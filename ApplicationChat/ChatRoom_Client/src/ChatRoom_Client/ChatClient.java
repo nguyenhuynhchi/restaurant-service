@@ -16,7 +16,7 @@ import java.util.ArrayList;
  *
  * @author Nguyen Huynh Chi
  */
-public class ChatClient {  //hello nè
+public class ChatClient {
 
     private static final String URL = "localhost";
     private static final int PORT_INFO = 5000;
@@ -33,7 +33,7 @@ public class ChatClient {  //hello nè
         this.vFC = vFC;
     }
 
-    public void StartClient() {  //hello
+    public void StartClient() {  
         try {
             clientName = vFC.userName;
             clientID = vFC.ID;
