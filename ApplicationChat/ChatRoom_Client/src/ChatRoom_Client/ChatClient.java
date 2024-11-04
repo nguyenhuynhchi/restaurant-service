@@ -6,11 +6,8 @@ package ChatRoom_Client;
 
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 import View.V_FrmChat_Client;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  *
@@ -24,7 +21,7 @@ public class ChatClient {
     private V_FrmChat_Client vFC;
     private String clientName;
     private String clientID;
-    public boolean connect = false;
+    public boolean connect;
 
     private Socket infoSocket;
     private Socket chatSocket;
@@ -54,13 +51,14 @@ public class ChatClient {
             new Thread(clientInfoListener).start();
 
             // Tạo và khởi chạy thread cho chatMessage_Listener để nhận tin nhắn chat từ server gửi về
-            ChatMessage_Listener chatMessageListener = new ChatMessage_Listener(chatSocket);
+            ChatMessage_Listener chatMessageListener = new ChatMessage_Listener(chatSocket, vFC);
             new Thread(chatMessageListener).start();
 
             // Gửi tin nhắn thông qua class MessageSender lên server
             OutputStream chatOutput = chatSocket.getOutputStream();
-            MessageSender messageSender = new MessageSender(chatOutput);
+            MessageSender messageSender = new MessageSender(chatOutput, vFC);
             new Thread(messageSender).start();
+            
 
         } catch (java.net.ConnectException e) {
             System.out.println("Lỗi: Không thể kết nối đến server. Vui lòng kiểm tra server và thử lại.");
@@ -69,13 +67,15 @@ public class ChatClient {
             System.out.println("Lỗi ở chatClient");  // Xử lý các ngoại lệ I/O khác
             connect = false; //Kiểm tra kết nối không thành công thì hiện panel thông báo
         }
+        System.out.println("connect: "+connect);
+        vFC.hienThongBaoKetNoi(connect);
     }
-
-    public String getclientName() {
-        return clientName;
-    }
-
-    public String getclientID() {
-        return clientID;
-    }
+    
+//    public String getclientName() {
+//        return clientName;
+//    }
+//
+//    public String getclientID() {
+//        return clientID;
+//    }
 }

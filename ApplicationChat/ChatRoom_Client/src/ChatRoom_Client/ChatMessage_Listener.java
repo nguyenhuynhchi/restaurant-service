@@ -12,9 +12,11 @@ public class ChatMessage_Listener implements Runnable {
 
     private Socket chatSocket;
     private InputStream input;
+    private V_FrmChat_Client vFC;
 
-    public ChatMessage_Listener(Socket chatSocket) {
+    public ChatMessage_Listener(Socket chatSocket, V_FrmChat_Client vFC) {
         this.chatSocket = chatSocket;
+        this.vFC = vFC;
         try {
             this.input = chatSocket.getInputStream();
         } catch (Exception e) {
@@ -33,6 +35,7 @@ public class ChatMessage_Listener implements Runnable {
 
                 // Hiển thị tin nhắn nhận được
                 System.out.println("Tin nhắn từ phòng chat: " + message);
+                vFC.addMessage(message, "in");
             }
         } catch (Exception e) {
             System.out.println("(ChatMessageListener) Lỗi kết nối server");

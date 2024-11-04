@@ -6,33 +6,38 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import ChatRoom_Client.ChatClient;
+import ChatRoom_Client.MessageSender;
 import View.V_FrmChat_Client;
 
 public class ControllerFormChat implements ActionListener {
 
     private V_FrmChat_Client vFC;
-    private ChatClient chatClient;
+//    private ChatClient chatClient;
 
-    public ControllerFormChat(V_FrmChat_Client vFC, ChatClient chatClient) {
+//    public ControllerFormChat(V_FrmChat_Client vFC, ChatClient chatClient) {
+//        this.vFC = vFC;
+//        this.chatClient = chatClient;
+//    }
+    
+    public ControllerFormChat(V_FrmChat_Client vFC) {
         this.vFC = vFC;
-        this.chatClient = chatClient;
+//        this.chatClient = new ChatClient(vFC);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
         String src = e.getActionCommand();
-        JButton srcBtn = (JButton) e.getSource();
-
-        
+        processAction(src);
+    }
+    
+    private void processAction(String actionCommand) {
+//	System.out.println("\nPRESS " + actionCommand + " !!!");
+//        if(actionCommand.equals("Gửi")){
+//            vFC.guiTin(messageSender);
+//        }
     }
 
-    public void kiemTraKetNoi() {
-        if (chatClient.connect == false) {
-            vFC.hienThongBaoKetNoi(true);  // Hiển thị thông báo nếu kết nối không thành công
-        } else {
-            vFC.hienThongBaoKetNoi(false); // Ẩn thông báo nếu kết nối thành công
-        }
-    }
+
 
 }
