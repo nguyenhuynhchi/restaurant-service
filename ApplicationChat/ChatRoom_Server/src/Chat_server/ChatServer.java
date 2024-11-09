@@ -3,9 +3,10 @@ package Chat_server;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 
 import View.V_FrmChat_Server;
 
@@ -21,6 +22,10 @@ public class ChatServer {
 	// List chứa các client kết nối
 	private List<ClientInfo_Handler> clientsInfo = new ArrayList<>();
 	private List<ClientChat_Handler> clientsChat = new ArrayList<>();
+	
+	// Tạo hashMap với tên nhóm làm khóa và danh sách các client
+	private Map<String, List<ClientInfo_Handler>> groups = new HashMap<>();
+
 	
 
 	private ServerSocket serverInfo_Socket;
@@ -127,5 +132,51 @@ public class ChatServer {
 			}
 	    }
 	}
+	
+	public void createGroup(String groupName, List<String> clientsInGroup) {
+	    // Tạo danh sách client cho nhóm
+	    List<ClientInfo_Handler> groupClients = new ArrayList<>();
+
+	    // Duyệt qua danh sách tên client trong nhóm
+	    for (String clientName : clientsInGroup) {
+	        ClientInfo_Handler clients= getClientByName(clientName); // Tìm client theo tên
+	        if (clients != null) {
+	            groupClients.add(clients);
+	        }
+	    }
+
+	    // Thêm nhóm mới hoặc cập nhật nếu nhóm đã tồn tại
+	    if (!groups.containsKey(groupName)) {  // Kiểm tra groups đã có tên nhóm này chưa
+	        groups.put(groupName, groupClients);
+	        System.out.println("Nhóm mới đã được tạo: " + groupName);
+	    } else {
+	        groups.get(groupName).addAll(groupClients);
+	        System.out.println("Nhóm đã cập nhật thêm thành viên: " + groupName);
+	    }
+
+	    // Thông báo cho các thành viên trong nhóm rằng nhóm đã được tạo
+//	    notifyGroupCreation(groupName, groupClients);
+	}
+	
+//	private void notifyGroupCreation(String groupName, List<ClientInfo_Handler> groupClients) {
+//		ClientChat_Handler clientChat;
+//		
+//	    String notification = "Nhóm " + groupName + " đã được tạo. Bạn đã tham gia nhóm.";
+//	    for (ClientInfo_Handler clientHandler : groupClients) {
+//	    	clientChat.sendMessage(notification);
+//	    }
+//	}
+	
+	private ClientInfo_Handler getClientByName(String clientName) {
+	    for (ClientInfo_Handler clientInfo : clientsInfo) { // Duyệt trong list clientsInfo
+	        if (clientInfo.getClientName().equals(clientName)) {
+	            return clientInfo;
+	        }
+	    }
+	    return null;
+	}
+	
+	
+	
 
 }

@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -41,9 +44,28 @@ public class ClientChat_Handler implements Runnable {
 			// Liên tục nhận tin nhắn từ client và chuyển tiếp tới các client khác
 			while ((bytesRead = input.read(buffer)) != -1) {
 				String message = new String(buffer, 0, bytesRead).trim();
-
-				chatServer.broadcastMessage(this.clientID, this.clientName, message);
-				System.out.println("Tin nhắn từ "+this.clientName + "(" + this.clientID + "): " + message);
+				
+				if (message.startsWith("GROUP #")) {
+			        // Tách lấy tên nhóm và danh sách client
+			        String[] parts = message.split("\\#");
+			        String groupName = parts[1];
+			        List<String> clientsInGroup = new ArrayList<>(Arrays.asList(parts[2].split(" \\+\\+ ")));
+			        clientsInGroup.add(this.clientID+" | "+this.clientName); // Thêm thành viên tạo nhóm vào list nhóm
+			        
+			        // In ra thông tin nhóm mới được tạo
+			        System.out.println("Có Client tạo nhóm tên \""+ groupName +"\", với các thành viên: ");
+			        for (String clients : clientsInGroup) {
+			        	System.out.println(clients);
+			        }
+			        
+			        // Xử lý thêm nhóm mới, thêm client vào nhóm
+//			        chatServer.createGroup(groupName, clientsInGroup);
+			        
+			    }else {
+			    	chatServer.broadcastMessage(this.clientID, this.clientName, message);
+			    	System.out.println("Tin nhắn từ "+this.clientName + "(" + this.clientID + "): " + message);
+			    }
+				
 			}
 		} catch (SocketException e) {
 	        System.out.println(clientName + "(" + clientID + ") "+ "vừa ngắt kết nối");

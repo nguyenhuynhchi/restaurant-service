@@ -3,7 +3,6 @@ package test;
 import javax.swing.UIManager;
 
 import ChatRoom_Client.ChatClient;
-import Controller.ControllerFormChat;
 import View.V_FrmChat_Client;
 
 public class test_FrmChat_Client {
@@ -19,8 +18,6 @@ public class test_FrmChat_Client {
             chatClient.StartClient();
 
             vFC.setVisible(true);
-//            ControllerFormChat controller = new ControllerFormChat(vFC, chatClient);
-//            controller.kiemTraKetNoi();
 
         } catch (Exception e) {
             e.printStackTrace();

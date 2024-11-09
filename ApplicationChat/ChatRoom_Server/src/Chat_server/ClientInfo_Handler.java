@@ -32,14 +32,17 @@ public class ClientInfo_Handler implements Runnable {
 			String clientData = new String(buffer, 0, bytesRead).trim();
 
 			// Tách tên và ID bằng ký tự "|"
+			if(clientData.startsWith("InfoNewClients|")) {
+				
 			String[] dataParts = clientData.split("\\|");
 
-			if (dataParts.length == 2) {
-				this.clientName = dataParts[0];
-				this.clientID = dataParts[1];
+			if (dataParts.length == 3) {
+				this.clientName = dataParts[1];
+				this.clientID = dataParts[2];
 			} else {
 				System.out.println("Dữ liệu không hợp lệ từ client.");
 			}
+		}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,7 +65,7 @@ public class ClientInfo_Handler implements Runnable {
 		}
 	}
 	
-	public void sendDisconnectNotification(String disconnectedClientName) {  // Gửi thông báo client đã ngắt kết nối đến các client khác
+	public void sendDisconnectNotification(String disconnectedClientName) {  // Gửi thông điệp client đã ngắt kết nối để xóa client khỏi list
 	    try {
 	        output.write(("DISCONNECT|" + disconnectedClientName + "\n").getBytes());
 	        output.flush();
