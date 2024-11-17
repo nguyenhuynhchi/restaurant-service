@@ -13,9 +13,9 @@ import java.net.Socket;
  *
  * @author Nguyen Huynh Chi
  */
-public class ClientInFo_Listener implements Runnable {
+public class Client_Listener implements Runnable {
 
-    private Socket infoSocket;
+    private Socket socket;
     private InputStream input;
     private OutputStream output;
     public boolean connect;
@@ -25,17 +25,17 @@ public class ClientInFo_Listener implements Runnable {
 
     private StringBuilder messageBuilder = new StringBuilder(); // Dùng để lưu trữ thông điệp nhận được
 
-    public ClientInFo_Listener(Socket infoSocket, V_FrmChat_Client vFC) {
-        this.infoSocket = infoSocket;
+    public Client_Listener(Socket socket, V_FrmChat_Client vFC) {
+        this.socket = socket;
         this.vFC = vFC;
         try {
-            this.input = infoSocket.getInputStream();
+            this.input = socket.getInputStream();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public ClientInFo_Listener() {
+    public Client_Listener() {
         //rỗng
     }
 
@@ -55,19 +55,27 @@ public class ClientInFo_Listener implements Runnable {
 
                     // Xử lý thông báo ngắt kết nối
                     if (message.startsWith("DISCONNECT|")) {
-                        String disconnectedClientName = message.split("\\|")[1];
+                        String disconnectedClientName = message.split("\\|")[1]; // Lấy tên Client vừa ngắt kết nối phía sau DISCONNECT|
                         vFC.removeClientFromList(disconnectedClientName); // Gọi PT xóa client từ JList
-                    } else if (message.contains("|")) {  // Xử lý thông tin client mới
-                        String[] dataParts = message.split("\\|"); // Tách dữ liệu tên và ID
-                        if (dataParts.length == 2) {
-                            this.NameCln = dataParts[0];
-                            this.IDCln = dataParts[1];
-                            System.out.println("Client khác đã kết nối: " + NameCln + " (" + IDCln + (")"));  // Hiển thị clientName và clientID mới
+                        System.out.println(disconnectedClientName + " - ĐÃ NGẮT KẾT NỐI");
+                    } // 
+                    else if (message.startsWith("InfoNewClients|")) {  // Xử lý thông tin client mới
+                        String[] infoClient = message.split("\\|"); // Tách dữ liệu tên và ID
+
+                        if (infoClient.length == 3) {
+                            this.NameCln = infoClient[1];
+                            this.IDCln = infoClient[2];
+                            System.out.println("Client khác đang kết nối: " + NameCln + " (" + IDCln + (")"));  // Hiển thị clientName và clientID mới
 
                             vFC.addClientToList(IDCln, NameCln);  // Thêm các Client vào list
                         } else {
                             System.out.println("Thông tin client không hợp lệ: " + message);
                         }
+                    } //
+                    else {  // Nếu không phải 2 thông báo ngắt kết nối hay có thêm client mới thì là tin nhắn nhận được
+                        // Hiển thị tin nhắn nhận được
+                        System.out.println("Tin nhắn từ phòng chat: " + message);
+                        vFC.addMessage(message, "in");
                     }
                 }
             }

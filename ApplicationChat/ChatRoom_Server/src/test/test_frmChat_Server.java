@@ -15,9 +15,12 @@ public class test_frmChat_Server {
 			vFC.setVisible(true);
 			
 			// Khởi tạo server chat và truyền viewFormChat vào
-	        ChatServer chatServer = new ChatServer(vFC);
+//	        ChatServer chatServer = new ChatServer(vFC);
+//	        chatServer.startServer();
+			
+			ChatServer chatServer = ChatServer.getInstance(vFC);
 	        chatServer.startServer();
-	        
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

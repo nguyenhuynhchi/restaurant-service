@@ -118,6 +118,7 @@ public class V_FrmChat_Client extends JFrame {
         }
 
         nhapTen();
+        
         ActionListener ac = new ControllerFormChat_Clients(this);
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
@@ -299,15 +300,15 @@ public class V_FrmChat_Client extends JFrame {
         lbl_tenNguoiDung.setBounds(10, 25, 250, 25);
         panel_UIDName.add(lbl_tenNguoiDung);
 
-        JLabel lbl_chatUID = new JLabel("000");
-        lbl_chatUID.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        lbl_chatUID.setBounds(10, 10, 76, 29);
-        panel_chat.add(lbl_chatUID);
-
-        JLabel lbl_chatName = new JLabel("Tên gì đó");
-        lbl_chatName.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        lbl_chatName.setBounds(186, 10, 174, 30);
-        panel_chat.add(lbl_chatName);
+//        JLabel lbl_chatUID = new JLabel("000");
+//        lbl_chatUID.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+//        lbl_chatUID.setBounds(10, 10, 76, 29);
+//        panel_chat.add(lbl_chatUID);
+//
+//        JLabel lbl_chatName = new JLabel("Tên gì đó");
+//        lbl_chatName.setFont(new Font("Times New Roman", Font.BOLD, 15));
+//        lbl_chatName.setBounds(186, 10, 174, 30);
+//        panel_chat.add(lbl_chatName);
 
 //        model_clients = new DefaultListModel<>();
         list_UIDName_onl = new JList<>(model_clients);
@@ -380,8 +381,10 @@ public class V_FrmChat_Client extends JFrame {
         model_clients.addElement(newClient); // Thêm clientID vào JList
     }
     
-    public void addGroupToList(String groupName){
-        model_groups.addElement(groupName);
+    public void addGroupToList(String groupName, int quantityInGroup){
+        String newGroup = groupName+" | "+quantityInGroup;
+        System.out.println(newGroup);
+        model_groups.addElement(newGroup);
     }
 
     public void removeClientFromList(String clientName) {
@@ -406,7 +409,7 @@ public class V_FrmChat_Client extends JFrame {
         }
     }
 
-    // Phương thức thêm tin nhắn mới vào chatPanel
+    // Phương thức thêm tin nhắn vào chatPanel (Chưa hoàn chỉnh)
     public void addMessage_(String message, String inputMessage) {
         // Tạo JPanel cho tin nhắn và cài đặt căn lề
         JPanel messagePanel = new JPanel();

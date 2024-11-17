@@ -14,11 +14,10 @@
         <group>
             <file>file:/D:/ApplicationChat/ChatRoom_Client/src/View/V_FrmChat_Client.java</file>
             <file>file:/D:/ApplicationChat/ChatRoom_Client/src/Controller/ControllerFormChat_Clients.java</file>
-            <file>file:/D:/ApplicationChat/ChatRoom_Client/src/ChatRoom_Client/ClientInFo_Listener.java</file>
+            <file>file:/D:/ApplicationChat/ChatRoom_Client/src/ChatRoom_Client/Client_Listener.java</file>
             <file>file:/D:/ApplicationChat/ChatRoom_Client/src/ChatRoom_Client/ChatClient.java</file>
             <file>file:/D:/ApplicationChat/ChatRoom_Client/src/test/test_FrmChat_Client.java</file>
             <file>file:/D:/ApplicationChat/ChatRoom_Client/src/ChatRoom_Client/MessageSender.java</file>
-            <file>file:/D:/ApplicationChat/ChatRoom_Client/src/ChatRoom_Client/ChatMessage_Listener.java</file>
         </group>
     </open-files>
 </project-private>

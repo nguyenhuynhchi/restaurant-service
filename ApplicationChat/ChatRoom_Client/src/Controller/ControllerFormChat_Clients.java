@@ -12,12 +12,13 @@ import java.util.List;
 public class ControllerFormChat_Clients implements ActionListener, MouseListener {
 
     private V_FrmChat_Client vFC;
+    private ChatClient chatClient;
 
     public ControllerFormChat_Clients(V_FrmChat_Client vFC) {
         this.vFC = vFC;
+        this.chatClient = chatClient.getInstance(vFC);
     }
 
-    private ChatClient chatClient = new ChatClient(vFC);
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -38,8 +39,10 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
             vFC.panel_TaoNhom.setVisible(false);
             vFC.panel_chat.setVisible(true);
             vFC.textField_TenNhom.setText("");
+            vFC.list_UIDName_onl_taoNhom.clearSelection();
         }
 
+        
 //        if (button.equals("Tạo")) {
 //            String groupName = vFC.textField_TenNhom.getText();
 //            List<String> selectedClients = vFC.list_UIDName_onl_taoNhom.getSelectedValuesList();

@@ -11,13 +11,14 @@ public class test_FrmChat_Client {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-            V_FrmChat_Client vFC = new V_FrmChat_Client();
+                V_FrmChat_Client vFC = new V_FrmChat_Client();
 
-            // Khởi tạo client chat và truyền view vào
-            ChatClient chatClient = new ChatClient(vFC);
-            chatClient.StartClient();
+                // Khởi tạo client chat và truyền view vào
+                ChatClient chatClient = new ChatClient(vFC);
+                chatClient.StartClient();
+                
+                vFC.setVisible(true);
 
-            vFC.setVisible(true);
 
         } catch (Exception e) {
             e.printStackTrace();
