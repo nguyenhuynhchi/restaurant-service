@@ -1,11 +1,8 @@
 package ChatRoom_Client;
 
-import java.io.IOException;
+import View.V_FrmChat_Client;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.List;
-
-import View.V_FrmChat_Client;
 
 /**
  *
@@ -15,7 +12,7 @@ public class ChatClient {
 
     private static final String URL = "localhost";
     private static final int PORT_INFO = 5000;
-    
+
     private static ChatClient instance;
     private V_FrmChat_Client vFC;
     public String clientName;
@@ -24,13 +21,15 @@ public class ChatClient {
 
     private Socket socket;
 //    private Socket chatSocket;
+    private MessageSender messageSender;
+    private Client_Listener client_Listener;
 
     public ChatClient(V_FrmChat_Client vFC) {
         this.vFC = vFC;
     }
-    
-    public static synchronized ChatClient getInstance(V_FrmChat_Client vFC){
-        if(instance == null){
+
+    public static synchronized ChatClient getInstance(V_FrmChat_Client vFC) {
+        if (instance == null) {
             instance = new ChatClient(vFC);
         }
         return instance;
@@ -52,11 +51,13 @@ public class ChatClient {
             InfoOutput.write(("InfoNewClients|" + clientName + "|" + clientID + "\n").getBytes());
 
             // Tạo và khởi chạy thread cho chatInfo_Listener để nhận thông tin các client từ server gửi về
-            Client_Listener clientInfoListener = new Client_Listener(socket, vFC);
-            new Thread(clientInfoListener).start();
+            client_Listener = new Client_Listener(socket, vFC);
+            new Thread(client_Listener).start();
 
-            MessageSender messageSender = new MessageSender(socket, vFC);
+            messageSender = new MessageSender(socket, vFC);
             new Thread(messageSender).start();
+            messageSender.setClientName(clientName);
+            messageSender.setClientID(clientID);
 
             connect = true; //Kiểm tra kết nối thành công thì không hiện panel thông báo
         } catch (java.net.ConnectException e) {
@@ -69,4 +70,9 @@ public class ChatClient {
         vFC.hienThongBaoKetNoi(connect);
     }
 
+//    public void disconnect(){
+//        messageSender.disconnect();
+//        client_Listener.disconnect();
+//        System.out.println("Đã ngắt kết nối khỏi server.");
+//    }
 }

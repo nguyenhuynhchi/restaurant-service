@@ -1,43 +1,32 @@
 package View;
 
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Toolkit;
-import java.awt.Window;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import Controller.ControllerFormChat_Server;
-
-import javax.swing.JButton;
 import java.awt.Color;
-import java.awt.Container;
-
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.UIManager;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.awt.event.ActionEvent;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.imageio.ImageIO;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JScrollPane;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import Controller.ControllerFormChat_Server;
 
 public class V_FrmChat_Server extends JFrame {
 
@@ -57,6 +46,7 @@ public class V_FrmChat_Server extends JFrame {
 	public JPanel panel_thongTinNhom;
 	public JPanel panel;
 	private String userName = "Server";
+	public JLabel lbl_tenNhom;
 
 	/**
 	 * Launch the application.
@@ -89,10 +79,7 @@ public class V_FrmChat_Server extends JFrame {
 
 		ActionListener ac = new ControllerFormChat_Server(this);
 
-		// Lấy kích thước màn hình
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = screenSize.width;
-		int height = screenSize.height;
+		
 		setBounds(0, 0, 1500, 800);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -143,6 +130,7 @@ public class V_FrmChat_Server extends JFrame {
 //		model_ClientsInGroup = new DefaultListModel<>();
 		list_UIDNameInGr = new JList<>();
 		list_UIDNameInGr.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		list_UIDNameInGr.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		JScrollPane scrollPane_listUIDNameInGr = new JScrollPane(list_UIDNameInGr);
 		scrollPane_listUIDNameInGr.setBounds(60, 85, 320, 500);
@@ -154,7 +142,7 @@ public class V_FrmChat_Server extends JFrame {
 		lbl_thongTinNhom.setBounds(0, 0, 170, 50);
 		panel_thongTinNhom.add(lbl_thongTinNhom);
 
-		JLabel lbl_tenNhom = new JLabel("");
+		lbl_tenNhom = new JLabel("");
 		lbl_tenNhom.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lbl_tenNhom.setBounds(170, 0, 320, 50);
 		panel_thongTinNhom.add(lbl_tenNhom);
@@ -207,8 +195,6 @@ public class V_FrmChat_Server extends JFrame {
 		model_Groups = new DefaultListModel<>();
 		list_GroupName = new JList<>(model_Groups);
 		list_GroupName.setFont(new Font("Tahoma", Font.PLAIN, 20));
-//        model_Groups.addElement("Nhóm abc | 4 thành viên");
-//        model_Groups.addElement("Nhóm def | 8 thành viên");
 
 		scrollPane_listGroupName = new JScrollPane(list_GroupName);
 		scrollPane_listGroupName.setBounds(0, 85, 300, 600);
@@ -225,6 +211,7 @@ public class V_FrmChat_Server extends JFrame {
 		btn_Clients.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btn_Clients.setBounds(0, 0, 145, 35);
 		btn_Clients.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+		btn_Clients.setActionCommand("Clients");
 		btn_Clients.addActionListener(ac);
 		panel_Clients_Nhom.add(btn_Clients);
 
@@ -232,13 +219,18 @@ public class V_FrmChat_Server extends JFrame {
 		btn_Nhom.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btn_Nhom.setBounds(155, 0, 145, 35);
 		btn_Nhom.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+		btn_Nhom.setActionCommand("Nhóm");
 		btn_Nhom.addActionListener(ac);
 		panel_Clients_Nhom.add(btn_Nhom);
 	}
 
-	public void addClient_ToJList(String clientID, String clientName) {
-		String newClient = clientID + " | " + clientName;
-		model_Clients.addElement(newClient); // Thêm clientID vào JList
+//	public void addClient_ToJList_(String clientID, String clientName) {
+//		String newClient = clientID + " | " + clientName;
+//		model_Clients.addElement(newClient); // Thêm clientID vào JList
+//	}
+
+	public void addClient_ToJList(String infoClient) {
+		model_Clients.addElement(infoClient); // Thêm client vào JList
 	}
 
 	public void addGroup_ToJList(String groupName, String quantityInGroup) {
@@ -246,21 +238,22 @@ public class V_FrmChat_Server extends JFrame {
 		model_Groups.addElement(newGroup);
 	}
 
-	public void removeClientFromList(String clientName) {
-		for (int i = 0; i < model_Clients.size(); i++) {
-			if (model_Clients.get(i).contains(clientName)) {
-				model_Clients.remove(i);
-				break;
-			}
-		}
+	public void removeClientFromList(String infoClientDisconnect) {
+//		for (int i = 0; i < model_Clients.size(); i++) {
+//			if (model_Clients.get(i).contains(infoClientDisconnect)) {
+//				model_Clients.remove(i);
+//				break;
+//			}
+//		}
+		System.out.println("Đã xóa client " + infoClientDisconnect + " khỏi JList");
+		model_Clients.removeElement(infoClientDisconnect);
 	}
 
 	public void updateClientListInGroup(List<String> clientNameInGroup) {
 		// Cập nhật danh sách client trong nhóm
 		DefaultListModel<String> modelClientName = new DefaultListModel<>();
 		for (String clientName : clientNameInGroup) {
-        	modelClientName.addElement(clientName);
-        	System.out.println("Vừa thêm client vào JList: " + clientName);
+			modelClientName.addElement(clientName);
 		}
 		list_UIDNameInGr.setModel(modelClientName);
 	}

@@ -1,13 +1,11 @@
 package Controller;
 
 import ChatRoom_Client.ChatClient;
+import View.V_FrmChat_Client;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import View.V_FrmChat_Client;
-import java.util.List;
 
 public class ControllerFormChat_Clients implements ActionListener, MouseListener {
 
@@ -22,33 +20,33 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String button = e.getActionCommand();
+        String actionCommand = e.getActionCommand();
 
-        if (button.equals("Clients")) {
+        if (actionCommand.equals("Clients")) {
             vFC.scrollPane_listGroupName.setVisible(false);
             vFC.scrollPane_listUIDName.setVisible(true);
-        } else if (button.equals("Nhóm")) {
+            vFC.list_GroupName.clearSelection();
+        } else if (actionCommand.equals("Nhóm")) {
             vFC.scrollPane_listUIDName.setVisible(false);
             vFC.scrollPane_listGroupName.setVisible(true);
+            vFC.list_UIDName_onl.clearSelection();
         }
 
-        if (button.equals("Tạo nhóm")) {
+        if (actionCommand.equals("Tạo nhóm")) {
             vFC.panel_TaoNhom.setVisible(true);
             vFC.panel_chat.setVisible(false);
-        } else if (button.equals("Đóng")) {
+        } else if (actionCommand.equals("Đóng")) {
             vFC.panel_TaoNhom.setVisible(false);
             vFC.panel_chat.setVisible(true);
             vFC.textField_TenNhom.setText("");
             vFC.list_UIDName_onl_taoNhom.clearSelection();
         }
-
         
-//        if (button.equals("Tạo")) {
-//            String groupName = vFC.textField_TenNhom.getText();
-//            List<String> selectedClients = vFC.list_UIDName_onl_taoNhom.getSelectedValuesList();
-//            chatClient.sendGroupInfo(groupName, selectedClients);
-//            vFC.addGroupToList(groupName);
-//        }
+        if(actionCommand.equals("Xem thành viên trong nhóm")){
+            vFC.panel_clientsGroup.setVisible(true);
+        }else if(actionCommand.equals("Đóng xem thành viên trong nhóm")){
+            vFC.panel_clientsGroup.setVisible(false);
+        }
 
     }
 

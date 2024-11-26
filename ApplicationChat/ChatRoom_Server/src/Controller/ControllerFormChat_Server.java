@@ -3,11 +3,10 @@ package Controller;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -24,19 +23,19 @@ public class ControllerFormChat_Server implements ActionListener {
 		this.chatServer = ChatServer.getInstance(vFC);
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String button = e.getActionCommand();
+		String actionCommand  = e.getActionCommand();
 
-		if (button.equals("Clients")) {
+		if (actionCommand.equals("Clients")) {
 			vFC.panel.setVisible(true);
 			vFC.scrollPane_listUIDName.setVisible(true);
 			vFC.panel_thongTinNhom.setVisible(false);
 			vFC.scrollPane_listGroupName.setVisible(false);
 			vFC.btn_Nhom.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
 			vFC.btn_Clients.setBorder(BorderFactory.createLineBorder(Color.blue, 3));
-		} else if (button.equals("Nhóm")) {
+			vFC.list_GroupName.clearSelection();
+		} else if (actionCommand.equals("Nhóm")) {
 			vFC.scrollPane_listGroupName.setVisible(true);
 			vFC.panel_thongTinNhom.setVisible(true);
 			vFC.scrollPane_listUIDName.setVisible(false);
@@ -49,32 +48,46 @@ public class ControllerFormChat_Server implements ActionListener {
 	}
 
 	private void setupGroupListListener() {
-		vFC.list_GroupName.addListSelectionListener(new ListSelectionListener() {
+		vFC.list_GroupName.addListSelectionListener(new ListSelectionListener() { // lắng nghe khi chọn 1 group trong
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-					String selectedGroup = vFC.list_GroupName.getSelectedValue().split("\\|")[0].trim(); // Lấy tên nhóm được chọn
-//					String[] parts = selectedGroup.split("\\|");
-					System.out.println("Groups được chọn: '" + selectedGroup+"'");
-					System.out.println("Keys in groups: '" + chatServer.groups.keySet()+"'");
-					if (selectedGroup != null) {
+					if (vFC.list_GroupName.getSelectedValue() != null) {
+						String selectedGroup = vFC.list_GroupName.getSelectedValue().split("\\|")[0].trim(); // Lấy tên
+																												// nhóm
+																												// được
+																												// chọn
+						System.out.println("Groups được chọn: '" + selectedGroup + "'");
+						if (selectedGroup != null) {
 
-						// Lấy danh sách tên client trong nhóm từ ChatServer
-						List<String> clientNames = chatServer.getClientNamesInGroup(selectedGroup);
-						
-						if (clientNames == null || clientNames.isEmpty()) {
-						    System.out.println("Không tìm thấy nhóm hoặc nhóm không có client.");
+							// Lấy danh sách tên client trong nhóm từ ChatServer
+							List<String> clientNames = chatServer.getClientsInGroup(selectedGroup);
+
+							if (clientNames == null || clientNames.isEmpty()) {
+								System.out.println("Không tìm thấy nhóm hoặc nhóm không có client.");
+							}
+
+							else {
+								System.out.println("Client in group '" + selectedGroup + "': ");
+								for (String clients : clientNames) {
+									System.out.println(clients);
+								}
+								vFC.list_UIDNameInGr.getSelectionModel().setValueIsAdjusting(true);
+								vFC.lbl_tenNhom.setText(selectedGroup);
+								vFC.updateClientListInGroup(clientNames);
+								vFC.list_UIDNameInGr.getSelectionModel().setValueIsAdjusting(false);
+							}
+
 						}
-						
-						for(String clients : clientNames) {
-							System.out.println("Client in groups: "+clients);
-						}
-						
-						vFC.updateClientListInGroup(clientNames);
+					} else {
+						List<String> listNoClients = new ArrayList<>();
+						vFC.updateClientListInGroup(listNoClients); // List Rỗng
 					}
 				}
 			}
 		});
+		
+		
 	}
 
 //	private void updateClientListInGroup(String groupName) {
