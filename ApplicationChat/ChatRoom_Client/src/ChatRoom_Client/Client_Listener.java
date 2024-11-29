@@ -9,20 +9,23 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Nguyen Huynh Chi
  */
 public class Client_Listener implements Runnable {
-
+    private static Client_Listener instance;
     private Socket socket;
     private InputStream input;
     public boolean connect;
     private String clientName;
     private String clientID;
     private V_FrmChat_Client vFC;
+    private ChatClient chatCLient;
 
     private StringBuilder messageBuilder = new StringBuilder(); // Dùng để lưu trữ thông điệp nhận được
 
@@ -33,13 +36,14 @@ public class Client_Listener implements Runnable {
     public Client_Listener(Socket socket, V_FrmChat_Client vFC) {
         this.socket = socket;
         this.vFC = vFC;
+        this.chatCLient = chatCLient.getInstance(vFC);
         try {
             this.input = socket.getInputStream();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+    
     @Override
     public void run() {
         try {
@@ -79,12 +83,7 @@ public class Client_Listener implements Runnable {
                         String groupName = parts[1].trim();
                         String quantityInGroup = parts[2];
                         List<String> clientsInGroup = new ArrayList<>(Arrays.asList(parts[3].split(" \\+\\+ ")));
-                        System.out.println("\n🔔 Bạn vừa được thêm vào nhóm '" + groupName + "', với " + quantityInGroup + " thành viên: ");
-                        for (String clients : clientsInGroup) {
-                            System.out.println(clients);
-                        }
-                        vFC.addGroupToList(groupName, quantityInGroup);
-                        vFC.addMessage("\n🔔 Bạn vừa được thêm vào nhóm '" + groupName + "', với " + quantityInGroup + " thành viên: ", "in");
+                        chatCLient.createGroup(groupName, quantityInGroup, clientsInGroup);
                     } // Nếu không phải các thông điệp thì là tin nhắn nhận được
                     else {
                         // Hiển thị tin nhắn nhận được
@@ -100,24 +99,14 @@ public class Client_Listener implements Runnable {
         }
     }
 
-//    public void disconnect() {
-//        try {
-//            if (socket != null) {
-//                socket.close();
-//            }
-//            if (input != null) {
-//                input.close();
-//            }
-//
-//        } catch (IOException e) {
-//            System.err.println("Lỗi khi ngắt kết nối: " + e.getMessage());
+//    public synchronized void createGroup(String groupName, String quantityInGroup, List<String> clientsInGroup) {
+//        listGroups.put(groupName, clientsInGroup);
+//        System.out.println("\n🔔 Bạn vừa được thêm vào nhóm '" + groupName + "', với " + quantityInGroup + " thành viên: ");
+//        for (String clients : clientsInGroup) {
+//            System.out.println(clients);
 //        }
-//    }
-//    public String getClientName() {
-//        return clientName;
-//    }
-//
-//    public String getClientID() {
-//        return clientID;
+//        vFC.addGroupToList(groupName, quantityInGroup);
+//        System.out.println("Danh sách nhóm có bạn là thành viên: "+listGroups);
+//        vFC.addMessage("\n🔔 Bạn vừa được thêm vào nhóm '" + groupName + "', với " + quantityInGroup + " thành viên: ", "in");
 //    }
 }

@@ -83,7 +83,7 @@ public class ClientHandler implements Runnable {
 					// Xử lý thêm nhóm mới, thêm client vào nhóm
 					chatServer.createGroup(groupName, quantityInGroup, clientsInGroup);
 					// Kiểm tra đã có group mới trong danh sách groups ở chatServer chưa
-					System.out.println("\nGroups trong chatServer: " + chatServer.groups);
+					System.out.println("\nGroups trong chatServer: " + chatServer.listGroups);
 
 				}
 

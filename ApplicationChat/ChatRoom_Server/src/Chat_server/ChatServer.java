@@ -26,7 +26,7 @@ public class ChatServer {
 	// List chứa các client kết nối
 	public List<ClientHandler> listClientHandler = new ArrayList<>();
 	// Tạo hashMap với tên nhóm làm khóa và danh sách các client
-	public Map<String, List<String>> groups = new HashMap<>();
+	public Map<String, List<String>> listGroups = new HashMap<>();
 
 	public ChatServer(V_FrmChat_Server vFC) {
 		this.vFC = vFC;
@@ -118,7 +118,7 @@ public class ChatServer {
 		System.out.println("Danh sách client trong nhóm: " + clientsInGroup);
 
 		// Thêm tên group được tạo với danh sách client vào hashMap groups
-		groups.put(groupName, clientsInGroup);
+		listGroups.put(groupName, clientsInGroup);
 		System.out.println("Nhóm mới đã được tạo: " + groupName);
 
 		// Thêm thông tin nhóm mới vào JList
@@ -137,10 +137,10 @@ public class ChatServer {
 	}
 
 	public List<String> getClientsInGroup(String groupName) {
-		if (!groups.containsKey(groupName)) {
+		if (!listGroups.containsKey(groupName)) {
 			System.out.println("Nhóm không tồn tại trong HashMap: '" + groupName + "'");
 		}
-		return groups.getOrDefault(groupName, Collections.emptyList());
+		return listGroups.getOrDefault(groupName, Collections.emptyList());
 	}
 
 	public ClientHandler getClientByInfo(String infoClient) {

@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -52,7 +53,7 @@ public class V_FrmChat_Client extends JFrame {
 
     private DefaultListModel<String> model_clients;
     private DefaultListModel<String> model_groups;
-    private DefaultListModel<String> model_clientGroup;
+//    private DefaultListModel<String> model_clientGroup;
     public JList<String> list_UIDName_onl;
     public JList<String> list_UIDName_onl_taoNhom;
     public JList<String> list_GroupName;
@@ -77,13 +78,14 @@ public class V_FrmChat_Client extends JFrame {
     public JButton btn_taoNhom;
     public JButton btn_guiTin;
     public JButton btn_xacNhanTaoNhom;
-    
-    private JLabel lbl_IDClientChat;
-    private JLabel lbl_nameClientChat;
+
+    public JLabel lbl_IDClientChat;
+    public JLabel lbl_nameClientChat;
     private JScrollPane scrollPane_clientsGroup;
-    private JList list_clientsGroup;
+    public JList list_clientsGroup;
     public JButton btn_viewClientsGroup;
     public JPanel panel_clientsGroup;
+//    private V_FrmUserAccess vFU;
 //	private static ChatClient chatClient;
 
     /**
@@ -110,21 +112,6 @@ public class V_FrmChat_Client extends JFrame {
         setLocationRelativeTo(null);
         setTitle("LAN Chat Application - Client");
 
-//        this.chatClient = chatClient.getInstance(this);
-//        
-//        addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowClosing(WindowEvent e) {
-//                System.out.println("Bạn vừa đóng ứng dụng");
-//                if (chatClient != null) {
-//                chatClient.disconnect();
-//            }
-//           
-//            // Đóng ứng dụng
-//            dispose();
-//            System.exit(0);
-//            }
-//        });
         URL urlIconFrame = V_FrmChat_Client.class.getResource("/Images/App_server.png");
         Image img = Toolkit.getDefaultToolkit().createImage(urlIconFrame);
         setIconImage(img);
@@ -144,8 +131,11 @@ public class V_FrmChat_Client extends JFrame {
         }
 
         nhapTen();
-
         ActionListener ac = new ControllerFormChat_Clients(this);
+//        V_FrmUserAccess frm_userAccess = new V_FrmUserAccess(this);
+//        frm_userAccess.setVisible(true);
+//        this.setVisible(true);
+        
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
 //        // Lấy kích thước màn hình
@@ -220,30 +210,31 @@ public class V_FrmChat_Client extends JFrame {
             }
         });
         panel_chat.add(tf_message);
-        
+
         panel_clientsGroup = new JPanel();
-        panel_clientsGroup.setBounds(760, 50, 390, 600);
+        panel_clientsGroup.setForeground(new Color(128, 128, 128));
+        panel_clientsGroup.setBorder(BorderFactory.createLineBorder(Color.blue, 3));
+        panel_clientsGroup.setBounds(750, 50, 390, 600);
         panel_clientsGroup.setLayout(null);
         panel_clientsGroup.setVisible(false);
         panel_chat.add(panel_clientsGroup);
-        
+
         scrollPane_clientsGroup = new JScrollPane();
-        scrollPane_clientsGroup.setBounds(0, 30, 390, 570);
+        scrollPane_clientsGroup.setBounds(3, 30, 384, 567);
         panel_clientsGroup.add(scrollPane_clientsGroup);
-        
-        model_clientGroup = new DefaultListModel<>();
-        
-        list_clientsGroup = new JList<>(model_clientGroup);
+
+//        model_clientGroup = new DefaultListModel<>();
+        list_clientsGroup = new JList<>();
         list_clientsGroup.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        list_clientsGroup.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scrollPane_clientsGroup.setViewportView(list_clientsGroup);
-        scrollPane_clientsGroup.setVisible(false);
-        
+
         JButton btn_dongViewClientsGroup = new JButton("x");
         btn_dongViewClientsGroup.setBounds(0, 0, 40, 30);
         btn_dongViewClientsGroup.setActionCommand("Đóng xem thành viên trong nhóm");
         btn_dongViewClientsGroup.addActionListener(ac);
         panel_clientsGroup.add(btn_dongViewClientsGroup);
-        
+
         btn_guiTin = new JButton("Gửi");
         btn_guiTin.setFont(new Font("Arial", Font.PLAIN, 12));
         btn_guiTin.setBounds(1054, 710, 75, 45);
@@ -276,12 +267,13 @@ public class V_FrmChat_Client extends JFrame {
         lbl_nameClientChat.setFont(new Font("Times New Roman", Font.BOLD, 17));
         lbl_nameClientChat.setBounds(10, 10, 250, 25);
         panel_chat.add(lbl_nameClientChat);
-        
+
         btn_viewClientsGroup = new JButton("Xem thành viên trong nhóm");
         btn_viewClientsGroup.setToolTipText("Xem thành viên trong nhóm");
         btn_viewClientsGroup.setBounds(881, 7, 170, 35);
         btn_viewClientsGroup.setActionCommand("Xem thành viên trong nhóm");
         btn_viewClientsGroup.addActionListener(ac);
+        btn_viewClientsGroup.setVisible(false);
         panel_chat.add(btn_viewClientsGroup);
         panel_TaoNhom.setLayout(null);
         panel_Chinh.add(panel_TaoNhom);
@@ -306,7 +298,7 @@ public class V_FrmChat_Client extends JFrame {
         JLabel lbl_TenNhom = new JLabel("Tên nhóm:");
         lbl_TenNhom.setHorizontalAlignment(SwingConstants.CENTER);
         lbl_TenNhom.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-        lbl_TenNhom.setBounds(20, 55, 90, 30);
+        lbl_TenNhom.setBounds(20, 55, 90, 35); // x, y, w, h
         panel_TaoNhom.add(lbl_TenNhom);
 
         textField_TenNhom = new JTextField();
@@ -497,6 +489,17 @@ public class V_FrmChat_Client extends JFrame {
                 break;
             }
         }
+    }
+
+    public void updateListClientsGroup(List<String> clientsInGroup) {
+        // Cập nhật danh sách client trong nhóm
+        DefaultListModel<String> model_clientGroup = new DefaultListModel<>();
+        System.out.println("Client in group : ");
+        for (String clients : clientsInGroup) {
+            model_clientGroup.addElement(clients);
+            System.out.println("- " + clients);
+        }
+        list_clientsGroup.setModel(model_clientGroup);
     }
 
     public void nhapTen() {

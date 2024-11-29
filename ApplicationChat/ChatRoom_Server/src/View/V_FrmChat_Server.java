@@ -251,10 +251,10 @@ public class V_FrmChat_Server extends JFrame {
 
 	public void updateClientListInGroup(List<String> clientNameInGroup) {
 		// Cập nhật danh sách client trong nhóm
-		DefaultListModel<String> modelClientName = new DefaultListModel<>();
+		DefaultListModel<String> modelClientsGroup = new DefaultListModel<>();
 		for (String clientName : clientNameInGroup) {
-			modelClientName.addElement(clientName);
+			modelClientsGroup.addElement(clientName);
 		}
-		list_UIDNameInGr.setModel(modelClientName);
+		list_UIDNameInGr.setModel(modelClientsGroup);
 	}
 }

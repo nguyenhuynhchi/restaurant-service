@@ -48,7 +48,7 @@ public class ControllerFormChat_Server implements ActionListener {
 	}
 
 	private void setupGroupListListener() {
-		vFC.list_GroupName.addListSelectionListener(new ListSelectionListener() { // lắng nghe khi chọn 1 group trong
+		vFC.list_GroupName.addListSelectionListener(new ListSelectionListener() { // lắng nghe khi chọn 1 group trong JList
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
@@ -82,6 +82,7 @@ public class ControllerFormChat_Server implements ActionListener {
 					} else {
 						List<String> listNoClients = new ArrayList<>();
 						vFC.updateClientListInGroup(listNoClients); // List Rỗng
+						vFC.lbl_tenNhom.setText("");
 					}
 				}
 			}

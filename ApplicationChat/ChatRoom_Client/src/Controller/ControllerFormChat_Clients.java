@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class ControllerFormChat_Clients implements ActionListener, MouseListener {
 
@@ -17,7 +20,6 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
         this.chatClient = chatClient.getInstance(vFC);
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
@@ -26,9 +28,11 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
             vFC.scrollPane_listGroupName.setVisible(false);
             vFC.scrollPane_listUIDName.setVisible(true);
             vFC.list_GroupName.clearSelection();
+            vFC.btn_viewClientsGroup.setVisible(false);
         } else if (actionCommand.equals("Nhóm")) {
             vFC.scrollPane_listUIDName.setVisible(false);
             vFC.scrollPane_listGroupName.setVisible(true);
+//            vFC.btn_viewClientsGroup.setVisible(true);
             vFC.list_UIDName_onl.clearSelection();
         }
 
@@ -41,16 +45,54 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
             vFC.textField_TenNhom.setText("");
             vFC.list_UIDName_onl_taoNhom.clearSelection();
         }
-        
-        if(actionCommand.equals("Xem thành viên trong nhóm")){
+
+        if (actionCommand.equals("Xem thành viên trong nhóm")) {
             vFC.panel_clientsGroup.setVisible(true);
-        }else if(actionCommand.equals("Đóng xem thành viên trong nhóm")){
+        } else if (actionCommand.equals("Đóng xem thành viên trong nhóm") || vFC.btn_viewClientsGroup.isVisible() == false) {
             vFC.panel_clientsGroup.setVisible(false);
         }
 
+        setupGroupListListener();
+
+    }
+
+    private void setupGroupListListener() {
+        vFC.list_GroupName.addListSelectionListener(new ListSelectionListener() { // lắng nghe khi chọn 1 group trong JList
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    if (vFC.list_GroupName.getSelectedValue() != null) {
+                        String selectedGroup = vFC.list_GroupName.getSelectedValue().split("\\|")[0].trim(); // Lấy tên nhóm được chọn
+
+                        vFC.lbl_nameClientChat.setText("Tên nhom: " + selectedGroup);
+                        vFC.lbl_IDClientChat.setVisible(false);
+                        System.out.println("Groups được chọn: '" + selectedGroup + "'");
+                        
+                        if (selectedGroup != null) {
+                            // Lấy danh sách tên client trong nhóm từ ChatServer
+                            List<String> clientNames = chatClient.getClientsInGroup(selectedGroup);
+
+                            if (clientNames == null || clientNames.isEmpty()) {
+                                System.out.println("Không tìm thấy nhóm hoặc nhóm không có client.");
+                            } else {
+                                System.out.println("Client in group '" + selectedGroup + "': ");
+                                for (String clients : clientNames) {
+                                    System.out.println(clients);
+                                }
+                                vFC.list_GroupName.getSelectionModel().setValueIsAdjusting(true);
+                                vFC.updateListClientsGroup(clientNames);
+                                vFC.list_GroupName.getSelectionModel().setValueIsAdjusting(false);
+                            }
+                        }
+                        vFC.btn_viewClientsGroup.setVisible(true);
+                    }
+                }
+            }
+        });
     }
 
     @Override
+
     public void mouseClicked(MouseEvent e) {
         int index = vFC.list_UIDName_onl_taoNhom.locationToIndex(e.getPoint());
 
