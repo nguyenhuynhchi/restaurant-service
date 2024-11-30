@@ -90,18 +90,18 @@ public class V_FrmChat_Client extends JFrame {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    V_FrmChat_Client frame = new V_FrmChat_Client();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+//    public static void main(String[] args) {
+//        EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                try {
+//                    V_FrmChat_Client frame = new V_FrmChat_Client();
+//                    frame.setVisible(true);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 
     /**
      * Create the frame.
@@ -111,21 +111,6 @@ public class V_FrmChat_Client extends JFrame {
         setLocationRelativeTo(null);
         setTitle("LAN Chat Application - Client");
 
-//        this.chatClient = chatClient.getInstance(this);
-//        
-//        addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowClosing(WindowEvent e) {
-//                System.out.println("Bạn vừa đóng ứng dụng");
-//                if (chatClient != null) {
-//                chatClient.disconnect();
-//            }
-//           
-//            // Đóng ứng dụng
-//            dispose();
-//            System.exit(0);
-//            }
-//        });
         URL urlIconFrame = V_FrmChat_Client.class.getResource("/Images/App_server.png");
         Image img = Toolkit.getDefaultToolkit().createImage(urlIconFrame);
         setIconImage(img);
@@ -144,8 +129,9 @@ public class V_FrmChat_Client extends JFrame {
             ID = 000 + "";
         }
 
-        nhapTen();
+//        nhapTen();
 
+        V_FrmUserAccess vFU = new V_FrmUserAccess(this);
         ActionListener ac = new ControllerFormChat_Clients(this);
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
@@ -396,21 +382,21 @@ public class V_FrmChat_Client extends JFrame {
         list_UIDName_onl = new JList<>(model_clients);
         list_UIDName_onl.setFont(new Font("Tahoma", Font.PLAIN, 20));
         list_UIDName_onl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    if (list_UIDName_onl.getSelectedValue() != null) {
-                        lbl_IDClientChat.setText("ID: " + list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
-                        lbl_nameClientChat.setText("Tên: " + list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
-                    } else {
-                        lbl_IDClientChat.setText("ID: ");
-                        lbl_nameClientChat.setText("Tên: ");
-                    }
-
-                }
-            }
-        });
+//        list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e) {
+//                if (!e.getValueIsAdjusting()) {
+//                    if (list_UIDName_onl.getSelectedValue() != null) {
+//                        lbl_IDClientChat.setText("ID: " + list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
+//                        lbl_nameClientChat.setText("Tên: " + list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
+//                    } else {
+//                        lbl_IDClientChat.setText("ID: ");
+//                        lbl_nameClientChat.setText("Tên: ");
+//                    }
+//
+//                }
+//            }
+//        });
 
         scrollPane_listUIDName = new JScrollPane(list_UIDName_onl);
         scrollPane_listUIDName.setBounds(0, 85, 300, 615);

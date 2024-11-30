@@ -30,7 +30,8 @@ public class V_FrmUserAccess extends JFrame {
     public JPanel panel_dangKy;
     public JPanel panel_dangNhap;
     public JButton btn_OK;
-    private V_FrmChat_Client vFC;
+    public String userName;
+//    private V_FrmChat_Client vFC;
 
 //    public V_FrmUserAccess(V_FrmChat_Client vFC) {
 //        this.vFC = vFC;
@@ -55,7 +56,7 @@ public class V_FrmUserAccess extends JFrame {
     /**
      * Create the frame.
      */
-    public V_FrmUserAccess() {
+    public V_FrmUserAccess(V_FrmChat_Client vFC) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setTitle("LAN Chat Application - Client");
@@ -103,6 +104,7 @@ public class V_FrmUserAccess extends JFrame {
                 }
             }
         });
+        userName = tf_tenDN.getText();
         panel_dangNhap.add(tf_tenDN);
 
         tf_password = new JTextField();

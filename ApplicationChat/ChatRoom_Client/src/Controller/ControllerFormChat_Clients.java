@@ -2,6 +2,7 @@ package Controller;
 
 import ChatRoom_Client.ChatClient;
 import View.V_FrmChat_Client;
+import View.V_FrmUserAccess;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -9,10 +10,12 @@ import java.awt.event.MouseListener;
 import java.util.List;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicListUI;
 
 public class ControllerFormChat_Clients implements ActionListener, MouseListener {
 
     private V_FrmChat_Client vFC;
+    
     private ChatClient chatClient;
 
     public ControllerFormChat_Clients(V_FrmChat_Client vFC) {
@@ -53,6 +56,25 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
         }
 
         setupGroupListListener();
+        setupList_UIDName_onl();
+    }
+
+    private void setupList_UIDName_onl() {
+        vFC.list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    if (vFC.list_UIDName_onl.getSelectedValue() != null) {
+                        vFC.lbl_IDClientChat.setVisible(true);
+                        vFC.lbl_IDClientChat.setText("ID: " + vFC.list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
+                        vFC.lbl_nameClientChat.setText("Tên: " + vFC.list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
+                    } else {
+                        vFC.lbl_IDClientChat.setText("ID: ");
+                        vFC.lbl_nameClientChat.setText("Tên: ");
+                    }
+                }
+            }
+        });
 
     }
 
@@ -64,10 +86,11 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
                     if (vFC.list_GroupName.getSelectedValue() != null) {
                         String selectedGroup = vFC.list_GroupName.getSelectedValue().split("\\|")[0].trim(); // Lấy tên nhóm được chọn
 
-                        vFC.lbl_nameClientChat.setText("Tên nhom: " + selectedGroup);
+                        vFC.lbl_nameClientChat.setText("Tên nhóm: " + selectedGroup);
                         vFC.lbl_IDClientChat.setVisible(false);
+                        vFC.list_UIDName_onl.clearSelection();
                         System.out.println("Groups được chọn: '" + selectedGroup + "'");
-                        
+
                         if (selectedGroup != null) {
                             // Lấy danh sách tên client trong nhóm từ ChatServer
                             List<String> clientNames = chatClient.getClientsInGroup(selectedGroup);

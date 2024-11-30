@@ -164,6 +164,18 @@ public class ChatServer {
 			getClientByInfo(client).sendMessage(notification);
 		}
 	}
+	
+	public void sendMessageToGroup(ClientHandler clientSend, String groupName, String message) {
+		List<String> clientsInGroup = getClientsInGroup(groupName);
+		System.out.println("client gửi tin: "+clientSend.infoClient());
+		for (String client : clientsInGroup) {
+			System.out.println("Gửi tới client: "+client);
+			if(!client.trim().equals(clientSend.infoClient().trim())) {
+				// [ten nhom <tenclient(123)>] - mes
+				getClientByInfo(client).sendMessage("["+groupName+" {"+clientSend.getClientName()+"("+clientSend.getClientID()+")}] - "+message);
+			}
+		}
+	}
 
 //	    String notification = "AddedToGroup#" + groupName + "#"+getClientsInGroup(groupName);
 //	    for (ClientHandler clientHandler : groupClients) {

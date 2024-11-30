@@ -30,7 +30,7 @@ public class MessageSender implements Runnable {
     private Socket socket;
     private String clientID;
     private String clientName;
-//    private ChatClient chatClient;
+    private ChatClient chatClient;
 
     public MessageSender() {
         // Rỗng
@@ -39,7 +39,7 @@ public class MessageSender implements Runnable {
     public MessageSender(Socket socket, V_FrmChat_Client vFC) {
         this.socket = socket;
         this.vFC = vFC;
-//        this.chatClient = chatClient.getInstance(vFC);
+        this.chatClient = chatClient.getInstance(vFC);
         try {
             this.output = socket.getOutputStream();
         } catch (Exception e) {
@@ -60,25 +60,7 @@ public class MessageSender implements Runnable {
 
         vFC.btn_xacNhanTaoNhom.addActionListener(new ActionListener() {  // Nhấn nút tạo để xác nhận tạo nhóm
             public void actionPerformed(ActionEvent arg0) {
-                try {
-                    String groupName = vFC.textField_TenNhom.getText();
-                    List<String> selectedClients = new ArrayList<>(vFC.list_UIDName_onl_taoNhom.getSelectedValuesList());  // List chứa các clients đã chọn trong list tạo nhóm
-                    selectedClients.add(clientID + "|" + clientName); // Thêm client tạo nhóm
-                    if (groupName == null || groupName.trim().isEmpty()) { // Chưa nhập tên
-                        JOptionPane.showMessageDialog(null, "Bạn chưa nhập tên nhóm", "Thông báo", JOptionPane.ERROR_MESSAGE);
-                    } else if (selectedClients.size() == 1 || selectedClients.isEmpty()) { // Chưa chọn client 
-                        JOptionPane.showMessageDialog(null, "Bạn chưa chọn thành viên cho nhóm", "Thông báo", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        int quantityInGroup = selectedClients.size();  // số lượng trong group
-                        System.out.println("Số lượng: " + quantityInGroup);
-                        sendGroupInfo(groupName, quantityInGroup, selectedClients);
-                        vFC.panel_TaoNhom.setVisible(false);
-                        vFC.panel_chat.setVisible(true);
-//                      vFC.addGroupToList(groupName, quantityInGroup);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                sendGroupInfo();
             }
         });
 
@@ -101,18 +83,75 @@ public class MessageSender implements Runnable {
             return;
         }
         try {
-            String message = vFC.tf_message.getText();
-            System.out.println("Client được chọn để gửi tin: " + vFC.list_UIDName_onl.getSelectedValue());
-            output.write(("MessageOfClient#" + clientID + " | " + clientName + "#" + vFC.list_UIDName_onl.getSelectedValue() + "#" + message + "\n").getBytes());
-            output.flush();
-            System.out.println("MessageOfClient#" + clientID + " | " + clientName + "#" + vFC.list_UIDName_onl.getSelectedValue() + "#" + message);
-            vFC.addMessage(message, "out"); // thêm tin nhắn vào panel_tinnhan
-            vFC.tf_message.setText("");
+            if (vFC.list_UIDName_onl.getSelectedValue() == null && vFC.list_GroupName.getSelectedValue() == null) {
+                return;
+            } else if (vFC.list_UIDName_onl.getSelectedValue() != null) {
+                String message = vFC.tf_message.getText();
+                String clientSelected = vFC.list_UIDName_onl.getSelectedValue();
+                System.out.println("Client được chọn để gửi tin: " + clientSelected);
+                output.write(("MessageOfClient#" + clientID + " | " + clientName + "#" + clientSelected + "#" + message + "\n").getBytes());
+                output.flush();
+                
+                // Thông điệp khi client gửi tin nhắn riêng: MessageOfClient # ID|name client gửi # client được chọn # tin nhắn
+                System.out.println(" - Đã gửi thông điệp: MessageOfClient#" + clientID + " | " + clientName + "#" + clientSelected + "#" + message);
+                vFC.addMessage(message, "out"); // thêm tin nhắn vào panel_tinnhan
+                vFC.tf_message.setText("");
+            } else if (vFC.list_GroupName.getSelectedValue() != null) {
+                String message = vFC.tf_message.getText();
+                String groupSelected = vFC.list_GroupName.getSelectedValue().split("\\|")[0].trim();
+                System.out.println("Nhóm được chọn để gửi tin: " + groupSelected);
+                output.write(("MessageOfGroup#" + clientID + " | " + clientName + "#" + groupSelected + "#" + message).getBytes());
+                output.flush();
+
+                // Thông điệp khi client gửi tin nhắn vào nhóm: MessageOfGroup # ID|name client gửi # tên nhóm được chọn # tin nhắn
+                System.out.println(" - Đã gửi thông điệp: MessageOfGroup#" + clientID + " | " + clientName + "#" + groupSelected + "#" + message);
+                vFC.addMessage(message, "out"); // thêm tin nhắn vào panel_tinnhan
+                vFC.tf_message.setText("");
+            }
         } catch (Exception e) {
             System.out.println("Lỗi ở ChatMessageSender(khi gửi tin nhắn)");
         }
     }
 
+    public void sendGroupInfo() {
+        try {
+            String groupName = vFC.textField_TenNhom.getText();
+            List<String> selectedClients = new ArrayList<>(vFC.list_UIDName_onl_taoNhom.getSelectedValuesList());  // List chứa các clients đã chọn trong list tạo nhóm
+            selectedClients.add(clientID + "|" + clientName); // Thêm client tạo nhóm
+            int quantityInGroup = selectedClients.size();  // số lượng trong group
+            System.out.println("Số lượng: " + quantityInGroup);
+
+            if (groupName == null || groupName.trim().isEmpty()) { // Chưa nhập tên
+                JOptionPane.showMessageDialog(null, "Bạn chưa nhập tên nhóm", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            } else if (selectedClients.size() == 1 || selectedClients.isEmpty()) { // Chưa chọn client 
+                JOptionPane.showMessageDialog(null, "Bạn chưa chọn thành viên cho nhóm", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Tạo thông điệp tạo nhóm gửi về server
+                String message = "GROUP#" + groupName + "#" + quantityInGroup + "#" + String.join(" ++ ", selectedClients);
+                System.out.println(message);
+                // Sử dụng output của `infoSocket` để gửi thông tin nhóm lên server
+                output.write((message + "\n").getBytes());
+                output.flush();
+            }
+            vFC.panel_TaoNhom.setVisible(false);
+            vFC.panel_chat.setVisible(true);
+        } catch (IOException e) {
+            System.out.println("Lỗi khi gửi thông tin nhóm về server: " + e.getMessage());
+        }
+    }
+
+    public void sendDisconnect() {
+        try {
+            String disconnectMessage = "DISCONNECT#" + clientID + "|" + clientName;
+            output.write(disconnectMessage.getBytes());
+            output.flush();
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi ngắt kết nối: " + e.getMessage());
+        }
+    }
+
+    public void BO() {
 //    String selection;
 //
 //    public String selection() {
@@ -133,8 +172,9 @@ public class MessageSender implements Runnable {
 //        }
 //        return selection;
 //    }
+    }
 
-    public void sendGroupInfo(String groupName, int quantityInGroup, List<String> clients) {
+    public void sendGroupInfo_(String groupName, int quantityInGroup, List<String> clients) {
         try {
             if (clients == null || clients.isEmpty()) {
                 System.out.println("Danh sách client cho nhóm chưa được chọn !");
@@ -148,17 +188,6 @@ public class MessageSender implements Runnable {
             output.flush();
         } catch (IOException e) {
             System.out.println("Lỗi khi gửi thông tin nhóm về server: " + e.getMessage());
-        }
-    }
-
-    public void sendDisconnect() {
-        try {
-            String disconnectMessage = "DISCONNECT#" + clientID + "|" + clientName;
-            output.write(disconnectMessage.getBytes());
-            output.flush();
-
-        } catch (IOException e) {
-            System.err.println("Lỗi khi ngắt kết nối: " + e.getMessage());
         }
     }
 

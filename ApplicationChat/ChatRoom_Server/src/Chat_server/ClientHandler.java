@@ -102,7 +102,7 @@ public class ClientHandler implements Runnable {
 					String clientSend = parts[1];
 					String clientReceive = parts[2];
 					String messageSendTo = parts[3];
-					System.out.println("\n * '"+clientSend + "' gửi 1 tin nhắn đến '" + clientReceive + "': " + parts[3]);
+					System.out.println("\n * '"+clientSend + "' gửi 1 tin nhắn đến '" + clientReceive + "': " + messageSendTo);
 
 					ClientHandler clientHandler_Re = chatServer.getClientByInfo(clientReceive);
 
@@ -111,7 +111,14 @@ public class ClientHandler implements Runnable {
 					} else {
 						chatServer.broadcastMessage(this, clientHandler_Re, messageSendTo);
 					}
-				} 
+				} else if (message.startsWith("MessageOfGroup#")) {  // Tin nhắn từ client trong nhóm
+					String[] parts = message.split("#");
+					String clientSend = parts[1].trim();
+					String groupName = parts[2].trim();
+					String messageSendTo = parts[3];
+					chatServer.sendMessageToGroup(this, groupName, messageSendTo);
+					System.out.println("\n * '"+clientSend + "' gửi 1 tin nhắn đến nhóm '" + groupName + "': " + messageSendTo);
+				}
 
 //				else { // Gửi tin nhắn nếu không phải thông báo client mới hay tạo group
 //					chatServer.broadcastMessage(this.clientID, this.clientName, message);
@@ -121,7 +128,8 @@ public class ClientHandler implements Runnable {
 
 			}
 		} catch (SocketException e) {
-			System.out.println(clientID + "|" + clientName +"vừa ngắt kết nối");
+//			System.out.println(clientID + "|" + clientName +"vừa ngắt kết nối");
+			System.err.println("Lỗi ClientHandler");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

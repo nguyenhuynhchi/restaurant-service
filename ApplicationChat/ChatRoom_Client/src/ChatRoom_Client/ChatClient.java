@@ -1,6 +1,7 @@
 package ChatRoom_Client;
 
 import View.V_FrmChat_Client;
+import View.V_FrmUserAccess;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Collections;
@@ -27,7 +28,7 @@ public class ChatClient {
 //    private Socket chatSocket;
     private MessageSender messageSender;
     private Client_Listener client_Listener;
-    
+
     public Map<String, List<String>> listGroups = new HashMap<>();
 
     public ChatClient(V_FrmChat_Client vFC) {
@@ -75,7 +76,7 @@ public class ChatClient {
         }
         vFC.hienThongBaoKetNoi(connect);
     }
-    
+
     public synchronized void createGroup(String groupName, String quantityInGroup, List<String> clientsInGroup) {
         listGroups.put(groupName, clientsInGroup);
         System.out.println("\n🔔 Bạn vừa được thêm vào nhóm '" + groupName + "', với " + quantityInGroup + " thành viên: ");
@@ -83,14 +84,14 @@ public class ChatClient {
             System.out.println(clients);
         }
         vFC.addGroupToList(groupName, quantityInGroup);
-        System.out.println("Danh sách nhóm có bạn là thành viên: "+listGroups);
+        System.out.println("Danh sách nhóm có bạn là thành viên: " + listGroups);
         vFC.addMessage("\n🔔 Bạn vừa được thêm vào nhóm '" + groupName + "', với " + quantityInGroup + " thành viên: ", "in");
     }
 
     public List<String> getClientsInGroup(String groupName) {
-		if (!listGroups.containsKey(groupName)) {
-			System.out.println("Nhóm '" + groupName + "' không tồn tại trong HashMap");
-		}
-		return listGroups.getOrDefault(groupName, Collections.emptyList());
-	}
+        if (!listGroups.containsKey(groupName)) {
+            System.out.println("Nhóm '" + groupName + "' không tồn tại trong HashMap");
+        }
+        return listGroups.getOrDefault(groupName, Collections.emptyList());
+    }
 }

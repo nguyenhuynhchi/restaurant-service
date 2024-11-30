@@ -8,6 +8,7 @@ import View.V_FrmChat_Client;
 import View.V_FrmUserAccess;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.WindowConstants;
 
 /**
  *
@@ -35,9 +36,8 @@ public class Controller_frmUserAccess implements ActionListener{
             vFU.panel_dangNhap.setVisible(true);
         }
         if(actionCommand.equals("OK")){
+            vFU.dispose();
             vFC.setVisible(true);
-            vFU.setVisible(false);
-            System.out.println("hiii");
         }
     }
     
