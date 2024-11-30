@@ -34,8 +34,10 @@ public class Controller_frmUserAccess implements ActionListener{
             vFU.panel_dangKy.setVisible(false);
             vFU.panel_dangNhap.setVisible(true);
         }
-        if(actionCommand.equals("ok")){
+        if(actionCommand.equals("OK")){
             vFC.setVisible(true);
+            vFU.setVisible(false);
+            System.out.println("hiii");
         }
     }
     

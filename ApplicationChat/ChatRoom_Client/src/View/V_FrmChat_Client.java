@@ -53,7 +53,7 @@ public class V_FrmChat_Client extends JFrame {
 
     private DefaultListModel<String> model_clients;
     private DefaultListModel<String> model_groups;
-//    private DefaultListModel<String> model_clientGroup;
+    private DefaultListModel<String> model_clientGroup;
     public JList<String> list_UIDName_onl;
     public JList<String> list_UIDName_onl_taoNhom;
     public JList<String> list_GroupName;
@@ -82,10 +82,9 @@ public class V_FrmChat_Client extends JFrame {
     public JLabel lbl_IDClientChat;
     public JLabel lbl_nameClientChat;
     private JScrollPane scrollPane_clientsGroup;
-    public JList list_clientsGroup;
+    private JList list_clientsGroup;
     public JButton btn_viewClientsGroup;
     public JPanel panel_clientsGroup;
-//    private V_FrmUserAccess vFU;
 //	private static ChatClient chatClient;
 
     /**
@@ -112,6 +111,21 @@ public class V_FrmChat_Client extends JFrame {
         setLocationRelativeTo(null);
         setTitle("LAN Chat Application - Client");
 
+//        this.chatClient = chatClient.getInstance(this);
+//        
+//        addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                System.out.println("Bạn vừa đóng ứng dụng");
+//                if (chatClient != null) {
+//                chatClient.disconnect();
+//            }
+//           
+//            // Đóng ứng dụng
+//            dispose();
+//            System.exit(0);
+//            }
+//        });
         URL urlIconFrame = V_FrmChat_Client.class.getResource("/Images/App_server.png");
         Image img = Toolkit.getDefaultToolkit().createImage(urlIconFrame);
         setIconImage(img);
@@ -131,17 +145,10 @@ public class V_FrmChat_Client extends JFrame {
         }
 
         nhapTen();
+
         ActionListener ac = new ControllerFormChat_Clients(this);
-//        V_FrmUserAccess frm_userAccess = new V_FrmUserAccess(this);
-//        frm_userAccess.setVisible(true);
-//        this.setVisible(true);
-        
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
-//        // Lấy kích thước màn hình
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        int width = screenSize.width;
-//        int height = screenSize.height;
         setBounds(0, 0, 1460, 830);
 
         JMenuBar menuBar = new JMenuBar();

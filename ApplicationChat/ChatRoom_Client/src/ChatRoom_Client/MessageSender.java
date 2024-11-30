@@ -82,7 +82,7 @@ public class MessageSender implements Runnable {
             }
         });
 
-        vFC.addWindowListener(new WindowAdapter() {
+        vFC.addWindowListener(new WindowAdapter() {  // Đóng ứng dụng gửi thông điệp về server
             @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println("Bạn vừa đóng ứng dụng. Ngắt kết nối khỏi server");
@@ -113,26 +113,26 @@ public class MessageSender implements Runnable {
         }
     }
 
-    String selection;
-
-    public String selection() {
-        try {
-            vFC.list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    if (!e.getValueIsAdjusting()) {
-                        if (vFC.list_UIDName_onl.getSelectedValue() != null) {
-                            selection = vFC.list_UIDName_onl.getSelectedValue();
-                        }
-                    }
-                }
-            });
-            System.out.println(selection);
-        } catch (Exception e) {
-            System.out.println("Lỗi ở ChatMessageSender(khi gửi tin nhắn)");
-        }
-        return selection;
-    }
+//    String selection;
+//
+//    public String selection() {
+//        try {
+//            vFC.list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
+//                @Override
+//                public void valueChanged(ListSelectionEvent e) {
+//                    if (!e.getValueIsAdjusting()) {
+//                        if (vFC.list_UIDName_onl.getSelectedValue() != null) {
+//                            selection = vFC.list_UIDName_onl.getSelectedValue();
+//                        }
+//                    }
+//                }
+//            });
+//            System.out.println(selection);
+//        } catch (Exception e) {
+//            System.out.println("Lỗi ở ChatMessageSender(khi gửi tin nhắn)");
+//        }
+//        return selection;
+//    }
 
     public void sendGroupInfo(String groupName, int quantityInGroup, List<String> clients) {
         try {

@@ -31,28 +31,26 @@ public class V_FrmUserAccess extends JFrame {
     public JPanel panel_dangNhap;
     public JButton btn_OK;
     private V_FrmChat_Client vFC;
-    
-    public String hi ="hiii ha";
 
-    public V_FrmUserAccess(V_FrmChat_Client vFC){
-        this.vFC = vFC;
-    }
+//    public V_FrmUserAccess(V_FrmChat_Client vFC) {
+//        this.vFC = vFC;
+//    }
+
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    V_FrmUserAccess frame = new V_FrmUserAccess();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-    
+//    public static void main(String[] args) {
+//        EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                try {
+//                    V_FrmUserAccess frame = new V_FrmUserAccess();
+//                    frame.setVisible(true);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 
     /**
      * Create the frame.
@@ -65,11 +63,10 @@ public class V_FrmUserAccess extends JFrame {
         URL urlIconFrame = V_FrmChat_Client.class.getResource("/Images/App_server.png");
         Image img = Toolkit.getDefaultToolkit().createImage(urlIconFrame);
         setIconImage(img);
-        
+
         ActionListener ac = new Controller_frmUserAccess(this, vFC);
-        
+
         setTitle("Chào!! Đăng nhập/Đăng ký");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 500, 245);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -125,8 +122,9 @@ public class V_FrmUserAccess extends JFrame {
         btn_OK = new JButton("OK");
         btn_OK.setBounds(110, 155, 55, 27);
         btn_OK.setFont(new Font("Tahoma", Font.BOLD, 15));
-        btn_OK.setActionCommand("ok");
-        
+        btn_OK.setActionCommand("OK");
+        btn_OK.addActionListener(ac);
+
         panel_dangNhap.add(btn_OK);
 
         JButton btn_dong = new JButton("Đóng");
@@ -139,6 +137,7 @@ public class V_FrmUserAccess extends JFrame {
         btn_dangKy.setBounds(352, 155, 95, 27);
         btn_dangKy.setFont(new Font("Tahoma", Font.BOLD, 15));
         btn_dangKy.setActionCommand("đăng ký");
+        btn_dangKy.addActionListener(ac);
         panel_dangNhap.add(btn_dangKy);
 
         JLabel lbl_dangNhap = new JLabel("Đăng nhập");
@@ -203,7 +202,7 @@ public class V_FrmUserAccess extends JFrame {
         btn_quayLai.setFont(new Font("Tahoma", Font.BOLD, 15));
         btn_quayLai.setBounds(241, 173, 100, 27);
         btn_quayLai.setActionCommand("quay lại");
-
+        btn_quayLai.addActionListener(ac);
         panel_dangKy.add(btn_quayLai);
 
         JLabel lbl_dangKy = new JLabel("Đăng ký");
