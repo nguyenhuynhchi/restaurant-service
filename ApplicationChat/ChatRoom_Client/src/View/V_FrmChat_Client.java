@@ -4,7 +4,6 @@ import Controller.ControllerFormChat_Clients;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
@@ -40,8 +39,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 public class V_FrmChat_Client extends JFrame {
 
@@ -65,6 +62,8 @@ public class V_FrmChat_Client extends JFrame {
 
     public String userName;
     public String ID;
+    public int port;
+    public boolean connect = false;
 
     private JPanel panel_TinNhan;
     private JTextArea messageArea;
@@ -86,6 +85,7 @@ public class V_FrmChat_Client extends JFrame {
     public JButton btn_viewClientsGroup;
     public JPanel panel_clientsGroup;
 //	private static ChatClient chatClient;
+    private final JLabel lbl_tenNguoiDung;
 
     /**
      * Launch the application.
@@ -101,12 +101,11 @@ public class V_FrmChat_Client extends JFrame {
 //                }
 //            }
 //        });
-//    }
-
+//    } 
     /**
      * Create the frame.
      */
-    public V_FrmChat_Client() {
+    public V_FrmChat_Client() throws InterruptedException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setTitle("LAN Chat Application - Client");
@@ -130,8 +129,9 @@ public class V_FrmChat_Client extends JFrame {
         }
 
 //        nhapTen();
-
         V_FrmUserAccess vFU = new V_FrmUserAccess(this);
+        
+
         ActionListener ac = new ControllerFormChat_Clients(this);
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
@@ -364,39 +364,14 @@ public class V_FrmChat_Client extends JFrame {
         lbl_IDNguoiDung.setBounds(10, 0, 250, 25);
         panel_UIDName.add(lbl_IDNguoiDung);
 
-        JLabel lbl_tenNguoiDung = new JLabel("Tên: " + userName);
+        lbl_tenNguoiDung = new JLabel("Tên: " + userName);
         lbl_tenNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 17));
         lbl_tenNguoiDung.setBounds(10, 25, 250, 25);
         panel_UIDName.add(lbl_tenNguoiDung);
 
-//        JLabel lbl_chatUID = new JLabel("000");
-//        lbl_chatUID.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-//        lbl_chatUID.setBounds(10, 10, 76, 29);
-//        panel_chat.add(lbl_chatUID);
-//
-//        JLabel lbl_chatName = new JLabel("Tên gì đó");
-//        lbl_chatName.setFont(new Font("Times New Roman", Font.BOLD, 15));
-//        lbl_chatName.setBounds(186, 10, 174, 30);
-//        panel_chat.add(lbl_chatName);
-//        model_clients = new DefaultListModel<>();
         list_UIDName_onl = new JList<>(model_clients);
         list_UIDName_onl.setFont(new Font("Tahoma", Font.PLAIN, 20));
         list_UIDName_onl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
-//            @Override
-//            public void valueChanged(ListSelectionEvent e) {
-//                if (!e.getValueIsAdjusting()) {
-//                    if (list_UIDName_onl.getSelectedValue() != null) {
-//                        lbl_IDClientChat.setText("ID: " + list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
-//                        lbl_nameClientChat.setText("Tên: " + list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
-//                    } else {
-//                        lbl_IDClientChat.setText("ID: ");
-//                        lbl_nameClientChat.setText("Tên: ");
-//                    }
-//
-//                }
-//            }
-//        });
 
         scrollPane_listUIDName = new JScrollPane(list_UIDName_onl);
         scrollPane_listUIDName.setBounds(0, 85, 300, 615);
@@ -505,6 +480,11 @@ public class V_FrmChat_Client extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+    
+    public void updateUserName(String userName) {
+        this.userName = userName;
+        lbl_tenNguoiDung.setText("Tên: " + userName);
     }
 
     // Phương thức thêm tin nhắn vào chatPanel (Chưa hoàn chỉnh)

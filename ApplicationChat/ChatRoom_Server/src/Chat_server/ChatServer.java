@@ -16,7 +16,7 @@ import View.V_FrmChat_Server;
  */
 public class ChatServer {
 
-	private static final int PORT_INFO = 5000;
+	private int port;
 
 	private static ChatServer instance;
 	private V_FrmChat_Server vFC;
@@ -42,10 +42,12 @@ public class ChatServer {
 
 	public void startServer() {
 		try {
+			port = vFC.port;
+			
 			// webSocket
-			serverInfo_Socket = new ServerSocket(PORT_INFO); // PORT để nhận thông tin các client
+			serverInfo_Socket = new ServerSocket(port); // PORT để nhận thông tin các client
 
-			System.out.println("\nServer đã được khởi động, lắng nghe ở cổng: " + PORT_INFO);
+			System.out.println("\nServer đã được khởi động, lắng nghe ở cổng: " + port);
 
 			// Client kết nối đến server
 			while (true) {
@@ -124,16 +126,6 @@ public class ChatServer {
 		// Thêm thông tin nhóm mới vào JList
 		vFC.addGroup_ToJList(groupName, quantityInGroup);
 		notifyGroupCreation(groupName, quantityInGroup, clientsInGroup);
-
-//		List<ClientHandler> groupClients = new ArrayList<>();
-//		for (String clientsGroup : clientsInGroup) {
-//			for (ClientHandler client : listClientHandler) {
-//				if (getClientByInfo(clientsGroup) == client) {
-//					groupClients.add(client);
-//				}
-//			}
-//		}
-
 	}
 
 	public List<String> getClientsInGroup(String groupName) {

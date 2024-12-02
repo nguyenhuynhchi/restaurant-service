@@ -1,6 +1,7 @@
 package View;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
@@ -20,6 +21,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -47,6 +49,9 @@ public class V_FrmChat_Server extends JFrame {
 	public JPanel panel;
 	private String userName = "Server";
 	public JLabel lbl_tenNhom;
+	public int port;
+	public boolean connect = false;
+	private JLabel lbl_port;
 
 	/**
 	 * Launch the application.
@@ -68,6 +73,7 @@ public class V_FrmChat_Server extends JFrame {
 	 * Create the frame.
 	 */
 	public V_FrmChat_Server() {
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setTitle("LAN Chat Application - Server");
@@ -79,7 +85,6 @@ public class V_FrmChat_Server extends JFrame {
 
 		ActionListener ac = new ControllerFormChat_Server(this);
 
-		
 		setBounds(0, 0, 1500, 800);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -124,6 +129,11 @@ public class V_FrmChat_Server extends JFrame {
 		panel_thongTinNhom = new JPanel();
 		panel_thongTinNhom.setBounds(0, 0, 1190, 740);
 		panel_thongTinNhom.setVisible(false);
+
+		panel = new JPanel();
+		panel.setBackground(new Color(128, 128, 128));
+		panel.setBounds(0, 0, 1190, 740);
+		panel_Chinh.add(panel);
 		panel_Chinh.add(panel_thongTinNhom);
 		panel_thongTinNhom.setLayout(null);
 
@@ -151,11 +161,6 @@ public class V_FrmChat_Server extends JFrame {
 		lbl_thanhVien.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lbl_thanhVien.setBounds(60, 55, 320, 30);
 		panel_thongTinNhom.add(lbl_thanhVien);
-
-		panel = new JPanel();
-		panel.setBackground(new Color(64, 128, 128));
-		panel.setBounds(0, 0, 1190, 740);
-		panel_Chinh.add(panel);
 		panel_caiDat.setLayout(null);
 		panel_Chinh.add(panel_caiDat);
 
@@ -171,15 +176,23 @@ public class V_FrmChat_Server extends JFrame {
 		panel_nguoidung.setLayout(null);
 
 		JPanel panel_UIDName = new JPanel();
-		panel_UIDName.setBackground(new Color(0, 128, 128));
-		panel_UIDName.setBounds(0, 0, 300, 50);
+		panel_UIDName.setBackground(new Color(86, 171, 171));
+		panel_UIDName.setBounds(0, 0, 300, 95);
 		panel_nguoidung.add(panel_UIDName);
 		panel_UIDName.setLayout(null);
 
+		lbl_port = new JLabel("");
+		lbl_port.setBackground(new Color(255, 255, 255));
+		lbl_port.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		lbl_port.setBounds(42, 32, 199, 25);
+		panel_UIDName.add(lbl_port);
+
+		openPort();
+
 		JLabel lbl_tenNguoiDung = new JLabel(userName);
 		lbl_tenNguoiDung.setHorizontalAlignment(SwingConstants.CENTER);
-		lbl_tenNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lbl_tenNguoiDung.setBounds(100, 0, 100, 30);
+		lbl_tenNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 22));
+		lbl_tenNguoiDung.setBounds(90, 0, 115, 33);
 		panel_UIDName.add(lbl_tenNguoiDung);
 		panel_TinNhan.setLayout(new BoxLayout(panel_TinNhan, BoxLayout.Y_AXIS));
 
@@ -188,7 +201,7 @@ public class V_FrmChat_Server extends JFrame {
 		list_UIDName_onl.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		scrollPane_listUIDName = new JScrollPane(list_UIDName_onl);
-		scrollPane_listUIDName.setBounds(0, 85, 300, 655);
+		scrollPane_listUIDName.setBounds(0, 130, 300, 610);
 		scrollPane_listUIDName.setVisible(true);
 		panel_nguoidung.add(scrollPane_listUIDName);
 
@@ -197,14 +210,14 @@ public class V_FrmChat_Server extends JFrame {
 		list_GroupName.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		scrollPane_listGroupName = new JScrollPane(list_GroupName);
-		scrollPane_listGroupName.setBounds(0, 85, 300, 600);
+		scrollPane_listGroupName.setBounds(0, 140, 300, 545);
 		scrollPane_listGroupName.setVisible(false);
 		panel_nguoidung.add(scrollPane_listGroupName);
 
 		JPanel panel_Clients_Nhom = new JPanel();
 		panel_Clients_Nhom.setBackground(new Color(128, 128, 128));
 		panel_Clients_Nhom.setLayout(null);
-		panel_Clients_Nhom.setBounds(0, 50, 300, 35);
+		panel_Clients_Nhom.setBounds(0, 95, 300, 35);
 		panel_nguoidung.add(panel_Clients_Nhom);
 
 		btn_Clients = new JButton("Clients");
@@ -228,6 +241,32 @@ public class V_FrmChat_Server extends JFrame {
 //		String newClient = clientID + " | " + clientName;
 //		model_Clients.addElement(newClient); // Thêm clientID vào JList
 //	}
+
+	public void openPort() {
+		while (true) {
+			try {
+				String portInput = JOptionPane.showInputDialog(null, "Nhập số cổng: ", "", JOptionPane.PLAIN_MESSAGE);
+				
+				if (portInput == null) { // Kiểm tra nếu người dùng nhấn "Cancel"
+	                System.out.println("Người dùng đã hủy.");
+	                System.exit(0); // Thoát chương trình
+	            }
+				if (portInput != null) { // Kiểm tra người dùng có nhấn "Cancel" hay không
+					port = Integer.parseInt(portInput); // Chuyển đổi chuỗi thành số nguyên
+					System.out.println("Số cổng bạn đã nhập là: " + port);
+					connect = true;
+					lbl_port.setText("Số cổng: " + port);
+					break;
+				} else if (portInput.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Bạn chưa nhập số cổng để mở", "Thông báo",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Vui lòng nhập một số nguyên hợp lệ!", "Lỗi nhập liệu",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 
 	public void addClient_ToJList(String infoClient) {
 		model_Clients.addElement(infoClient); // Thêm client vào JList

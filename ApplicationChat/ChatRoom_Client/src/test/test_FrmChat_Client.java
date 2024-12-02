@@ -12,15 +12,17 @@ public class test_FrmChat_Client {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-                V_FrmChat_Client vFC = new V_FrmChat_Client();
-                V_FrmUserAccess vFU = new V_FrmUserAccess(vFC);
-                // Khởi tạo client chat và truyền view vào
-                ChatClient chatClient = new ChatClient(vFC);
-                chatClient.StartClient();
-                
-                vFU.setVisible(true);
-//                vFC.setVisible(true);
-
+            V_FrmChat_Client vFC = new V_FrmChat_Client();
+            V_FrmUserAccess vFU = new V_FrmUserAccess(vFC);
+            vFU.setVisible(true);
+            
+            while (!vFU.connect && !vFC.connect) {
+                Thread.sleep(100); // Đợi một chút
+            }
+            
+            // Khởi tạo client chat và truyền view vào
+            ChatClient chatClient = new ChatClient(vFC);
+            chatClient.StartClient();
 
         } catch (Exception e) {
             e.printStackTrace();

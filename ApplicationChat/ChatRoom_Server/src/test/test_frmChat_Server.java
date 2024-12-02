@@ -17,6 +17,9 @@ public class test_frmChat_Server {
 			// Khởi tạo server chat và truyền viewFormChat vào
 //	        ChatServer chatServer = new ChatServer(vFC);
 //	        chatServer.startServer();
+			while (!vFC.connect) {
+                Thread.sleep(100); // Đợi một chút
+            }
 			
 			ChatServer chatServer = ChatServer.getInstance(vFC);
 	        chatServer.startServer();

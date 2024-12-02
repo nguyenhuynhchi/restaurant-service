@@ -5,6 +5,7 @@
 package ChatRoom_Client;
 
 import View.V_FrmChat_Client;
+import View.V_FrmUserAccess;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -14,10 +15,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -91,7 +89,7 @@ public class MessageSender implements Runnable {
                 System.out.println("Client được chọn để gửi tin: " + clientSelected);
                 output.write(("MessageOfClient#" + clientID + " | " + clientName + "#" + clientSelected + "#" + message + "\n").getBytes());
                 output.flush();
-                
+
                 // Thông điệp khi client gửi tin nhắn riêng: MessageOfClient # ID|name client gửi # client được chọn # tin nhắn
                 System.out.println(" - Đã gửi thông điệp: MessageOfClient#" + clientID + " | " + clientName + "#" + clientSelected + "#" + message);
                 vFC.addMessage(message, "out"); // thêm tin nhắn vào panel_tinnhan
@@ -110,6 +108,17 @@ public class MessageSender implements Runnable {
             }
         } catch (Exception e) {
             System.out.println("Lỗi ở ChatMessageSender(khi gửi tin nhắn)");
+        }
+    }
+
+    public void sendInfo(String clientName, String clientID) {
+      try {
+            String info = "InfoNewClients|" + clientName + "|" + clientID + "\n";
+            output.write(info.getBytes());
+            output.flush();
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi ngắt kết nối: " + e.getMessage());
         }
     }
 

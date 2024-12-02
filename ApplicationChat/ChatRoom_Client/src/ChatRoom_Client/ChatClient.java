@@ -16,10 +16,11 @@ import java.util.Map;
 public class ChatClient {
 
     private static final String URL = "localhost";
-    private static final int PORT_INFO = 5000;
+    private int port;
 
     private static ChatClient instance;
     private V_FrmChat_Client vFC;
+    private V_FrmUserAccess vFU;
     public String clientName;
     public String clientID;
     public boolean connect;
@@ -46,16 +47,17 @@ public class ChatClient {
         try {
             clientName = vFC.userName;
             clientID = vFC.ID;
+            port = vFC.port;
 
-            socket = new Socket(URL, PORT_INFO); // Cổng 5000
+            socket = new Socket(URL, port); // Cổng 5000
 
             System.out.println("Connected to server");
 
             System.out.println("Name(ID) của bạn: " + clientName + "(" + clientID + ")");
 
             // Gửi tên của chính client lên server
-            OutputStream InfoOutput = socket.getOutputStream();
-            InfoOutput.write(("InfoNewClients|" + clientName + "|" + clientID + "\n").getBytes());
+//            OutputStream InfoOutput = socket.getOutputStream();
+//            InfoOutput.write(("InfoNewClients|" + clientName + "|" + clientID + "\n").getBytes());
 
             // Tạo và khởi chạy thread cho chatInfo_Listener để nhận thông tin các client từ server gửi về
             client_Listener = new Client_Listener(socket, vFC);
@@ -65,13 +67,15 @@ public class ChatClient {
             new Thread(messageSender).start();
             messageSender.setClientName(clientName);
             messageSender.setClientID(clientID);
-
+            messageSender.sendInfo(clientName, clientID);
+            
             connect = true; //Kiểm tra kết nối thành công thì không hiện panel thông báo
         } catch (java.net.ConnectException e) {
             System.out.println("Lỗi: Không thể kết nối đến server. Vui lòng kiểm tra server và thử lại.");
             connect = false; //Kiểm tra kết nối không thành công thì hiện panel thông báo
         } catch (Exception e) {
-            System.out.println("Lỗi ở chatClient");  // Xử lý các ngoại lệ I/O khác
+            System.err.println("Lỗi ở chatClient ");
+            e.printStackTrace();
             connect = false; //Kiểm tra kết nối không thành công thì hiện panel thông báo
         }
         vFC.hienThongBaoKetNoi(connect);
