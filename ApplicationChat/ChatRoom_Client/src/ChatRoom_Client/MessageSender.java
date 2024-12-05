@@ -111,14 +111,26 @@ public class MessageSender implements Runnable {
         }
     }
 
-    public void sendInfo(String clientName, String clientID) {
-      try {
-            String info = "InfoNewClients|" + clientName + "|" + clientID + "\n";
-            output.write(info.getBytes());
-            output.flush();
+    public void sendNewCreateClient(String clientName, String clientID) {
+
+    }
+
+    public void sendInfo(String clientName, String clientID, String password) {
+        try {
+            if (vFC.newCreate == false) {
+                String info = "InfoClients|" + clientName + "|" + clientID + "|" + password + "\n";
+                output.write(info.getBytes());
+                output.flush();
+                System.out.println("Đã gửi thông tin ĐĂNG NHẬP này về server để kiểm tra:"+info);
+            } else if (vFC.newCreate == true) {
+                String info = "InfoNewCreateClients|" + clientName + "|" + clientID + "|" + password + "\n";
+                output.write(info.getBytes());
+                output.flush();
+                System.out.println("Đã gửi thông tin ĐĂNG KÍ này về server để kiểm tra:"+info);
+            }
 
         } catch (IOException e) {
-            System.err.println("Lỗi khi ngắt kết nối: " + e.getMessage());
+            System.err.println("Lỗi khi kết nối: " + e.getMessage());
         }
     }
 

@@ -6,7 +6,6 @@ import Chat_server.ChatServer;
 import View.V_FrmChat_Server;
 
 public class test_frmChat_Server {
-//	public V_FrmChat_Server vFC;
 
 	public static void main(String[] args) {
 		try {

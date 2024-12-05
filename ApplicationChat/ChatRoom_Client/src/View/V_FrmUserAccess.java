@@ -23,7 +23,7 @@ public class V_FrmUserAccess extends JFrame {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     public JTextField tf_tenDN;
-    private JTextField tf_password;
+    public JTextField tf_password;
     public JTextField tf_tenDN_DK;
     public JTextField tf_password_DK;
     public JTextField tf_autPassword_DK;
@@ -33,10 +33,8 @@ public class V_FrmUserAccess extends JFrame {
     public String userName;
     public boolean connect = false;
     public JTextField tf_port_DK;
-//    public int port;
     public JTextField tf_port;
-//    private V_FrmChat_Client vFC;
-
+    
 //    public V_FrmUserAccess(V_FrmChat_Client vFC) {
 //        this.vFC = vFC;
 //    }

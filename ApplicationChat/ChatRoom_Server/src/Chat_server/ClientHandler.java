@@ -19,7 +19,8 @@ public class ClientHandler implements Runnable {
 	private ChatServer chatServer;
 	private String clientID;
 	private String clientName;
-
+	private String password;
+	public boolean newCreate = false;
 	private InputStream input;
 	private OutputStream output;
 
@@ -32,26 +33,39 @@ public class ClientHandler implements Runnable {
 			this.input = socket.getInputStream();
 			this.output = socket.getOutputStream();
 
-			// Đọc tên và id từ client
+//			// Đọc tên và id từ client
 			int bytesRead = input.read(buffer);
 			String clientData = new String(buffer, 0, bytesRead).trim();
 
 //			 Tách tên và ID bằng ký tự "|"
-			if (clientData.startsWith("InfoNewClients|")) {
+			if (clientData.startsWith("InfoClients|")) {
 
 				String[] dataParts = clientData.split("\\|");
 
-				if (dataParts.length == 3) {
+				if (dataParts.length == 4) {
 					this.clientName = dataParts[1];
 					this.clientID = dataParts[2];
+					this.password = dataParts[3];
 				} else {
 					System.out.println("Dữ liệu không hợp lệ từ client.");
 				}
+//				System.out.println(clientID+"|"+clientName+" - Client này đăng nhập");
+			}else if(clientData.startsWith("InfoNewCreateClients")) {
+				String[] dataParts = clientData.split("\\|");
+				newCreate = true;
+				if (dataParts.length == 4) {
+					this.clientName = dataParts[1];
+					this.clientID = dataParts[2];
+					this.password = dataParts[3];
+				} else {
+					System.out.println("Dữ liệu không hợp lệ từ client.");
+				}
+				System.out.println(clientID+"|"+clientName+" - Client này đăng kí tài khoản");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("(ClientHandler)");
+			System.out.println("Lỗi ở ClientHandler");
 		}
 	}
 
@@ -74,8 +88,8 @@ public class ClientHandler implements Runnable {
 					List<String> clientsInGroup = new ArrayList<>(Arrays.asList(parts[3].split(" \\+\\+ ")));
 
 					// In ra thông tin nhóm mới được tạo
-					System.out.println("\n ** '"+this.infoClient() + "' vừa tạo nhóm \n" + "Tên nhóm: \"" + groupName + "\", với "
-							+ quantityInGroup + " thành viên: ");
+					System.out.println("\n ** '" + this.infoClient() + "' vừa tạo nhóm \n" + "Tên nhóm: \"" + groupName
+							+ "\", với " + quantityInGroup + " thành viên: ");
 					for (String clients : clientsInGroup) {
 						System.out.println(clients);
 					}
@@ -97,12 +111,13 @@ public class ClientHandler implements Runnable {
 						handleClientDisconnect();
 						break;
 					}
-				} else if (message.startsWith("MessageOfClient#")) {  // Tin nhắn của client
+				} else if (message.startsWith("MessageOfClient#")) { // Tin nhắn của client
 					String[] parts = message.split("#");
 					String clientSend = parts[1];
 					String clientReceive = parts[2];
 					String messageSendTo = parts[3];
-					System.out.println("\n * '"+clientSend + "' gửi 1 tin nhắn đến '" + clientReceive + "': " + messageSendTo);
+					System.out.println(
+							"\n * '" + clientSend + "' gửi 1 tin nhắn đến '" + clientReceive + "': " + messageSendTo);
 
 					ClientHandler clientHandler_Re = chatServer.getClientByInfo(clientReceive);
 
@@ -111,14 +126,37 @@ public class ClientHandler implements Runnable {
 					} else {
 						chatServer.broadcastMessage(this, clientHandler_Re, messageSendTo);
 					}
-				} else if (message.startsWith("MessageOfGroup#")) {  // Tin nhắn từ client trong nhóm
+				} else if (message.startsWith("MessageOfGroup#")) { // Tin nhắn từ client trong nhóm
 					String[] parts = message.split("#");
 					String clientSend = parts[1].trim();
 					String groupName = parts[2].trim();
 					String messageSendTo = parts[3];
 					chatServer.sendMessageToGroup(this, groupName, messageSendTo);
-					System.out.println("\n * '"+clientSend + "' gửi 1 tin nhắn đến nhóm '" + groupName + "': " + messageSendTo);
-				}
+					System.out.println(
+							"\n * '" + clientSend + "' gửi 1 tin nhắn đến nhóm '" + groupName + "': " + messageSendTo);
+				} 
+//				else if (message.startsWith("InfoClients|")) {
+//
+//					String[] dataParts = message.split("\\|");
+//
+//					if (dataParts.length == 3) {
+//						this.clientName = dataParts[1];
+//						this.clientID = dataParts[2];
+//					} else {
+//						System.out.println("Dữ liệu không hợp lệ từ client.");
+//					}
+//					System.out.println(clientID+"|"+clientName+" - Client này đăng nhập");
+//				}else if(message.startsWith("InfoNewCreateClients")) {
+//					String[] dataParts = message.split("\\|");
+//
+//					if (dataParts.length == 3) {
+//						this.clientName = dataParts[1];
+//						this.clientID = dataParts[2];
+//					} else {
+//						System.out.println("Dữ liệu không hợp lệ từ client.");
+//					}
+//					System.out.println(clientID+"|"+clientName+" - Client này đăng kí tài khoản");
+//				}
 
 //				else { // Gửi tin nhắn nếu không phải thông báo client mới hay tạo group
 //					chatServer.broadcastMessage(this.clientID, this.clientName, message);
@@ -137,7 +175,7 @@ public class ClientHandler implements Runnable {
 
 	public void sendMessage(String message) {
 		try {
-			output.write((message+"\n").getBytes());
+			output.write((message + "\n").getBytes());
 			output.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -163,7 +201,6 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	
 //	public void closeConnection() { // đóng kết nói để giải phóng tài nguyên của client đó
 //		try {
 //			if (input != null)
@@ -209,6 +246,15 @@ public class ClientHandler implements Runnable {
 
 	public void setClientName(String clientName) {
 		this.clientName = clientName;
+	}
+	
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String infoClient() {

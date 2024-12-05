@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.UUID;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -61,9 +62,12 @@ public class V_FrmChat_Client extends JFrame {
     public JPanel panel_chucNang;
 
     public String userName;
-    public String ID;
+    String uuid = UUID.randomUUID().toString();
+    public String ID = uuid.substring(0, 3);
+    public String password;
     public int port;
     public boolean connect = false;
+    public boolean newCreate = false;
 
     private JPanel panel_TinNhan;
     private JTextArea messageArea;
@@ -86,6 +90,7 @@ public class V_FrmChat_Client extends JFrame {
     public JPanel panel_clientsGroup;
 //	private static ChatClient chatClient;
     private final JLabel lbl_tenNguoiDung;
+    private final JLabel lbl_Cong;
 
     /**
      * Launch the application.
@@ -114,23 +119,21 @@ public class V_FrmChat_Client extends JFrame {
         Image img = Toolkit.getDefaultToolkit().createImage(urlIconFrame);
         setIconImage(img);
 
-        try {
-            // Lấy địa chỉ IP của máy tính
-            InetAddress ip = InetAddress.getLocalHost();
-            String ipAddress = ip.getHostAddress();
-
-            // Chuyển đổi IP thành số 3 chữ số
-            int ipHash = ipAddress.hashCode(); // Lấy giá trị băm của địa chỉ IP
-            int ipNumber = Math.abs(ipHash) % 1000;
-            ID = String.format("%03d", ipNumber);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            ID = 000 + "";
-        }
-
+//        try {
+//            // Lấy địa chỉ IP của máy tính
+//            InetAddress ip = InetAddress.getLocalHost();
+//            String ipAddress = ip.getHostAddress();
+//
+//            // Chuyển đổi IP thành số 3 chữ số
+//            int ipHash = ipAddress.hashCode(); // Lấy giá trị băm của địa chỉ IP
+//            int ipNumber = Math.abs(ipHash) % 1000;
+//            ID = String.format("%03d", ipNumber);
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//            ID = 000 + "";
+//        }
 //        nhapTen();
         V_FrmUserAccess vFU = new V_FrmUserAccess(this);
-        
 
         ActionListener ac = new ControllerFormChat_Clients(this);
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
@@ -361,13 +364,19 @@ public class V_FrmChat_Client extends JFrame {
         JLabel lbl_IDNguoiDung = new JLabel("ID:" + ID);
         lbl_IDNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 17));
         lbl_IDNguoiDung.setBackground(new Color(255, 255, 255));
-        lbl_IDNguoiDung.setBounds(10, 0, 250, 25);
+        lbl_IDNguoiDung.setBounds(10, 0, 125, 25);
         panel_UIDName.add(lbl_IDNguoiDung);
 
         lbl_tenNguoiDung = new JLabel("Tên: " + userName);
         lbl_tenNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 17));
         lbl_tenNguoiDung.setBounds(10, 25, 250, 25);
         panel_UIDName.add(lbl_tenNguoiDung);
+
+        lbl_Cong = new JLabel("Cổng: " + port);
+        lbl_Cong.setFont(new Font("Times New Roman", Font.BOLD, 17));
+        lbl_Cong.setBackground(Color.WHITE);
+        lbl_Cong.setBounds(150, 0, 125, 25);
+        panel_UIDName.add(lbl_Cong);
 
         list_UIDName_onl = new JList<>(model_clients);
         list_UIDName_onl.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -440,7 +449,10 @@ public class V_FrmChat_Client extends JFrame {
 
     public void addClientToList(String IDCln, String NameCln) {
         String newClient = IDCln + "|" + NameCln;
-        model_clients.addElement(newClient); // Thêm clientID vào JList
+        SwingUtilities.invokeLater(() -> {
+            model_clients.addElement(newClient); // Thêm clientID vào JList
+            System.out.println("Đã thêm client " + IDCln + "|" + NameCln + " vào JList");
+        });
     }
 
     public void addGroupToList(String groupName, String quantityInGroup) {
@@ -449,7 +461,7 @@ public class V_FrmChat_Client extends JFrame {
         model_groups.addElement(newGroup);
     }
 
-    public void removeClientInList(String infoClientDisconnect) { // cần sửa phương thức này
+    public void removeClientInList(String infoClientDisconnect) {
         for (int i = 0; i < model_clients.getSize(); i++) {
             String clientInfo = model_clients.getElementAt(i);
             if (clientInfo.equals(infoClientDisconnect)) { //kiểm tra tên trong JList có chứa tên client ngắt kết nối không và xóa
@@ -481,10 +493,12 @@ public class V_FrmChat_Client extends JFrame {
             }
         }
     }
-    
-    public void updateUserName(String userName) {
+
+    public void updateUserInfo(String userName, String password, String port) {  //update khi đăng nhập sẽ hiện thị tên trên form và kèm theo password truyền qua ChatClient
         this.userName = userName;
         lbl_tenNguoiDung.setText("Tên: " + userName);
+        lbl_Cong.setText("Cổng: "+ port);
+        this.password = password;
     }
 
     // Phương thức thêm tin nhắn vào chatPanel (Chưa hoàn chỉnh)

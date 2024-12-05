@@ -23,6 +23,7 @@ public class ChatClient {
     private V_FrmUserAccess vFU;
     public String clientName;
     public String clientID;
+    public String password;
     public boolean connect;
 
     private Socket socket;
@@ -47,7 +48,9 @@ public class ChatClient {
         try {
             clientName = vFC.userName;
             clientID = vFC.ID;
+            password = vFC.password;
             port = vFC.port;
+            
 
             socket = new Socket(URL, port); // Cổng 5000
 
@@ -63,11 +66,14 @@ public class ChatClient {
             client_Listener = new Client_Listener(socket, vFC);
             new Thread(client_Listener).start();
 
+            // Tạo và khởi chạy thread cho MessageSender để gửi các thông tin đến server
             messageSender = new MessageSender(socket, vFC);
             new Thread(messageSender).start();
+            
             messageSender.setClientName(clientName);
             messageSender.setClientID(clientID);
-            messageSender.sendInfo(clientName, clientID);
+            
+            messageSender.sendInfo(clientName, clientID, password); // gửi thông tin đăng nhập về server
             
             connect = true; //Kiểm tra kết nối thành công thì không hiện panel thông báo
         } catch (java.net.ConnectException e) {

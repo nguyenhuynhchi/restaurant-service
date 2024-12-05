@@ -37,16 +37,58 @@ public class Controller_frmUserAccess implements ActionListener {
         }
 
         if (actionCommand.equals("tạo")) {
+            String port = vFU.tf_port_DK.getText().trim();
             String userName = vFU.tf_tenDN_DK.getText().trim();
             String password = vFU.tf_password_DK.getText().trim();
             String autPassword = vFU.tf_autPassword_DK.getText().trim();
-            System.out.println("passwword: " + password + "\nautpassword: " + autPassword);
+            boolean flat = false;
+//            System.out.println("passwword: " + password + "\nautpassword: " + autPassword);
+
+            if (!port.isEmpty()) {
+                try {
+                    int portNumber = Integer.parseInt(port);
+                    vFC.port = portNumber;
+                    flat = true;
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(vFU, "Vui lòng nhập cho cổng là một số nguyên hợp lệ!", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                    flat = false;
+                    vFU.tf_port_DK.setText("");
+                }
+            } 
+            if (port.isEmpty()) {
+                // Hiển thị thông báo lỗi nếu port chưa được nhập
+                flat = false;
+                JOptionPane.showMessageDialog(vFU, "Vui lòng nhập số cổng của server!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
+            }
             if (userName.isEmpty()) {
+                // Hiển thị thông báo lỗi nếu tên chưa được nhập
+                flat = false;
+                JOptionPane.showMessageDialog(vFU, "Vui lòng nhập tên cho tài khoản!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
+            }
+            if (password.isEmpty()) {
+                // Hiển thị thông báo lỗi nếu mật khẩu chưa được nhập
+                flat = false;
+                JOptionPane.showMessageDialog(vFU, "Vui lòng nhập mật khẩu cho tài khoản!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
+            }
+            else if (!autPassword.equals(password) || autPassword.isEmpty()) {
                 // Hiển thị thông báo lỗi nếu mật khẩu xác nhận không giống
-                JOptionPane.showMessageDialog(vFU, "Vui lòng nhập tên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            } else if (!autPassword.equals(password)) {
-                // Hiển thị thông báo lỗi nếu mật khẩu xác nhận không giống
-                JOptionPane.showMessageDialog(vFU, "Sai mật khẩu xác nhận!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                flat = false;
+                JOptionPane.showMessageDialog(vFU, "Mật khẩu xác nhận không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+            if (flat) {
+                // Hiển thị thông báo đăng ký thành công và quay lại panel để đăng nhập
+                JOptionPane.showMessageDialog(vFU, "Đăng ký thành công! \nVào sử dụng thoi", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//                vFU.panel_dangKy.setVisible(false);
+//                vFU.panel_dangNhap.setVisible(true);
+//                vFU.tf_tenDN.setText("");
+//                vFU.tf_password.setText("");
+//                vFU.tf_port.setText("");
+                vFU.dispose();          // Đóng form V_FrmUserAccess
+                vFU.connect = true;     // Cập nhật trạng thái kết nối
+                vFC.updateUserInfo(userName, password, port); // Gán tên đăng nhập cho V_FrmChat_Client
+                vFC.setVisible(true);   // Hiển thị form V_FrmChat_Client
+                vFC.connect = true;
+                vFC.newCreate = true; // Là tài khoản mới đăng ký
             }
 
         }
@@ -66,17 +108,18 @@ public class Controller_frmUserAccess implements ActionListener {
             String port = vFU.tf_port.getText().trim();
             System.out.println(port);
             String userName = vFU.tf_tenDN.getText().trim();
+            String password = vFU.tf_password.getText().trim();
             if (!userName.isEmpty() && !port.isEmpty()) {
                 try {
-                    vFC.updateUserName(userName); // Gán tên đăng nhập cho V_FrmChat_Client
-                    int portNumber = Integer.parseInt(port); 
+                    vFC.updateUserInfo(userName, password, port); // Gán tên đăng nhập cho V_FrmChat_Client
+                    int portNumber = Integer.parseInt(port);
                     vFC.port = portNumber;
                     vFU.dispose();          // Đóng form V_FrmUserAccess
                     vFC.setVisible(true);   // Hiển thị form V_FrmChat_Client
                     vFU.connect = true;     // Cập nhật trạng thái kết nối
                     vFC.connect = true;
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(vFU, "Vui lòng nhập một số nguyên hợp lệ!", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(vFU, "Vui lòng nhập cho cổng là một số nguyên hợp lệ!", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 }
             } else if (userName.isEmpty()) {
                 // Hiển thị thông báo lỗi nếu tên đăng nhập trống

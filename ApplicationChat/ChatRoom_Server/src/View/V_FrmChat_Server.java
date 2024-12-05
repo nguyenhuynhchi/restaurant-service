@@ -48,10 +48,12 @@ public class V_FrmChat_Server extends JFrame {
 	public JPanel panel_thongTinNhom;
 	public JPanel panel;
 	private String userName = "Server";
+	public int soLuongConnect = 0;
 	public JLabel lbl_tenNhom;
 	public int port;
 	public boolean connect = false;
 	private JLabel lbl_port;
+	public JLabel lbl_soLuongClient;
 
 	/**
 	 * Launch the application.
@@ -181,10 +183,10 @@ public class V_FrmChat_Server extends JFrame {
 		panel_nguoidung.add(panel_UIDName);
 		panel_UIDName.setLayout(null);
 
-		lbl_port = new JLabel("");
+		lbl_port = new JLabel("Số cổng: ");
 		lbl_port.setBackground(new Color(255, 255, 255));
 		lbl_port.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-		lbl_port.setBounds(42, 32, 199, 25);
+		lbl_port.setBounds(10, 30, 170, 25);
 		panel_UIDName.add(lbl_port);
 
 		openPort();
@@ -194,6 +196,13 @@ public class V_FrmChat_Server extends JFrame {
 		lbl_tenNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 22));
 		lbl_tenNguoiDung.setBounds(90, 0, 115, 33);
 		panel_UIDName.add(lbl_tenNguoiDung);
+		
+		
+		lbl_soLuongClient = new JLabel("Số người kết nối: " + soLuongConnect);
+		lbl_soLuongClient.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		lbl_soLuongClient.setBackground(Color.WHITE);
+		lbl_soLuongClient.setBounds(10, 60, 170, 25);
+		panel_UIDName.add(lbl_soLuongClient);
 		panel_TinNhan.setLayout(new BoxLayout(panel_TinNhan, BoxLayout.Y_AXIS));
 
 		model_Clients = new DefaultListModel<>();

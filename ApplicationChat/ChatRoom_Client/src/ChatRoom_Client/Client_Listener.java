@@ -73,7 +73,7 @@ public class Client_Listener implements Runnable {
                         }
                     } // Xử lý thông điệp ngắt kết nối
                     else if (message.startsWith("DISCONNECT#")) {
-                        String infoClientDisconnect = message.split("\\#")[1]; // Lấy tên Client vừa ngắt kết nối phía sau DISCONNECT|
+                        String infoClientDisconnect = message.split("\\#")[1]; // Lấy tên Client vừa ngắt kết nối 
                         vFC.removeClientInList(infoClientDisconnect); // Gọi PT xóa client từ JList
                         System.out.println(infoClientDisconnect + "  ĐÃ NGẮT KẾT NỐI");
                     } // Xử lý thông điệp được thêm vào group
