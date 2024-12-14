@@ -10,10 +10,10 @@ public class MES_model {
 	private String contentMessage;
 	private Timestamp timeReceive;
 
-	public MES_model(String messageID, String senderID, String receiverID, String receiverGroupID,
+	public MES_model(String senderID, String receiverID, String receiverGroupID,
 			String contentMessage, Timestamp timeReceive) {
 		super();
-		this.messageID = messageID;
+//		this.messageID = messageID;
 		this.senderID = senderID;
 		this.receiverID = receiverID;
 		this.receiverGroupID = receiverGroupID;

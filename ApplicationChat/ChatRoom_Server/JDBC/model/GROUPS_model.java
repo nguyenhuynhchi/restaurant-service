@@ -9,21 +9,12 @@ public class GROUPS_model {
 	private String createBy;
 	private Timestamp createTime;
 
-	public GROUPS_model(String groupID, String groupName, int quantityMember, String createBy, Timestamp createTime) {
+	public GROUPS_model(String groupName, int quantityMember, String createBy, Timestamp createTime) {
 		super();
-		this.groupID = groupID;
 		this.groupName = groupName;
 		this.quantityMember = quantityMember;
 		this.createBy = createBy;
 		this.createTime = createTime;
-	}
-
-	public String getGroupID() {
-		return groupID;
-	}
-
-	public void setGroupID(String groupID) {
-		this.groupID = groupID;
 	}
 
 	public String getGroupName() {

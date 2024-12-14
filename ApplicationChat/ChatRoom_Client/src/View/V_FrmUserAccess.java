@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 public class V_FrmUserAccess extends JFrame {
 
     private static final long serialVersionUID = 1L;
+    private static V_FrmUserAccess instance;
     private JPanel contentPane;
     public JTextField tf_tenDN;
     public JTextField tf_password;
@@ -31,13 +32,12 @@ public class V_FrmUserAccess extends JFrame {
     public JPanel panel_dangNhap;
     public JButton btn_OK;
     public String userName;
-    public boolean connect = false;
     public JTextField tf_port_DK;
     public JTextField tf_port;
     
-//    public V_FrmUserAccess(V_FrmChat_Client vFC) {
-//        this.vFC = vFC;
-//    }
+    public boolean connect = false;
+    public boolean newCreate = false;
+
     /**
      * Launch the application.
      */
@@ -53,6 +53,14 @@ public class V_FrmUserAccess extends JFrame {
 //            }
 //        });
 //    }
+    
+    public static synchronized V_FrmUserAccess getInstance(V_FrmChat_Client vFC) {
+        if (instance == null) {
+            instance = new V_FrmUserAccess(vFC);
+        }
+        return instance;
+    }
+    
     /**
      * Create the frame.
      */

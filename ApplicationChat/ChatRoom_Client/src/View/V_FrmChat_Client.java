@@ -12,9 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 import javax.swing.AbstractAction;
@@ -40,6 +38,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class V_FrmChat_Client extends JFrame {
 
@@ -62,12 +62,13 @@ public class V_FrmChat_Client extends JFrame {
     public JPanel panel_chucNang;
 
     public String userName;
-    String uuid = UUID.randomUUID().toString();
-    public String ID = uuid.substring(0, 3);
+//    String uuid = UUID.randomUUID().toString();
+//    public String ID = uuid.substring(0, 3);
+    public String userID;
+
     public String password;
     public int port;
     public boolean connect = false;
-    public boolean newCreate = false;
 
     private JPanel panel_TinNhan;
     private JTextArea messageArea;
@@ -91,6 +92,8 @@ public class V_FrmChat_Client extends JFrame {
 //	private static ChatClient chatClient;
     private final JLabel lbl_tenNguoiDung;
     private final JLabel lbl_Cong;
+    public final JLabel lbl_IDNguoiDung;
+    private final JLabel lbl_ThongBaoKetNoi;
 
     /**
      * Launch the application.
@@ -133,9 +136,8 @@ public class V_FrmChat_Client extends JFrame {
 //            ID = 000 + "";
 //        }
 //        nhapTen();
-        V_FrmUserAccess vFU = new V_FrmUserAccess(this);
-
-        ActionListener ac = new ControllerFormChat_Clients(this);
+//        V_FrmUserAccess vFU = V_FrmUserAccess.getInstance(this);
+        ActionListener ac = new ControllerFormChat_Clients(this, null);
 //        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
         setBounds(0, 0, 1460, 830);
@@ -251,6 +253,7 @@ public class V_FrmChat_Client extends JFrame {
         scrollPane_TinNhan = new JScrollPane(panel_TinNhan);
         scrollPane_TinNhan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane_TinNhan.setBounds(0, 50, 1150, 650);
+        scrollPane_TinNhan.setBackground(new Color(255, 255, 255));
         panel_chat.add(scrollPane_TinNhan);
 
         lbl_IDClientChat = new JLabel("ID:");
@@ -361,7 +364,7 @@ public class V_FrmChat_Client extends JFrame {
         panel_nguoidung.add(panel_UIDName);
         panel_UIDName.setLayout(null);
 
-        JLabel lbl_IDNguoiDung = new JLabel("ID:" + ID);
+        lbl_IDNguoiDung = new JLabel("ID:" + userID);
         lbl_IDNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 17));
         lbl_IDNguoiDung.setBackground(new Color(255, 255, 255));
         lbl_IDNguoiDung.setBounds(10, 0, 125, 25);
@@ -381,6 +384,21 @@ public class V_FrmChat_Client extends JFrame {
         list_UIDName_onl = new JList<>(model_clients);
         list_UIDName_onl.setFont(new Font("Tahoma", Font.PLAIN, 20));
         list_UIDName_onl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    if (list_UIDName_onl.getSelectedValue() != null) {
+                        lbl_IDClientChat.setVisible(true);
+                        lbl_IDClientChat.setText("ID: " + list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
+                        lbl_nameClientChat.setText("Tên: " + list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
+                    } else {
+                        lbl_IDClientChat.setText("ID: ");
+                        lbl_nameClientChat.setText("Tên: ");
+                    }
+                }
+            }
+        });
 
         scrollPane_listUIDName = new JScrollPane(list_UIDName_onl);
         scrollPane_listUIDName.setBounds(0, 85, 300, 615);
@@ -428,11 +446,15 @@ public class V_FrmChat_Client extends JFrame {
 
         // Kiểm tra nếu client chưa kết nối đến server thì sẽ hiện panel thông báo không
         // kết nối được với server
-//        controller.kiemTraKetNoi();
-        JLabel lbl_ThongBaoKetNoi = new JLabel("Không thể kết nối đến server");
+//      controller.kiemTraKetNoi();
+        lbl_ThongBaoKetNoi = new JLabel("Server chưa được khởi dộng ở cổng: ");
         lbl_ThongBaoKetNoi.setFont(new Font("Segoe UI Light", Font.BOLD, 20));
         panel_ThongBaoKetNoi.add(lbl_ThongBaoKetNoi, BorderLayout.CENTER);
-//		btn_taoNhom.addActionListener(ac);
+//	btn_taoNhom.addActionListener(ac);
+
+        for (int i = 1; i <= 60; i++) {
+            addMessage("", "out", 0, null);
+        }
     }
 
     // Phương thức để cập nhật trạng thái của panel
@@ -494,10 +516,13 @@ public class V_FrmChat_Client extends JFrame {
         }
     }
 
-    public void updateUserInfo(String userName, String password, String port) {  //update khi đăng nhập sẽ hiện thị tên trên form và kèm theo password truyền qua ChatClient
+    public void updateUserInfo(String userID, String userName, String password, String port) {  //update khi đăng nhập sẽ hiện thị tên trên form và kèm theo password truyền qua ChatClient
         this.userName = userName;
+        this.userID = userID;
         lbl_tenNguoiDung.setText("Tên: " + userName);
-        lbl_Cong.setText("Cổng: "+ port);
+        lbl_IDNguoiDung.setText("ID: " + userID);
+        lbl_Cong.setText("Cổng: " + port);
+        lbl_ThongBaoKetNoi.setText("Server chưa được khởi dộng ở cổng: " + port);
         this.password = password;
     }
 
@@ -538,27 +563,31 @@ public class V_FrmChat_Client extends JFrame {
                 .setValue(scrollPane_TinNhan.getVerticalScrollBar().getMaximum()));
     }
 
-    public void addMessage(String message, String IO_message) {
+    public void addMessage(String message, String IO_message, int distance, Color color) {
         // Tạo JPanel cho tin nhắn
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BorderLayout());
 //        messagePanel.setAlignmentX(IO_message.equals("in") ? Component.LEFT_ALIGNMENT : Component.RIGHT_ALIGNMENT);
 
         // Tạo JLabel để chứa nội dung tin nhắn
-        int maxWidth = 400;
+        int maxWidth = 423;
         JLabel messageLabel = new JLabel(
                 "<html><body style='width: " + maxWidth + "px'; word-wrap: break-word;>" + message + "</body></html>");
         messageLabel.setOpaque(true);
         messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Đặt màu nền khác nhau cho tin nhắn gửi đi và nhận vào
         if (IO_message.equals("in")) {
-            messageLabel.setBackground(new Color(173, 216, 230)); // Màu xanh nhạt cho tin nhắn nhận
+            messageLabel.setBackground(color); // Màu xanh nhạt cho tin nhắn nhận   - new Color(173, 216, 230)
             messagePanel.add(messageLabel, BorderLayout.WEST);
-        } else {
-            messageLabel.setBackground(new Color(144, 238, 144)); // Màu xanh lá nhạt cho tin nhắn gửi
+        } else if (IO_message.equals("out")) {
+            messageLabel.setBackground(color); // Màu xanh lá nhạt cho tin nhắn gửi
             messagePanel.add(messageLabel, BorderLayout.EAST);
+        } else if (IO_message.equals("said")) {
+            messageLabel.setBackground(color); // Màu xanh đâm cho thông báo
+            messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            messagePanel.add(messageLabel, BorderLayout.CENTER);
         }
 
         // Đặt kích thước tối đa cho tin nhắn
@@ -566,7 +595,7 @@ public class V_FrmChat_Client extends JFrame {
 
         // Thêm JPanel của tin nhắn vào chatPanel
         panel_TinNhan.add(messagePanel);
-        panel_TinNhan.add(Box.createVerticalStrut(5)); // Khoảng cách nhỏ giữa các tin nhắn
+        panel_TinNhan.add(Box.createVerticalStrut(distance)); // Khoảng cách nhỏ giữa các tin nhắn
         panel_TinNhan.revalidate(); // Làm mới giao diện
         panel_TinNhan.repaint();
         // Tự động cuộn xuống dòng cuối

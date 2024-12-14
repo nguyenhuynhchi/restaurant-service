@@ -6,6 +6,7 @@ package ChatRoom_Client;
 
 import View.V_FrmChat_Client;
 import View.V_FrmUserAccess;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -37,7 +38,7 @@ public class MessageSender implements Runnable {
     public MessageSender(Socket socket, V_FrmChat_Client vFC) {
         this.socket = socket;
         this.vFC = vFC;
-        this.chatClient = chatClient.getInstance(vFC);
+//        this.chatClient = chatClient.getInstance(vFC);
         try {
             this.output = socket.getOutputStream();
         } catch (Exception e) {
@@ -45,8 +46,6 @@ public class MessageSender implements Runnable {
         }
     }
 
-//    private String clientID = chatClient.clientID;
-//    private String clientName = chatClient.clientName;
     @Override
     public void run() {
 
@@ -67,13 +66,11 @@ public class MessageSender implements Runnable {
             public void windowClosing(WindowEvent e) {
                 System.out.println("Bạn vừa đóng ứng dụng. Ngắt kết nối khỏi server");
                 sendDisconnect();
-
                 // Đóng ứng dụng
                 vFC.dispose();
                 System.exit(0);
             }
         });
-
     }
 
     public void sendMessage() {
@@ -84,15 +81,16 @@ public class MessageSender implements Runnable {
             if (vFC.list_UIDName_onl.getSelectedValue() == null && vFC.list_GroupName.getSelectedValue() == null) {
                 return;
             } else if (vFC.list_UIDName_onl.getSelectedValue() != null) {
-                String message = vFC.tf_message.getText();
                 String clientSelected = vFC.list_UIDName_onl.getSelectedValue();
+                String message = vFC.tf_message.getText();
                 System.out.println("Client được chọn để gửi tin: " + clientSelected);
                 output.write(("MessageOfClient#" + clientID + " | " + clientName + "#" + clientSelected + "#" + message + "\n").getBytes());
                 output.flush();
 
                 // Thông điệp khi client gửi tin nhắn riêng: MessageOfClient # ID|name client gửi # client được chọn # tin nhắn
                 System.out.println(" - Đã gửi thông điệp: MessageOfClient#" + clientID + " | " + clientName + "#" + clientSelected + "#" + message);
-                vFC.addMessage(message, "out"); // thêm tin nhắn vào panel_tinnhan
+                // thêm tin nhắn vào panel_tinnhan (màu xanh lá)
+                vFC.addMessage("[Gửi đến {" + clientSelected + "}] - " + message, "out", 1, new Color(144, 238, 144));
                 vFC.tf_message.setText("");
             } else if (vFC.list_GroupName.getSelectedValue() != null) {
                 String message = vFC.tf_message.getText();
@@ -103,7 +101,7 @@ public class MessageSender implements Runnable {
 
                 // Thông điệp khi client gửi tin nhắn vào nhóm: MessageOfGroup # ID|name client gửi # tên nhóm được chọn # tin nhắn
                 System.out.println(" - Đã gửi thông điệp: MessageOfGroup#" + clientID + " | " + clientName + "#" + groupSelected + "#" + message);
-                vFC.addMessage(message, "out"); // thêm tin nhắn vào panel_tinnhan
+                vFC.addMessage("[Gửi đến nhóm {" + groupSelected + "}] - " + message, "out", 1, new Color(144, 238, 144)); // thêm tin nhắn vào panel_tinnhan
                 vFC.tf_message.setText("");
             }
         } catch (Exception e) {
@@ -115,20 +113,10 @@ public class MessageSender implements Runnable {
 
     }
 
-    public void sendInfo(String clientName, String clientID, String password) {
+    public void sendInfo(String info) {
         try {
-            if (vFC.newCreate == false) {
-                String info = "InfoClients|" + clientName + "|" + clientID + "|" + password + "\n";
-                output.write(info.getBytes());
-                output.flush();
-                System.out.println("Đã gửi thông tin ĐĂNG NHẬP này về server để kiểm tra:"+info);
-            } else if (vFC.newCreate == true) {
-                String info = "InfoNewCreateClients|" + clientName + "|" + clientID + "|" + password + "\n";
-                output.write(info.getBytes());
-                output.flush();
-                System.out.println("Đã gửi thông tin ĐĂNG KÍ này về server để kiểm tra:"+info);
-            }
-
+            output.write(info.getBytes());
+            output.flush();
         } catch (IOException e) {
             System.err.println("Lỗi khi kết nối: " + e.getMessage());
         }

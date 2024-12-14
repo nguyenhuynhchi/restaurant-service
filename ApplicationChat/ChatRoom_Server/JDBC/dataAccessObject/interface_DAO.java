@@ -8,8 +8,8 @@ public interface interface_DAO<T> {
 	public int delete(T t);
 	
 	public ArrayList<T> selectAll();
-	public T selectById(T t);
-	public int findByCondition(String condition);
+	public T selectByInfo(T t, String condition);
+	public String findByCondition(String condition);
 	public ArrayList<T> selectByCondition(String condition);
 
 	

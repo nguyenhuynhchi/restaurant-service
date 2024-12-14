@@ -8,24 +8,30 @@ import data.JDBC_Util;
 import model.MES_model;
 
 public class DAO_MES implements interface_DAO<MES_model>{
+	public static DAO_MES getInstance() {
+		return new DAO_MES();
+	}
 
 	@Override
 	public int insert(MES_model t) {
+		int rs = 0;
 		try {
 			// Tạo kết nối đến csdl
 			Connection conn = JDBC_Util.getConnection();
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO MES () "
-						+ "VALUES (?)";
+				String sql = "INSERT INTO MES (senderID, receiverID, receiverGroupID, contentMessage, timeReceive) VALUES (?, ?, ?, ?, ?)";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 
 				// Thiết lập các giá trị cho PreparedStatement
-//				pstmt.setInt(1, t.getUser_id()); // Sử dụng userId nhận được từ DAO_nguoichoi
-				
+				pstmt.setString(1, t.getSenderID()); 
+				pstmt.setString(2, t.getReceiverID()); 
+				pstmt.setString(3, t.getReceiverGroupID()); 
+				pstmt.setString(4, t.getContentMessage()); 
+				pstmt.setTimestamp(5, t.getTimeReceive()); 
 
 				// thực thi lệnh SQL
 				int affectedRows = pstmt.executeUpdate();
@@ -34,6 +40,7 @@ public class DAO_MES implements interface_DAO<MES_model>{
 				if (affectedRows > 0) {
 					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
 					System.out.println("- Có " + affectedRows + " dòng bị thay đổi");
+					rs=1;
 				}
 
 				// Ngắt kết nối
@@ -46,7 +53,7 @@ public class DAO_MES implements interface_DAO<MES_model>{
 			// TODO Auto-generated catch block
 			System.out.println("SQL Error: " + e.getMessage());
 		}
-		return 0;
+		return rs;
 	}
 
 	@Override
@@ -68,21 +75,21 @@ public class DAO_MES implements interface_DAO<MES_model>{
 	}
 
 	@Override
-	public MES_model selectById(MES_model t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ArrayList<MES_model> selectByCondition(String condition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public int findByCondition(String condition) {
+	public String findByCondition(String condition) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
+	}
+
+	@Override
+	public MES_model selectByInfo(MES_model t, String condition) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

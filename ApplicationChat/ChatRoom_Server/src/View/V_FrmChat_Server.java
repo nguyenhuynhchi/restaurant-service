@@ -254,7 +254,7 @@ public class V_FrmChat_Server extends JFrame {
 	public void openPort() {
 		while (true) {
 			try {
-				String portInput = JOptionPane.showInputDialog(null, "Nhập số cổng: ", "", JOptionPane.PLAIN_MESSAGE);
+				String portInput = JOptionPane.showInputDialog(null, "Nhập số cổng: ", "Khởi động server", JOptionPane.PLAIN_MESSAGE);
 				
 				if (portInput == null) { // Kiểm tra nếu người dùng nhấn "Cancel"
 	                System.out.println("Người dùng đã hủy.");
@@ -281,7 +281,7 @@ public class V_FrmChat_Server extends JFrame {
 		model_Clients.addElement(infoClient); // Thêm client vào JList
 	}
 
-	public void addGroup_ToJList(String groupName, String quantityInGroup) {
+	public void addGroup_ToJList(String groupName, int quantityInGroup) {
 		String newGroup = groupName + "|" + quantityInGroup;
 		model_Groups.addElement(newGroup);
 	}

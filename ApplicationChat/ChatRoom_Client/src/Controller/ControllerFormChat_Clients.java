@@ -10,17 +10,18 @@ import java.awt.event.MouseListener;
 import java.util.List;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.basic.BasicListUI;
 
 public class ControllerFormChat_Clients implements ActionListener, MouseListener {
 
     private V_FrmChat_Client vFC;
+    private V_FrmUserAccess vFU;
     
     private ChatClient chatClient;
 
-    public ControllerFormChat_Clients(V_FrmChat_Client vFC) {
+    public ControllerFormChat_Clients(V_FrmChat_Client vFC, V_FrmUserAccess vFU) {
         this.vFC = vFC;
-        this.chatClient = chatClient.getInstance(vFC);
+        this.vFU = vFU;
+        this.chatClient = chatClient.getInstance(vFC, vFU);
     }
 
     @Override
@@ -56,27 +57,27 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
         }
 
         setupGroupListListener();
-        setupList_UIDName_onl();
+//        setupList_UIDName_onl();
     }
 
-    private void setupList_UIDName_onl() {
-        vFC.list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    if (vFC.list_UIDName_onl.getSelectedValue() != null) {
-                        vFC.lbl_IDClientChat.setVisible(true);
-                        vFC.lbl_IDClientChat.setText("ID: " + vFC.list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
-                        vFC.lbl_nameClientChat.setText("Tên: " + vFC.list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
-                    } else {
-                        vFC.lbl_IDClientChat.setText("ID: ");
-                        vFC.lbl_nameClientChat.setText("Tên: ");
-                    }
-                }
-            }
-        });
-
-    }
+//    private void setupList_UIDName_onl() {
+//        vFC.list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e) {
+//                if (!e.getValueIsAdjusting()) {
+//                    if (vFC.list_UIDName_onl.getSelectedValue() != null) {
+//                        vFC.lbl_IDClientChat.setVisible(true);
+//                        vFC.lbl_IDClientChat.setText("ID: " + vFC.list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
+//                        vFC.lbl_nameClientChat.setText("Tên: " + vFC.list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
+//                    } else {
+//                        vFC.lbl_IDClientChat.setText("ID: ");
+//                        vFC.lbl_nameClientChat.setText("Tên: ");
+//                    }
+//                }
+//            }
+//        });
+//
+//    }
 
     private void setupGroupListListener() {
         vFC.list_GroupName.addListSelectionListener(new ListSelectionListener() { // lắng nghe khi chọn 1 group trong JList

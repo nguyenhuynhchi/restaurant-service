@@ -5,6 +5,8 @@
 package ChatRoom_Client;
 
 import View.V_FrmChat_Client;
+import View.V_FrmUserAccess;
+import java.awt.Color;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -18,14 +20,18 @@ import java.util.Map;
  * @author Nguyen Huynh Chi
  */
 public class Client_Listener implements Runnable {
+
     private static Client_Listener instance;
     private Socket socket;
     private InputStream input;
     public boolean connect;
-    private String clientName;
-    private String clientID;
+//    private String clientName;
+//    private String clientID;
     private V_FrmChat_Client vFC;
+    private V_FrmUserAccess vFU;
     private ChatClient chatCLient;
+
+    public int successLogIn = -1;
 
     private StringBuilder messageBuilder = new StringBuilder(); // Dùng để lưu trữ thông điệp nhận được
 
@@ -33,17 +39,18 @@ public class Client_Listener implements Runnable {
         // Rỗng
     }
 
-    public Client_Listener(Socket socket, V_FrmChat_Client vFC) {
+    public Client_Listener(Socket socket, V_FrmChat_Client vFC, V_FrmUserAccess vFU) {
         this.socket = socket;
         this.vFC = vFC;
-        this.chatCLient = chatCLient.getInstance(vFC);
+        this.vFU = vFU;
+        this.chatCLient = chatCLient.getInstance(vFC, vFU);
         try {
             this.input = socket.getInputStream();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void run() {
         try {
@@ -58,13 +65,28 @@ public class Client_Listener implements Runnable {
                     String message = messageBuilder.substring(0, endIndex).trim();  // Tách thông điệp đầy đủ
                     messageBuilder.delete(0, endIndex + 1);  // Xóa thông điệp đã xử lý khỏi messageBuilder
 
+                    //Kiểm tra đăng nhập thành công không 
+                    if (message.startsWith("UNSUCCESS")) {  // Đăng nhập không thành công
+                        System.out.println("Đăng nhập không thành công");
+                        successLogIn = 0;
+                        System.out.println("success: "+successLogIn);
+                    } 
+                    else if(message.startsWith("SUCCESS#")){  // đăng nhập thành công
+                        String[] part = message.split("\\#");
+                        vFC.userID = part[1];
+                        
+//                        vFC.lbl_IDNguoiDung.setText("ID: "+vFC.userID);
+                        System.out.println("Đăng nhập thành công. ID là:"+vFC.userID);
+                        successLogIn = 1;
+                        System.out.println("success: "+successLogIn);
+                    }
                     // Xử lý thông điệp cho biết thông tin các client khác
-                    if (message.startsWith("InfoClients#")) {
+                    else if (message.startsWith("InfoClients#")) {
                         String[] infoClient = message.split("\\#"); // Tách dữ liệu tên và ID
 
                         if (infoClient.length == 2) {
-                            clientID = infoClient[1].split("\\|")[0];
-                            clientName = infoClient[1].split("\\|")[1];
+                            String clientID = infoClient[1].split("\\|")[0];
+                            String clientName = infoClient[1].split("\\|")[1];
                             System.out.println("Client khác đang kết nối: " + clientID + "|" + clientName);  // Hiển thị clientName và clientID mới
 
                             vFC.addClientToList(clientID, clientName);  // Thêm các Client vào list
@@ -75,7 +97,9 @@ public class Client_Listener implements Runnable {
                     else if (message.startsWith("DISCONNECT#")) {
                         String infoClientDisconnect = message.split("\\#")[1]; // Lấy tên Client vừa ngắt kết nối 
                         vFC.removeClientInList(infoClientDisconnect); // Gọi PT xóa client từ JList
-                        System.out.println(infoClientDisconnect + "  ĐÃ NGẮT KẾT NỐI");
+                        String messageDisconnect = "<b>!</b> "+infoClientDisconnect + " - ĐÃ NGẮT KẾT NỐI "+"<b>!</b>";
+                        System.out.println(messageDisconnect);
+                        vFC.addMessage(messageDisconnect, "said", 1, new Color(120, 120, 255));
                     } // Xử lý thông điệp được thêm vào group
                     else if (message.startsWith("AddedToGroup#")) {
                         // Tách lấy tên nhóm và danh sách client
@@ -88,7 +112,7 @@ public class Client_Listener implements Runnable {
                     else {
                         // Hiển thị tin nhắn nhận được
                         System.out.println("Tin nhắn từ phòng chat: " + message);
-                        vFC.addMessage(message, "in");
+                        vFC.addMessage(message, "in", 1, new Color(173, 216, 230));
                     }
                 }
             }

@@ -77,7 +77,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 	}
 
 	@Override
-	public USERS_model selectById(USERS_model t) {
+	public USERS_model selectByInfo(USERS_model t, String condition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -89,8 +89,8 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 	}
 
 	@Override
-	public int findByCondition(String condition) {
-		int rs = 0;
+	public String findByCondition(String condition) {
+		String rs = null;
 		String[] parts = condition.split("#");
 		String userName = parts[0];
 		String password = parts[1];
@@ -99,9 +99,9 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 			Connection conn = JDBC_Util.getConnection();
 
 			if (conn != null) {
-				
+
 				// Thực thi lệnh sql
-				String sql = "SELECT userName, password from USERS  WHERE userName = ?  AND  password = ? LIMIT 1";
+				String sql = "SELECT userID from USERS  WHERE userName = ?  AND  password = ? LIMIT 1";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -109,7 +109,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 				// Thiết lập các giá trị cho PreparedStatement
 				pstmt.setString(1, userName);
 				pstmt.setString(2, password);
-				
+
 				// thực thi lệnh SQL
 				ResultSet result = pstmt.executeQuery();
 
@@ -117,15 +117,15 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 				try {
 					if (result.next()) {
 						System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
-						System.out.println("Kết quả: " + result);
-						rs = 1;
-					}else {
+						rs = result.getString("userID");
+						System.out.println("ID của client đó: " + rs);
+					} else {
 						System.out.println("Không có kết quả truy vấn");
 					}
 
 				} catch (SQLException e) {
 					e.printStackTrace();
-					System.out.println("Không có kết quả truy vấn");
+					System.out.println("Lỗi khi truy vấn");
 				}
 
 				// Ngắt kết nối

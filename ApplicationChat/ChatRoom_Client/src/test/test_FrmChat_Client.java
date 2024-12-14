@@ -21,21 +21,12 @@ public class test_FrmChat_Client {
             }
             
             // Khởi tạo client chat và truyền view vào
-            ChatClient chatClient = new ChatClient(vFC);
+            ChatClient chatClient = new ChatClient(vFC, vFU);
             chatClient.StartClient();
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Lỗi ở test");
         }
-// Lấy thời gian hiện tại tính bằng mili giây từ epoch (1970-01-01 00:00:00 UTC)
-//        long uniqueNumber;
-//
-//        // In ra số duy nhất
-//        for (int i = 0; i < 100; i++) {
-//            uniqueNumber = System.currentTimeMillis();
-//            System.out.println("Số duy nhất "+i+": " + uniqueNumber);
-//        }
-
     }
 }
