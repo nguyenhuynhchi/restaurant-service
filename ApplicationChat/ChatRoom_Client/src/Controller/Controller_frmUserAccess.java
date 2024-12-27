@@ -23,6 +23,7 @@ public class Controller_frmUserAccess implements ActionListener {
     public String port;
     public String userID;
     public String userName;
+    public String fullName;
     public String password;
 
     public Controller_frmUserAccess(V_FrmUserAccess vFU, V_FrmChat_Client vFC) {
@@ -66,6 +67,7 @@ public class Controller_frmUserAccess implements ActionListener {
         String uuid = UUID.randomUUID().toString();
         this.userID = uuid.substring(0, 3);
         this.userName = vFU.tf_tenDN_DK.getText().trim();
+        this.fullName = vFU.tf_hoTen_DK.getText().trim();
         this.password = vFU.tf_password_DK.getText().trim();
         String autPassword = vFU.tf_autPassword_DK.getText().trim();
         boolean flat = false;
@@ -88,27 +90,33 @@ public class Controller_frmUserAccess implements ActionListener {
             JOptionPane.showMessageDialog(vFU, "Vui lòng nhập số cổng của server!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
         }
         if (userName.isEmpty()) {
-            // Hiển thị thông báo lỗi nếu tên chưa được nhập
+            // Hiển thị thông báo lỗi nếu userName chưa được nhập
             flat = false;
             JOptionPane.showMessageDialog(vFU, "Vui lòng nhập tên cho tài khoản!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
+        } else if (!userName.matches("^[a-zA-Z0-9'_]+$")) {
+            flat = false;
+            JOptionPane.showMessageDialog(vFU,
+                    "Tên đăng nhập không được chứa khoảng trắng hoặc ký tự đặc biệt!",
+                    "Lỗi nhập liệu",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        if (password.isEmpty()) {
+        if (fullName.isEmpty()) {
+            // Hiển thị thông báo lỗi nếu họ tên chưa được nhập
+            flat = false;
+            JOptionPane.showMessageDialog(vFU, "Vui lòng nhập họ tên để hiển thị cho tài khoản!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
+        }
+        if (password.isEmpty() || password.length() < 6) {
             // Hiển thị thông báo lỗi nếu mật khẩu chưa được nhập
             flat = false;
-            JOptionPane.showMessageDialog(vFU, "Vui lòng nhập mật khẩu cho tài khoản!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(vFU, "Vui lòng nhập mật khẩu từ 6 kí tự trở lên!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
         } else if (!autPassword.equals(password) || autPassword.isEmpty()) {
             // Hiển thị thông báo lỗi nếu mật khẩu xác nhận không giống
             flat = false;
             JOptionPane.showMessageDialog(vFU, "Mật khẩu xác nhận không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
         if (flat) {
-            // Hiển thị thông báo đăng ký thành công và quay lại panel để đăng nhập
-            JOptionPane.showMessageDialog(vFU, "Đăng ký thành công! \nVào sử dụng thoi", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-
             vFU.newCreate = true; // Là tài khoản mới đăng ký
-            vFC.updateUserInfo(userID, userName, password, port); // Gán tên đăng nhập cho V_FrmChat_Client
-            vFU.dispose();          // Đóng form V_FrmUserAccess
-            vFC.setVisible(true);   // Hiển thị form V_FrmChat_Client
+            vFC.updateUserInfo(userID, userName, fullName, password, port); // Gán tên đăng nhập cho V_FrmChat_Client
             vFC.connect = true;
             vFU.connect = true;     // Cập nhật trạng thái kết nối
         }
@@ -127,7 +135,7 @@ public class Controller_frmUserAccess implements ActionListener {
             JOptionPane.showMessageDialog(vFU, "Vui lòng nhập mật khẩu!", "Lỗi nhập thiếu", JOptionPane.ERROR_MESSAGE);
         } else if (!userName.isEmpty() && !port.isEmpty() && !password.isEmpty()) {
             try {
-                vFC.updateUserInfo(null, userName, password, port); // (SỬA)Gán tên đăng nhập cho V_FrmChat_Client
+                vFC.updateUserInfo(null, userName, null, password, port); // (SỬA)Gán tên đăng nhập cho V_FrmChat_Client
                 int portNumber = Integer.parseInt(port);
                 vFC.port = portNumber;
                 vFU.newCreate = false;

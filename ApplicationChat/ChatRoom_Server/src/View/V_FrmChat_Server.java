@@ -1,14 +1,17 @@
 package View;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -29,6 +32,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import Controller.ControllerFormChat_Server;
+import javax.swing.ImageIcon;
 
 public class V_FrmChat_Server extends JFrame {
 
@@ -41,6 +45,7 @@ public class V_FrmChat_Server extends JFrame {
 	public JList<String> list_UIDName_onl;
 	public JList<String> list_GroupName;
 	public JList<String> list_UIDNameInGr;
+	private List<String> highlightedClients = new ArrayList<>();
 	public JScrollPane scrollPane_listUIDName;
 	public JScrollPane scrollPane_listGroupName;
 	public JButton btn_Clients;
@@ -230,6 +235,7 @@ public class V_FrmChat_Server extends JFrame {
 		panel_nguoidung.add(panel_Clients_Nhom);
 
 		btn_Clients = new JButton("Clients");
+		btn_Clients.setIcon(new ImageIcon(V_FrmChat_Server.class.getResource("/Images/client.png")));
 		btn_Clients.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btn_Clients.setBounds(0, 0, 145, 35);
 		btn_Clients.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
@@ -238,6 +244,7 @@ public class V_FrmChat_Server extends JFrame {
 		panel_Clients_Nhom.add(btn_Clients);
 
 		btn_Nhom = new JButton("Nhóm");
+		btn_Nhom.setIcon(new ImageIcon(V_FrmChat_Server.class.getResource("/Images/group.png")));
 		btn_Nhom.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btn_Nhom.setBounds(155, 0, 145, 35);
 		btn_Nhom.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
@@ -287,12 +294,6 @@ public class V_FrmChat_Server extends JFrame {
 	}
 
 	public void removeClientFromList(String infoClientDisconnect) {
-//		for (int i = 0; i < model_Clients.size(); i++) {
-//			if (model_Clients.get(i).contains(infoClientDisconnect)) {
-//				model_Clients.remove(i);
-//				break;
-//			}
-//		}
 		System.out.println("Đã xóa client " + infoClientDisconnect + " khỏi JList");
 		model_Clients.removeElement(infoClientDisconnect);
 	}
@@ -305,4 +306,46 @@ public class V_FrmChat_Server extends JFrame {
 		}
 		list_UIDNameInGr.setModel(modelClientsGroup);
 	}
+	
+	public void clientOnline(String infoClient) {
+		list_UIDName_onl.setCellRenderer(createCustomRenderer(infoClient));
+	}
+	
+	public ListCellRenderer<? super String> createCustomRenderer(String newHighlightClient) {
+	    // Thêm client mới cần highlight vào danh sách
+	    if (newHighlightClient != null) {
+	        highlightedClients.add(newHighlightClient);
+	    }
+
+	    return new DefaultListCellRenderer() {
+	        @Override
+	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+	            
+	            // Nếu client thuộc danh sách được highlight thì đổi màu
+	            if (value != null && highlightedClients.contains(value.toString())) {
+	                label.setForeground(Color.GREEN); // Đổi màu chữ thành xanh lá
+	                for(String clientHighlight : highlightedClients) {
+	                	moveHighlightedClientToTop(model_Clients, clientHighlight);
+	                }
+
+	            } else {
+	                label.setForeground(Color.BLACK); // Mặc định là màu đen
+	            }
+	            
+	            return label;
+	        }
+	    };
+	}
+	
+	public void moveHighlightedClientToTop(DefaultListModel<String> model, String highlightClient) {
+	    if (model.contains(highlightClient)) {
+	        // Xóa phần tử được highlight khỏi vị trí hiện tại
+	        model.removeElement(highlightClient);
+	        // Thêm phần tử được highlight lên đầu danh sách
+	        model.add(0, highlightClient);
+	    }
+	}
+
+
 }

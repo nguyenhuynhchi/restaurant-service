@@ -4,7 +4,6 @@ import Controller.ControllerFormChat_Clients;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -14,12 +13,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.List;
-import java.util.UUID;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -61,10 +61,9 @@ public class V_FrmChat_Client extends JFrame {
     public JPanel panel_nguoidung;
     public JPanel panel_chucNang;
 
-    public String userName;
-//    String uuid = UUID.randomUUID().toString();
-//    public String ID = uuid.substring(0, 3);
-    public String userID;
+    private String userName;
+    private String fullName;
+    private String userID;
 
     public String password;
     public int port;
@@ -94,6 +93,7 @@ public class V_FrmChat_Client extends JFrame {
     private final JLabel lbl_Cong;
     public final JLabel lbl_IDNguoiDung;
     private final JLabel lbl_ThongBaoKetNoi;
+    public AbstractButton btn_openFile;
 
     /**
      * Launch the application.
@@ -122,23 +122,7 @@ public class V_FrmChat_Client extends JFrame {
         Image img = Toolkit.getDefaultToolkit().createImage(urlIconFrame);
         setIconImage(img);
 
-//        try {
-//            // Lấy địa chỉ IP của máy tính
-//            InetAddress ip = InetAddress.getLocalHost();
-//            String ipAddress = ip.getHostAddress();
-//
-//            // Chuyển đổi IP thành số 3 chữ số
-//            int ipHash = ipAddress.hashCode(); // Lấy giá trị băm của địa chỉ IP
-//            int ipNumber = Math.abs(ipHash) % 1000;
-//            ID = String.format("%03d", ipNumber);
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//            ID = 000 + "";
-//        }
-//        nhapTen();
-//        V_FrmUserAccess vFU = V_FrmUserAccess.getInstance(this);
         ActionListener ac = new ControllerFormChat_Clients(this, null);
-//        ControllerFormChat_Clients mouse_Ctrl = new ControllerFormChat_Clients(this);  
 
         setBounds(0, 0, 1460, 830);
 
@@ -234,7 +218,7 @@ public class V_FrmChat_Client extends JFrame {
         panel_clientsGroup.add(btn_dongViewClientsGroup);
 
         btn_guiTin = new JButton("Gửi");
-        btn_guiTin.setFont(new Font("Arial", Font.PLAIN, 12));
+        btn_guiTin.setFont(new Font("Arial", Font.PLAIN, 13));
         btn_guiTin.setBounds(1054, 710, 75, 45);
         // Sử dụng InputMap và ActionMap để ánh xạ phím Enter
         btn_guiTin.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ENTER"), "doClick");
@@ -274,6 +258,12 @@ public class V_FrmChat_Client extends JFrame {
         btn_viewClientsGroup.addActionListener(ac);
         btn_viewClientsGroup.setVisible(false);
         panel_chat.add(btn_viewClientsGroup);
+
+        btn_openFile = new JButton("");
+        btn_openFile.setIcon(new ImageIcon(V_FrmChat_Client.class.getResource("/Images/btn_file.png")));
+        btn_openFile.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        btn_openFile.setBounds(5, 710, 85, 45);
+        panel_chat.add(btn_openFile);
         panel_TaoNhom.setLayout(null);
         panel_Chinh.add(panel_TaoNhom);
 
@@ -421,20 +411,22 @@ public class V_FrmChat_Client extends JFrame {
         panel_Client_Nhom.setBounds(0, 50, 300, 35);
         panel_nguoidung.add(panel_Client_Nhom);
 
-        JButton btn_Clients = new JButton("Clients");
-        btn_Clients.setFont(new Font("Arial", Font.BOLD, 15));
-        btn_Clients.setBounds(0, 0, 145, 35);
-        btn_Clients.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-        btn_Clients.setActionCommand("Clients");
-        btn_Clients.addActionListener(ac);
-        panel_Client_Nhom.add(btn_Clients);
-
         JButton btn_Nhom = new JButton("Nhóm");
+        btn_Nhom.setIcon(new ImageIcon(V_FrmChat_Client.class.getResource("/Images/group.png")));
         btn_Nhom.setFont(new Font("Arial", Font.BOLD, 15));
         btn_Nhom.setBounds(155, 0, 145, 35);
         btn_Nhom.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
         btn_Nhom.setActionCommand("Nhóm");
         btn_Nhom.addActionListener(ac);
+        
+                JButton btn_Clients = new JButton("Clients");
+                btn_Clients.setIcon(new ImageIcon(V_FrmChat_Client.class.getResource("/Images/client.png")));
+                btn_Clients.setFont(new Font("Arial", Font.BOLD, 15));
+                btn_Clients.setBounds(0, 0, 145, 35);
+                btn_Clients.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+                btn_Clients.setActionCommand("Clients");
+                btn_Clients.addActionListener(ac);
+                panel_Client_Nhom.add(btn_Clients);
         panel_Client_Nhom.add(btn_Nhom);
 
         panel_ThongBaoKetNoi = new JPanel();
@@ -453,7 +445,7 @@ public class V_FrmChat_Client extends JFrame {
 //	btn_taoNhom.addActionListener(ac);
 
         for (int i = 1; i <= 60; i++) {
-            addMessage("", "out", 0, null);
+            addMessage("", "out", 0, null, null);
         }
     }
 
@@ -479,7 +471,7 @@ public class V_FrmChat_Client extends JFrame {
 
     public void addGroupToList(String groupName, String quantityInGroup) {
         String newGroup = groupName + " | " + quantityInGroup;
-        System.out.println(newGroup);
+        System.out.println("Đã thêm group " + newGroup + " vào JList");
         model_groups.addElement(newGroup);
     }
 
@@ -516,54 +508,19 @@ public class V_FrmChat_Client extends JFrame {
         }
     }
 
-    public void updateUserInfo(String userID, String userName, String password, String port) {  //update khi đăng nhập sẽ hiện thị tên trên form và kèm theo password truyền qua ChatClient
+    public void updateUserInfo(String userID, String userName, String fullName, String password, String port) {  //update khi đăng nhập sẽ hiện thị tên trên form và kèm theo password truyền qua ChatClient
+        this.fullName = fullName;
         this.userName = userName;
         this.userID = userID;
-        lbl_tenNguoiDung.setText("Tên: " + userName);
+        lbl_tenNguoiDung.setText("Tên: " + fullName);
         lbl_IDNguoiDung.setText("ID: " + userID);
         lbl_Cong.setText("Cổng: " + port);
         lbl_ThongBaoKetNoi.setText("Server chưa được khởi dộng ở cổng: " + port);
         this.password = password;
     }
 
-    // Phương thức thêm tin nhắn vào chatPanel (Chưa hoàn chỉnh)
-    public void addMessage_(String message, String inputMessage) {
-        // Tạo JPanel cho tin nhắn và cài đặt căn lề
-        JPanel messagePanel = new JPanel();
-        messagePanel.setBackground(new Color(192, 192, 192));
-
-        messagePanel.setLayout(new FlowLayout(inputMessage.equals("in") ? FlowLayout.LEFT : FlowLayout.RIGHT));
-        // Tạo JLabel với nội dung
-        JLabel messageLabel = new JLabel("<html>" + message + "</html>"); // HTML cho phép tự động xuống dòng
-        messageLabel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Đệm xung quanh nội dung
-        messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        messageLabel.setOpaque(true);
-        messageLabel.setBackground(new Color(200, 200, 200));
-
-        int maxWidth = 500;
-        int labelWidth = Math.min(maxWidth, messageLabel.getPreferredSize().width + 20); // Thêm 20 cho khoảng đệm trái
-        // và phải
-        messageLabel.setPreferredSize(new Dimension(maxWidth, messageLabel.getPreferredSize().height));
-        messagePanel.add(messageLabel, BorderLayout.NORTH);
-//        panel_TinNhan.add(messagePanel);
-//        panel_TinNhan.revalidate();  // Cập nhật layout sau khi thêm label
-//        panel_TinNhan.repaint();     // Vẽ lại JPanel để hiển thị thay đổi
-
-        // Cuộn xuống tin nhắn mới nhất
-        SwingUtilities.invokeLater(() -> scrollPane_TinNhan.getVerticalScrollBar()
-                .setValue(scrollPane_TinNhan.getVerticalScrollBar().getMaximum()));
-    }
-
-    public void addMessage__(String message, String inputMessage) {
-        // Tạo JTextArea để hiển thị tin nhắn
-        messageArea.setText(messageArea.getText() + "\n" + message + "\n");
-
-        // Cuộn xuống tin nhắn mới nhất
-        SwingUtilities.invokeLater(() -> scrollPane_TinNhan.getVerticalScrollBar()
-                .setValue(scrollPane_TinNhan.getVerticalScrollBar().getMaximum()));
-    }
-
-    public void addMessage(String message, String IO_message, int distance, Color color) {
+    // Add Message cũ không thể gưi file
+    public void addMessage_(String message, String IO_message, int distance, Color color) {
         // Tạo JPanel cho tin nhắn
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BorderLayout());
@@ -602,4 +559,168 @@ public class V_FrmChat_Client extends JFrame {
         SwingUtilities.invokeLater(() -> scrollPane_TinNhan.getVerticalScrollBar()
                 .setValue(scrollPane_TinNhan.getVerticalScrollBar().getMaximum()));
     }
+
+    // Test gửi file
+    public void addMessage(String message, String IO_message, int distance, Color color, String timeOfMes) {
+        // Tạo JPanel cho tin nhắn
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new BorderLayout());
+
+        // Tạo JLabel để chứa nội dung tin nhắn
+        int maxWidth = 423;
+
+        if (message.startsWith("IMAGE#")) {
+            // Tin nhắn là hình ảnh
+            System.out.println("\n-Thông điệp chưa xử lý: " + message);
+            String[] parts = message.trim().split("\\#");
+            System.out.println("\n" + parts[0] + "-Base64Image: \n" + parts[1]);
+            System.out.println("Đang thêm hình ảnh vào panel");
+            if (parts.length == 2) {
+                try {
+                    byte[] imageBytes;
+                    // Giải mã dữ liệu base64 thành byte[]
+                    if (parts.length > 1 && parts[1] != null && !parts[1].isEmpty()) {
+                        imageBytes = java.util.Base64.getDecoder().decode(parts[1]);
+                    } else {
+                        throw new IllegalArgumentException("Invalid Base64 input");
+                    }
+
+                    // Tạo ImageIcon từ byte[]
+                    ImageIcon imageIcon = new ImageIcon(imageBytes);
+
+                    // Điều chỉnh kích thước hình ảnh nếu lớn hơn chiều rộng tối đa
+                    Image scaledImage = imageIcon.getImage().getScaledInstance(maxWidth, -1, Image.SCALE_SMOOTH);
+                    imageIcon = new ImageIcon(scaledImage);
+
+                    // Thêm hình ảnh vào JLabel
+                    JLabel imageLabel = new JLabel(imageIcon);
+                    imageLabel.setPreferredSize(new Dimension(maxWidth, imageIcon.getIconHeight()));
+
+                    // Đặt vị trí hình ảnh theo IO_message
+                    if (IO_message.equals("in")) {
+                        try {
+                            messagePanel.add(imageLabel, BorderLayout.WEST);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("Hình ảnh nhận");
+                    } else if (IO_message.equals("out")) {
+                        try {
+                            messagePanel.add(imageLabel, BorderLayout.EAST);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("Hình ảnh gửi");
+                    }
+                    System.out.println("Đã thêm hình ảnh nhận được vào panel");
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Dữ liệu hình ảnh không hợp lệ: ");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Lỗi xử lý khi thêm hình ảnh vào panel");
+            }
+        } else if (message.equals("")) {
+            JLabel messageLabel = new JLabel(
+                    "<html><body style='width: " + maxWidth + "px'; word-wrap: break-word;>" + message + "</body></html>");
+            messageLabel.setOpaque(true);
+            messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+            messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            // Đặt màu nền khác nhau cho tin nhắn gửi đi và nhận vào
+            if (IO_message.equals("in")) {
+                messageLabel.setBackground(color); // Màu xanh nhạt cho tin nhắn nhận   - new Color(173, 216, 230)
+                messagePanel.add(messageLabel, BorderLayout.WEST);
+            } else if (IO_message.equals("out")) {
+                messageLabel.setBackground(color); // Màu xanh lá nhạt cho tin nhắn gửi
+                messagePanel.add(messageLabel, BorderLayout.EAST);
+            } else if (IO_message.equals("said")) {
+                messageLabel.setBackground(color); // Màu xanh đâm cho thông báo
+                messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                messagePanel.add(messageLabel, BorderLayout.CENTER);
+            }
+
+            // Đặt kích thước tối đa cho tin nhắn
+            messageLabel.setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
+        } else {
+            JLabel messageLabel = new JLabel();
+            if (timeOfMes != null) {
+
+                // Tin nhắn là văn bản
+                messageLabel.setText(
+                        "<html>"
+                        + "<body style='width: " + maxWidth + "px; word-wrap: break-word;'>"
+                        + message
+                        + "<br><i><span style='font-size: 10px;'>" + timeOfMes + "</span></i>"
+                        + "</body>"
+                        + "</html>");
+                System.out.println("Thời gian: " + timeOfMes);
+                messageLabel.setOpaque(true);
+                messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+                messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            }else{
+                // Tin nhắn là văn bản
+                messageLabel.setText(
+                        "<html>"
+                        + "<body style='width: " + maxWidth + "px; word-wrap: break-word;'>"
+                        + message
+                        + "</body>"
+                        + "</html>");
+                messageLabel.setOpaque(true);
+                messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+                messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            }
+
+            // Đặt màu nền khác nhau cho tin nhắn gửi đi và nhận vào
+            if (IO_message.equals("in")) {
+                messageLabel.setBackground(color); // Màu xanh nhạt cho tin nhắn nhận   - new Color(173, 216, 230)
+                messagePanel.add(messageLabel, BorderLayout.WEST);
+            } else if (IO_message.equals("out")) {
+                messageLabel.setBackground(color); // Màu xanh lá nhạt cho tin nhắn gửi
+                messagePanel.add(messageLabel, BorderLayout.EAST);
+            } else if (IO_message.equals("said")) {
+                messageLabel.setBackground(color); // Màu xanh đâm cho thông báo
+                messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                messagePanel.add(messageLabel, BorderLayout.CENTER);
+            }
+
+            // Đặt kích thước tối đa cho tin nhắn
+            messageLabel.setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
+        }
+
+        // Thêm JPanel của tin nhắn vào chatPanel
+        panel_TinNhan.add(messagePanel);
+        panel_TinNhan.add(Box.createVerticalStrut(distance)); // Khoảng cách nhỏ giữa các tin nhắn
+        panel_TinNhan.revalidate(); // Làm mới giao diện
+        panel_TinNhan.repaint();
+
+        // Tự động cuộn xuống dòng cuối
+        SwingUtilities.invokeLater(() -> scrollPane_TinNhan.getVerticalScrollBar()
+                .setValue(scrollPane_TinNhan.getVerticalScrollBar().getMaximum()));
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
 }

@@ -56,6 +56,8 @@ public class ChatServer {
 
 			// webSocket
 			serverInfo_Socket = new ServerSocket(port); // PORT để nhận thông tin các client
+			getGroups();
+			getClient();
 
 			System.out.println("\nServer đã được khởi động, lắng nghe ở cổng: " + port + "\n");
 
@@ -87,7 +89,7 @@ public class ChatServer {
 		String result = DAO_USERS.getInstance().findByCondition(checkCondition);
 		if (result != null) {
 			System.out.println(" ! Tên: " + userName + "\n ! Password: " + password);
-			System.out.println("Có '" + userName + "' trong bảng. Với ID là: " + result);
+			System.out.println("Có '" + userName + "' trong bảng. Với ID và Họ Tên là: " + result);
 			return result;
 		} else {
 			System.out.println("Không có '" + userName + "' trong bảng");
@@ -95,24 +97,36 @@ public class ChatServer {
 		}
 	}
 
-	public void logInSuccess(ClientHandler clientHandler, String clientID) {
-		clientHandler.setClientID(clientID); // Gán ID của client đăng nhập (khi được tìm kiếm bằng tên và password
+	public boolean checkClientCreate(String userName) {
 
-		// Tạo và khởi chạy thread ClientHandler để tiếp nhận các thông điệp của client
-		// rồi xử lý
-//		new Thread(clientHandler).start();
+		if (DAO_USERS.getInstance().checkUserName(userName)) { // Trả về true thì tên người dùng bị trùng
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void logInSuccess(ClientHandler clientHandler, String ID_fullName) {
+		String[] parts = ID_fullName.split("\\#");
+		String clientID_ = parts[0];
+		String fullName_ = parts[1];
+		System.out.println("\t + ID: " + clientID_ + "\n\t + Họ tên: " + fullName_);
+		clientHandler.setClientID(clientID_); // Gán ID của client đăng nhập (khi được tìm kiếm bằng tên và password
+		clientHandler.setFullName(fullName_);
 
 		// thêm client mới kết nối vào list
 		listClientHandler.add(clientHandler);
 
 		// thêm client mới kết nối vào Jlist
-		vFC.addClient_ToJList(clientHandler.infoClient().trim());
+//		vFC.addClient_ToJList(clientHandler.infoClient().trim());
+		vFC.clientOnline(clientHandler.infoClient().trim());
 
 		// Gửi thông điệp cho biết đăng nhập thành công
-		String logInSuccess = "SUCCESS#" + clientID;
+		String logInSuccess = "SUCCESS#" + ID_fullName;
+
 		clientHandler.sendMessage(logInSuccess);
 
-		System.out.println("-Client mới kết nối: " + clientHandler.getClientName() + "(" + clientHandler.getClientID()
+		System.out.println("-Client mới kết nối: " + clientHandler.getFullName() + "(" + clientHandler.getClientID()
 				+ ") ~~~ " + clientInfo_Socket.getInetAddress().getHostAddress() + "\n");
 
 		sendInfo(clientHandler); // Gửi thông tin cho các client để cập nhật JList
@@ -120,41 +134,38 @@ public class ChatServer {
 		// Tăng số lượng client kết nối để hiển thị
 		vFC.soLuongConnect++;
 		vFC.lbl_soLuongClient.setText("Số người kết nối: " + vFC.soLuongConnect);
-	}
-
-	public void logInUnsuccess(ClientHandler clientHandler) {
-		// Gửi thông điệp đăng nhập không thành công về client
-//		new Thread(clientHandler).start(); // Xem xét có nên để không
-		clientHandler.sendMessage("UNSUCCESS");
-		System.out.println("Client " + clientHandler.getClientName() + " đăng nhập không thành công");
 	}
 
 	// Nếu là client mới đăng kí (mới tạo tài khoản) thì thêm thông tin vào bảng
 	// users
 	public void addNewCreateClient(ClientHandler clientHandler) {
+		// Gửi thông điệp đăng kí thành công về client
+		String logInSuccess = "CREATESUCCESS";
+		clientHandler.sendMessage(logInSuccess);
+
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp createTime = Timestamp.valueOf(now); // Lấy thời gian hiện tại tức lúc vừa tạo
 
 		// Thêm thông tin client vào csdl
 		USERS_model user = new USERS_model(clientHandler.getClientID(), clientHandler.getClientName(),
-				clientHandler.getPassword(), createTime);
+				clientHandler.getFullName(), clientHandler.getPassword(), createTime);
 		int result = DAO_USERS.getInstance().insert(user);
 
 		if (result == 1) {
 			System.out.println("Thêm tài khoản client mới đăng kí thành công");
-		}else {
-			System.out.println("Thêm tài khoản client mới đăng kí không thành công");
+		} else {
+			System.out.println("Thêm tài khoản client mới đăng kí KHÔNG thành công");
 		}
 
 		// thêm client mới kết nối vào list
 		listClientHandler.add(clientHandler);
 
 		// thêm client mới kết nối vào Jlist
-		vFC.addClient_ToJList(clientHandler.infoClient().trim());
+//		vFC.addClient_ToJList(clientHandler.infoClient().trim());
 
 		sendInfo(clientHandler); // Gửi thông tin cho các client để cập nhật JList
 
-		System.out.println("-Client mới kết nối: " + clientHandler.getClientName() + "(" + clientHandler.getClientID()
+		System.out.println("-Client mới kết nối: " + clientHandler.getFullName() + "(" + clientHandler.getClientID()
 				+ ") ~~~ " + clientInfo_Socket.getInetAddress().getHostAddress() + "\n");
 
 		// Tăng số lượng client kết nối để hiển thị
@@ -162,49 +173,151 @@ public class ChatServer {
 		vFC.lbl_soLuongClient.setText("Số người kết nối: " + vFC.soLuongConnect);
 	}
 
+	public void getClient(){
+		String[] partsResult = DAO_USERS.getInstance().getUsers().split("\\#");
+		for (int i = 0; i < partsResult.length; i++) {
+			System.out.println("\n-rs"+i+"- " + partsResult[i]);
+			vFC.addClient_ToJList(partsResult[i]);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void getMessageOfClient(ClientHandler clientHandler) {
+		String[] result = DAO_MES.getInstance().getInfoMessage(clientHandler.getClientID()).split("\\$");
+		for (int i = 0; i < result.length; i++) {
+			System.out.println("tin " + i + ": " + result[i]);
+			clientHandler.sendMessage("UpdateMessage#" + result[i]);
+		}
+	}
+
+	public void getGroups() {
+		String[] result = DAO_GROUPS.getInstance().getInfoGroups().split("\\$");
+		System.out.println("\nĐang lấy groups từ CSDL");
+		for (int i = 0; i < result.length; i++) {
+			String[] groupsParts = result[i].split("\\#");
+
+			String groupName = groupsParts[1].split("\\|")[0];
+			int quantity = Integer.parseInt(groupsParts[1].split("\\|")[1]);
+			System.out.println("Groups " + groupsParts[0] + ": " + groupName + "|" + quantity);
+
+			String[] clientInGroupParts = groupsParts[2].split("\\@");
+			List<String> clientInGroup = new ArrayList<>();
+			for (int j = 0; j < clientInGroupParts.length; j++) {
+				System.out.println("client trong group: " + clientInGroupParts[j]);
+				clientInGroup.add(clientInGroupParts[j].trim());
+			}
+			updateGroup(groupName, quantity, clientInGroup);
+		}
+	}
+
+	public void updateGroup(String groupName, int quantityInGroup, List<String> clientsInGroup) {
+		System.out.println("Kiểm tra:" + groupName + "|" + quantityInGroup);
+		System.out.println("Đang thêm nhóm mới tạo vào hashmap groups: " + groupName);
+		System.out.println("Danh sách client trong nhóm: " + clientsInGroup);
+
+		// Thêm tên group được tạo với danh sách client vào hashMap groups
+		listGroups.put(groupName, clientsInGroup);
+		System.out.println("Nhóm đã được cập nhật: " + groupName);
+
+		// Thêm thông tin nhóm mới vào JList
+		vFC.addGroup_ToJList(groupName, quantityInGroup);
+//		notifyGroupCreation(groupName, quantityInGroup, clientsInGroup);
+	}
+
+	public void updateGroupForClient(ClientHandler clientHandler) {
+		List<String> groups = new ArrayList<>(getGroupsForClient(clientHandler.infoClient()));
+		System.out.println("Các groups có '" + clientHandler.infoClient() + "' là thành viên: " + groups);
+		for (String groupName : groups) {
+			int quantity = 0;
+			for (String client : getClientsInGroup(groupName)) {
+				quantity++;
+			}
+			String notification = "UpdateGroup#" + groupName + "#" + quantity + "#"
+					+ String.join(" ++ ", getClientsInGroup(groupName));
+			System.out.println("\n" + notification);
+			clientHandler.sendMessage(notification);
+		}
+	}
+
 	// Gửi tin nhắn từ client tới client
-	public void broadcastMessage(ClientHandler clientSend, ClientHandler clientReceive, String message) {
-		clientReceive
-				.sendMessage("[" + clientSend.getClientName() + "(" + clientSend.getClientID() + ")] - " + message);
-		System.out.println("*ĐÃ GỬI* ! [" + clientSend.getClientName() + "(" + clientSend.getClientID() + ")] - " + message);
-		
+	public void broadcastMessage(ClientHandler clientSend, ClientHandler clientReceive, String message,
+			String imageORmessage) {
+		if (imageORmessage == "image") {
+			String messageImage = "IMAGE#[" + clientSend.getFullName() + "(" + clientSend.getClientID()
+					+ ")] - <html><body><b><i>hình ảnh</i></b></body></html>#" + message;
+			clientReceive.sendMessage(messageImage);
+			System.out.println("*ĐÃ GỬI* ! [" + clientSend.getFullName() + "(" + clientSend.getClientID() + ")] - \n"
+					+ messageImage);
+		} else {
+			clientReceive
+					.sendMessage("[" + clientSend.getFullName() + "(" + clientSend.getClientID() + ")] - " + message);
+			System.out.println(
+					"*ĐÃ GỬI* ! [" + clientSend.getFullName() + "(" + clientSend.getClientID() + ")] - " + message);
+		}
+
 		// Thêm thông tin tin nhắn vào bảng mes
 		String senderID = clientSend.getClientID();
 		String receiverID = clientReceive.getClientID();
-		
+
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp timeReceive = Timestamp.valueOf(now); // lấy thời gian hiện tại
-		
+
+		if (imageORmessage == "image") {
+			message = "*hình ảnh*";
+		}
 		MES_model mes = new MES_model(senderID, receiverID, null, message, timeReceive);
 		int result = DAO_MES.getInstance().insert(mes);
+		if (result == 1) {
+			System.out.println("Thêm thông tin tin nhắn vào bảng mes thành công");
+		} else {
+			System.out.println("Thêm thông tin tin nhắn vào bảng mes không thành công");
+		}
+
 	}
-	
+
 	// Gửi tin nhắn từ client trong group
-	public void broadcastMessageToGroup(ClientHandler clientSend, String groupName, String message) {
-		List<String> clientsInGroup = getClientsInGroup(groupName);
+	public void broadcastMessageToGroup(ClientHandler clientSend, String groupName, String message,
+			String imageORmessage) {
+		List<String> clientsInGroup = getClientsInGroup(groupName); // Lấy danh sách client theo tên group trong hashmap
 		System.out.println("client gửi tin: " + clientSend.infoClient());
+
 		for (String client : clientsInGroup) {
 			System.out.println("Gửi tới client: " + client);
 			if (!client.trim().equals(clientSend.infoClient().trim())) {
-				// [ten nhom {tenclient(123)}] - mes
-				getClientByInfo(client).sendMessage("[" + groupName + " {" + clientSend.getClientName() + "("+ clientSend.getClientID() + ")}] - " + message);
+				if (imageORmessage == "image") {
+					String messageImage = "IMAGE#[" + groupName + " {" + clientSend.getFullName() + "("
+							+ clientSend.getClientID() + ")}] - <html><body><b><i>hình ảnh</i></b></body></html>#"
+							+ message;
+					getClientByInfo(client).sendMessage(messageImage);
+				} else {
+					// [ten nhom {tenclient(123)}] - mes
+					getClientByInfo(client).sendMessage("[" + groupName + " {" + clientSend.getFullName() + "("
+							+ clientSend.getClientID() + ")}] - " + message);
+				}
 			}
 		}
-		
+
 		// Thêm thông tin tin nhắn vào bảng mes
 		String senderID = clientSend.getClientID();
-		
+
 		String condition = groupName;
 		String groupID = DAO_GROUPS.getInstance().findByCondition(condition); // Lấy ID của group
-		
+
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp timeReceive = Timestamp.valueOf(now); // lấy thời gian hiện tại
-		
+
+		if (imageORmessage == "image") {
+			message = "*hình ảnh*";
+		}
 		MES_model mes = new MES_model(senderID, null, groupID, message, timeReceive);
 		int result = DAO_MES.getInstance().insert(mes);
-		if(result == 1) {
+		if (result == 1) {
 			System.out.println("Thêm thông tin tin nhắn vào bảng mes thành công");
-		}else {
+		} else {
 			System.out.println("Thêm thông tin tin nhắn vào bảng mes không thành công");
 		}
 	}
@@ -225,8 +338,6 @@ public class ChatServer {
 			}
 		}
 	}
-	
-	
 
 	public void sendInfo(ClientHandler clientHandler) {
 		// Gửi thông tin của tất cả client đã kết nối tới client mới để cập nhật lên
@@ -234,7 +345,9 @@ public class ChatServer {
 		for (ClientHandler existingClient : listClientHandler) {
 			if (existingClient != clientHandler) { // Chỉ gửi clients hiện có không gửi lại chính client vừa kết nối
 				clientHandler.sendMessage(
-						"InfoClients#" + existingClient.getClientID() + "|" + existingClient.getClientName());
+						"InfoClients#" + existingClient.getClientID() + "|" + existingClient.getFullName());
+				System.out.println(
+						" -> InfoClients#" + existingClient.getClientID() + "|" + existingClient.getFullName());
 			}
 		}
 
@@ -242,7 +355,9 @@ public class ChatServer {
 		// Jlist
 		for (ClientHandler client : listClientHandler) {
 			if (client != clientHandler) { // Không gửi lại thông tin cho client vừa kết nối
-				client.sendMessage("InfoClients#" + clientHandler.getClientID() + "|" + clientHandler.getClientName());
+				client.sendMessage("InfoClients#" + clientHandler.getClientID() + "|" + clientHandler.getFullName());
+				System.out
+						.println(" ->> InfoClients#" + clientHandler.getClientID() + "|" + clientHandler.getFullName());
 			}
 		}
 	}
@@ -257,12 +372,6 @@ public class ChatServer {
 		listGroups.put(groupName, clientsInGroup);
 		System.out.println("Nhóm mới đã được tạo: " + groupName);
 
-//		String groupID = "0" + (vFC.list_GroupName.getLastVisibleIndex() + 1) + ""; // Tạo ID cho nhóm: 01; 02
-//		System.out.println("ID nhóm: " + groupID);
-//		String groupID = DAO_GROUPS.getInstance().getIDGroup();  // Lấy ID group trước đó
-//		groupID = (Integer.parseInt(groupID)+1)+"";
-//		System.out.println("ID của group vừa tạo: "+groupID);
-
 		// Thêm thông tin group vào csdl
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp createTime = Timestamp.valueOf(now); // lấy thời gian hiện tại
@@ -271,7 +380,7 @@ public class ChatServer {
 		int result = DAO_GROUPS.getInstance().insert(group);
 		if (result == 1) {
 			System.out.println("Thêm thông tin vào bảng groups thành công");
-		}else {
+		} else {
 			System.out.println("Thêm thông tin vào bảng groups không thành công");
 		}
 
@@ -287,12 +396,27 @@ public class ChatServer {
 		return listGroups.getOrDefault(groupName, Collections.emptyList());
 	}
 
+	public List<String> getGroupsForClient(String infoClient) {
+		List<String> groups = new ArrayList<>();
+
+		for (Map.Entry<String, List<String>> entry : listGroups.entrySet()) {
+			String groupName = entry.getKey();
+			List<String> clients = entry.getValue();
+
+			if (clients.contains(infoClient)) {
+				groups.add(groupName);
+			}
+		}
+
+		return groups;
+	}
+
 	public ClientHandler getClientByInfo(String infoClient) {
 		String[] parts = infoClient.split("\\|");
 
 		for (ClientHandler client : listClientHandler) { // Duyệt trong listClientHandler
-			if (client.getClientID().equals(parts[0].trim()) && client.getClientName().equals(parts[1].trim())) {
-				
+			if (client.getClientID().equals(parts[0].trim()) && client.getFullName().equals(parts[1].trim())) {
+
 				return client;
 			}
 		}
@@ -310,12 +434,13 @@ public class ChatServer {
 		String groupID = DAO_GROUPS.getInstance().findByCondition(condition); // Lấy ID của group
 		int memberID = 0;
 		for (String client : groupClients) {
-			//Gửi thông điệp tạo nhóm đến các client trong nhóm được tạo
+			// Gửi thông điệp tạo nhóm đến các client trong nhóm được tạo
 			getClientByInfo(client).sendMessage(notification);
 			System.out.println("\tĐã gửi -> " + getClientByInfo(client).infoClient());
-			
+
 			// Thêm các thành viên của nhóm vào csdl
 			String userID = getClientByInfo(client).getClientID();
+
 			memberID++;
 			String groupMemberID = null;
 			if (memberID < 10) {
@@ -326,15 +451,13 @@ public class ChatServer {
 
 			GROUPMEMBERS_model member = new GROUPMEMBERS_model(groupMemberID, groupID, userID);
 			int result = DAO_GROUPMEMBERS.getInstance().insert(member);
-			if(result ==1) {
+			if (result == 1) {
 				System.out.println("Thêm thông tin vào bảng GROUPMEMBERS thành công");
-			}else {
+			} else {
 				System.out.println("Thêm thông tin vào bảng GROUPMEMBERS không thành công");
 			}
 		}
 	}
-
-	
 
 //	    String notification = "AddedToGroup#" + groupName + "#"+getClientsInGroup(groupName);
 //	    for (ClientHandler clientHandler : groupClients) {

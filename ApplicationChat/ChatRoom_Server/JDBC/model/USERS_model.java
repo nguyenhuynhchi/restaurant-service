@@ -5,13 +5,15 @@ import java.sql.Timestamp;
 public class USERS_model {
 	private String userID;
 	private String userName;
+	private String fullName;
 	private String password;
 	private Timestamp createTime;
 
-	public USERS_model(String userID, String userName, String password, Timestamp createTime) {
+	public USERS_model(String userID, String userName, String fullName, String password, Timestamp createTime) {
 		super();
 		this.userID = userID;
 		this.userName = userName;
+		this.fullName = fullName;
 		this.password = password;
 		this.createTime = createTime;
 	}
@@ -48,4 +50,13 @@ public class USERS_model {
 		this.createTime = createTime;
 	}
 
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	
 }

@@ -24,7 +24,8 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO USERS (userID, userName, password, createTime)" + "VALUES (?, ?, ?, ?)";
+				String sql = "INSERT INTO USERS (userID, userName, fullName, password, createTime)"
+						+ "VALUES (?, ?, ?, ?, ?)";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -32,8 +33,9 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 				// Thiết lập các giá trị cho PreparedStatement
 				pstmt.setString(1, t.getUserID());
 				pstmt.setString(2, t.getUserName());
-				pstmt.setString(3, t.getPassword());
-				pstmt.setTimestamp(4, t.getCreateTime());
+				pstmt.setString(3, t.getFullName());
+				pstmt.setString(4, t.getPassword());
+				pstmt.setTimestamp(5, t.getCreateTime());
 
 				// thực thi lệnh SQL
 				int affectedRows = pstmt.executeUpdate();
@@ -101,7 +103,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT userID from USERS  WHERE userName = ?  AND  password = ? LIMIT 1";
+				String sql = "SELECT userID, fullName from USERS  WHERE userName = ?  AND  password = ? LIMIT 1";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -117,7 +119,9 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 				try {
 					if (result.next()) {
 						System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
-						rs = result.getString("userID");
+						String ID = result.getString("userID");
+						String fullName = result.getString("fullName");
+						rs = ID + "#" + fullName;
 						System.out.println("ID của client đó: " + rs);
 					} else {
 						System.out.println("Không có kết quả truy vấn");
@@ -141,4 +145,143 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 		return rs;
 	}
 
+	public String findName(String condition) {
+		String rs = null;
+		// Tạo kết nối đến csdl
+		try {
+			Connection conn = JDBC_Util.getConnection();
+
+			if (conn != null) {
+
+				// Thực thi lệnh sql
+				String sql = "SELECT userName from USERS  WHERE userID = ? LIMIT 1";
+
+				// Tạo đối tượng PreparedStatement
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+
+				// Thiết lập các giá trị cho PreparedStatement
+				pstmt.setString(1, condition);
+
+				// thực thi lệnh SQL
+				ResultSet result = pstmt.executeQuery();
+
+				// Kiểm tra xem có có kết quả truy vấn không
+				try {
+					if (result.next()) {
+						System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
+						rs = result.getString("userName");
+						System.out.println("Tên của '" + condition + "' đó: " + rs);
+					} else {
+						System.out.println("Không có kết quả truy vấn");
+					}
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("Lỗi khi truy vấn");
+				}
+
+				// Ngắt kết nối
+				JDBC_Util.closeConnection(conn);
+			} else {
+				System.out.println("Kết nối không thành công.");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("SQL Error: " + e.getMessage());
+		}
+		return rs;
+	}
+
+	public boolean checkUserName(String condition) {
+		boolean rs = true;
+		// Tạo kết nối đến csdl
+		try {
+			Connection conn = JDBC_Util.getConnection();
+
+			if (conn != null) {
+
+				// Thực thi lệnh sql
+				String sql = "SELECT * from USERS  WHERE userName = '" + condition + "' LIMIT 1";
+
+				// Tạo đối tượng PreparedStatement
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+
+				// thực thi lệnh SQL
+				ResultSet result = pstmt.executeQuery();
+
+				// Kiểm tra xem có có kết quả truy vấn không
+				try {
+					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
+					if (result.next()) {
+						String userName = result.getString("userName");
+						System.out.println("Tên người dùng bị trùng: " + userName);
+					} else {
+						System.out.println("Không có kết quả truy vấn");
+						rs = false;
+					}
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("Lỗi khi truy vấn");
+				}
+
+				// Ngắt kết nối
+				JDBC_Util.closeConnection(conn);
+			} else {
+				System.out.println("Kết nối không thành công.");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("SQL Error: " + e.getMessage());
+		}
+		return rs;
+	}
+
+	public String getUsers() {
+		String rs = "";
+		// Tạo kết nối đến csdl
+		try {
+			Connection conn = JDBC_Util.getConnection();
+
+			if (conn != null) {
+
+				// Thực thi lệnh sql
+				String sql = "SELECT * from USERS";
+
+				// Tạo đối tượng PreparedStatement
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+
+				// thực thi lệnh SQL
+				ResultSet result = pstmt.executeQuery();
+
+				// Kiểm tra xem có có kết quả truy vấn không
+				try {
+					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
+					while (result.next()) {
+						String userID = result.getString("userID");
+						String fullName = result.getString("fullName");
+//						System.out.println("\t -- " + userID + "|" + fullName);
+						rs += userID + "|" + fullName+"#";
+					}
+					System.out.println("**"+rs);
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("Lỗi khi truy vấn");
+				}
+
+				// Ngắt kết nối
+				JDBC_Util.closeConnection(conn);
+			} else {
+				System.out.println("Kết nối không thành công.");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("SQL Error: " + e.getMessage());
+		}
+		return rs;
+	}
 }

@@ -1,7 +1,6 @@
 package View;
 
 import Controller.Controller_frmUserAccess;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -17,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JPasswordField;
+import javax.swing.ImageIcon;
 
 public class V_FrmUserAccess extends JFrame {
 
@@ -24,19 +25,20 @@ public class V_FrmUserAccess extends JFrame {
     private static V_FrmUserAccess instance;
     private JPanel contentPane;
     public JTextField tf_tenDN;
-    public JTextField tf_password;
     public JTextField tf_tenDN_DK;
-    public JTextField tf_password_DK;
-    public JTextField tf_autPassword_DK;
     public JPanel panel_dangKy;
     public JPanel panel_dangNhap;
     public JButton btn_OK;
     public String userName;
     public JTextField tf_port_DK;
     public JTextField tf_port;
-    
+
     public boolean connect = false;
     public boolean newCreate = false;
+    public JPasswordField tf_password;
+    public JPasswordField tf_password_DK;
+    public JPasswordField tf_autPassword_DK;
+    public JTextField tf_hoTen_DK;
 
     /**
      * Launch the application.
@@ -53,14 +55,13 @@ public class V_FrmUserAccess extends JFrame {
 //            }
 //        });
 //    }
-    
     public static synchronized V_FrmUserAccess getInstance(V_FrmChat_Client vFC) {
         if (instance == null) {
             instance = new V_FrmUserAccess(vFC);
         }
         return instance;
     }
-    
+
     /**
      * Create the frame.
      */
@@ -76,7 +77,7 @@ public class V_FrmUserAccess extends JFrame {
         ActionListener ac = new Controller_frmUserAccess(this, vFC);
 
         setTitle("Chào!! Đăng nhập/Đăng ký");
-        setBounds(100, 100, 500, 300);
+        setBounds(100, 100, 500, 327);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -85,8 +86,115 @@ public class V_FrmUserAccess extends JFrame {
 
         panel_dangKy = new JPanel();
         panel_dangKy.setLayout(null);
-        panel_dangKy.setBounds(0, 0, 486, 263);
+        panel_dangKy.setBounds(0, 0, 486, 294);
         panel_dangKy.setVisible(false);
+        contentPane.add(panel_dangKy);
+
+        JLabel lbl_tenDN_DK = new JLabel("Tên đăng nhập:");
+        lbl_tenDN_DK.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl_tenDN_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lbl_tenDN_DK.setBounds(66, 83, 120, 20);
+        panel_dangKy.add(lbl_tenDN_DK);
+
+        JLabel lbl_password_DK = new JLabel("Mật khẩu:");
+        lbl_password_DK.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl_password_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lbl_password_DK.setBounds(109, 161, 76, 20);
+        panel_dangKy.add(lbl_password_DK);
+
+        tf_tenDN_DK = new JTextField();
+        tf_tenDN_DK.setToolTipText("Tên đăng nhập không chứa khoảng trắng hay kí tự đặc biệt");
+        tf_tenDN_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
+        tf_tenDN_DK.setColumns(10);
+        tf_tenDN_DK.setBounds(187, 80, 210, 30);
+        tf_tenDN_DK.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf_tenDN_DK.getText().length() >= 30) {
+                    e.consume(); // Ngăn không cho nhập thêm ký tự
+                }
+            }
+        });
+        panel_dangKy.add(tf_tenDN_DK);
+
+        JButton btn_tao = new JButton("Tạo");
+        btn_tao.setFont(new Font("Tahoma", Font.BOLD, 15));
+        btn_tao.setBounds(136, 246, 83, 27);
+        btn_tao.setActionCommand("tạo");
+        btn_tao.addActionListener(ac);
+        panel_dangKy.add(btn_tao);
+
+        JButton btn_quayLai = new JButton("Quay lại");
+        btn_quayLai.setFont(new Font("Tahoma", Font.BOLD, 15));
+        btn_quayLai.setBounds(240, 246, 100, 27);
+        btn_quayLai.setActionCommand("quay lại");
+        btn_quayLai.addActionListener(ac);
+        panel_dangKy.add(btn_quayLai);
+
+        JLabel lbl_dangKy = new JLabel("Đăng ký");
+        lbl_dangKy.setHorizontalAlignment(SwingConstants.CENTER);
+        lbl_dangKy.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lbl_dangKy.setBounds(193, 10, 100, 30);
+        panel_dangKy.add(lbl_dangKy);
+
+        JLabel lbl_autPassword_DK = new JLabel("Xác nhận mật khẩu:");
+        lbl_autPassword_DK.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl_autPassword_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lbl_autPassword_DK.setBounds(30, 200, 160, 20);
+        panel_dangKy.add(lbl_autPassword_DK);
+
+        JLabel lbl_nhapCong = new JLabel("Số cổng:");
+        lbl_nhapCong.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl_nhapCong.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lbl_nhapCong.setBounds(120, 48, 66, 20);
+        panel_dangKy.add(lbl_nhapCong);
+
+        tf_port_DK = new JTextField("");
+        tf_port_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
+        tf_port_DK.setColumns(10);
+        tf_port_DK.setBounds(187, 45, 106, 30);
+        panel_dangKy.add(tf_port_DK);
+
+        tf_password_DK = new JPasswordField();
+        tf_password_DK.setToolTipText("Mật khẩu phải có tối thiểu 6 ký tự trở lên");
+        tf_password_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
+        tf_password_DK.setEchoChar('?');
+        tf_password_DK.setBounds(187, 159, 210, 30);
+        tf_password_DK.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf_password_DK.getText().length() >= 50) {
+                    e.consume(); // Ngăn không cho nhập thêm ký tự
+                }
+            }
+        });
+        panel_dangKy.add(tf_password_DK);
+
+        tf_autPassword_DK = new JPasswordField();
+        tf_autPassword_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
+        tf_autPassword_DK.setEchoChar('?');
+        tf_autPassword_DK.setBounds(187, 198, 210, 30);
+        tf_autPassword_DK.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf_autPassword_DK.getText().length() >= 50) {
+                    e.consume(); // Ngăn không cho nhập thêm ký tự
+                }
+            }
+        });
+        panel_dangKy.add(tf_autPassword_DK);
+
+        JLabel lbl_hoTen_DK = new JLabel("Họ tên:");
+        lbl_hoTen_DK.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl_hoTen_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
+        lbl_hoTen_DK.setBounds(66, 122, 120, 20);
+        panel_dangKy.add(lbl_hoTen_DK);
+
+        tf_hoTen_DK = new JTextField();
+        tf_hoTen_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
+        tf_hoTen_DK.setColumns(10);
+        tf_hoTen_DK.setBounds(187, 119, 210, 30);
+        panel_dangKy.add(tf_hoTen_DK);
 
         panel_dangNhap = new JPanel();
         panel_dangNhap.setBounds(0, 0, 486, 263);
@@ -100,7 +208,7 @@ public class V_FrmUserAccess extends JFrame {
         panel_dangNhap.add(lbl_tenDN);
 
         JLabel lbl_password = new JLabel("Mật khẩu:");
-        lbl_password.setBounds(110, 123, 76, 20);
+        lbl_password.setBounds(109, 128, 76, 20);
         lbl_password.setHorizontalAlignment(SwingConstants.RIGHT);
         lbl_password.setFont(new Font("Tahoma", Font.BOLD, 15));
         panel_dangNhap.add(lbl_password);
@@ -119,20 +227,6 @@ public class V_FrmUserAccess extends JFrame {
         });
         // vFC.userName = tf_tenDN.getText();
         panel_dangNhap.add(tf_tenDN);
-
-        tf_password = new JTextField();
-        tf_password.setBounds(190, 120, 210, 30);
-        tf_password.setFont(new Font("Tahoma", Font.BOLD, 12));
-        tf_password.setColumns(10);
-        tf_password.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (tf_password.getText().length() >= 50) {
-                    e.consume(); // Ngăn không cho nhập thêm ký tự
-                }
-            }
-        });
-        panel_dangNhap.add(tf_password);
 
         btn_OK = new JButton("OK");
         btn_OK.setBounds(81, 184, 55, 27);
@@ -173,98 +267,20 @@ public class V_FrmUserAccess extends JFrame {
         tf_port.setColumns(10);
         tf_port.setBounds(190, 50, 106, 30);
         panel_dangNhap.add(tf_port);
-        contentPane.add(panel_dangKy);
 
-        JLabel lbl_tenDN_DK = new JLabel("Tên đăng nhập:");
-        lbl_tenDN_DK.setHorizontalAlignment(SwingConstants.RIGHT);
-        lbl_tenDN_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
-        lbl_tenDN_DK.setBounds(66, 83, 120, 20);
-        panel_dangKy.add(lbl_tenDN_DK);
-
-        JLabel lbl_password_DK = new JLabel("Mật khẩu:");
-        lbl_password_DK.setHorizontalAlignment(SwingConstants.RIGHT);
-        lbl_password_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
-        lbl_password_DK.setBounds(109, 120, 76, 20);
-        panel_dangKy.add(lbl_password_DK);
-
-        tf_tenDN_DK = new JTextField();
-        tf_tenDN_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
-        tf_tenDN_DK.setColumns(10);
-        tf_tenDN_DK.setBounds(187, 80, 210, 30);
-        tf_tenDN_DK.addKeyListener(new KeyAdapter() {
+        tf_password = new JPasswordField();
+        tf_password.setEchoChar('?');
+        tf_password.setBounds(190, 126, 210, 30);
+        tf_password.setFont(new Font("Tahoma", Font.BOLD, 15));
+        tf_password.setColumns(10);
+        tf_password.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (tf_tenDN_DK.getText().length() >= 30) {
+                if (tf_password.getText().length() >= 50) {
                     e.consume(); // Ngăn không cho nhập thêm ký tự
                 }
             }
         });
-        panel_dangKy.add(tf_tenDN_DK);
-
-        tf_password_DK = new JTextField();
-        tf_password_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
-        tf_password_DK.setColumns(10);
-        tf_password_DK.setBounds(187, 117, 210, 30);
-        tf_password_DK.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (tf_password_DK.getText().length() >= 50) {
-                    e.consume(); // Ngăn không cho nhập thêm ký tự
-                }
-            }
-        });
-        panel_dangKy.add(tf_password_DK);
-
-        JButton btn_tao = new JButton("Tạo");
-        btn_tao.setFont(new Font("Tahoma", Font.BOLD, 15));
-        btn_tao.setBounds(140, 215, 83, 27);
-        btn_tao.setActionCommand("tạo");
-        btn_tao.addActionListener(ac);
-        panel_dangKy.add(btn_tao);
-
-        JButton btn_quayLai = new JButton("Quay lại");
-        btn_quayLai.setFont(new Font("Tahoma", Font.BOLD, 15));
-        btn_quayLai.setBounds(244, 215, 100, 27);
-        btn_quayLai.setActionCommand("quay lại");
-        btn_quayLai.addActionListener(ac);
-        panel_dangKy.add(btn_quayLai);
-
-        JLabel lbl_dangKy = new JLabel("Đăng ký");
-        lbl_dangKy.setHorizontalAlignment(SwingConstants.CENTER);
-        lbl_dangKy.setFont(new Font("Tahoma", Font.BOLD, 20));
-        lbl_dangKy.setBounds(193, 10, 100, 30);
-        panel_dangKy.add(lbl_dangKy);
-
-        JLabel lbl_autPassword_DK = new JLabel("Xác nhận mật khẩu:");
-        lbl_autPassword_DK.setHorizontalAlignment(SwingConstants.RIGHT);
-        lbl_autPassword_DK.setFont(new Font("Tahoma", Font.BOLD, 15));
-        lbl_autPassword_DK.setBounds(30, 159, 160, 20);
-        panel_dangKy.add(lbl_autPassword_DK);
-
-        tf_autPassword_DK = new JTextField();
-        tf_autPassword_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
-        tf_autPassword_DK.setColumns(10);
-        tf_autPassword_DK.setBounds(187, 153, 210, 30);
-        tf_autPassword_DK.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (tf_autPassword_DK.getText().length() >= 50) {
-                    e.consume(); // Ngăn không cho nhập thêm ký tự
-                }
-            }
-        });
-        panel_dangKy.add(tf_autPassword_DK);
-
-        JLabel lbl_nhapCong = new JLabel("Số cổng:");
-        lbl_nhapCong.setHorizontalAlignment(SwingConstants.RIGHT);
-        lbl_nhapCong.setFont(new Font("Tahoma", Font.BOLD, 15));
-        lbl_nhapCong.setBounds(120, 48, 66, 20);
-        panel_dangKy.add(lbl_nhapCong);
-
-        tf_port_DK = new JTextField("");
-        tf_port_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
-        tf_port_DK.setColumns(10);
-        tf_port_DK.setBounds(187, 45, 106, 30);
-        panel_dangKy.add(tf_port_DK);
+        panel_dangNhap.add(tf_password);
     }
 }
