@@ -119,13 +119,22 @@ public class ChatServer {
 
 		// thêm client mới kết nối vào Jlist
 //		vFC.addClient_ToJList(clientHandler.infoClient().trim());
-		vFC.clientOnline(clientHandler.infoClient().trim());
 
 		// Gửi thông điệp cho biết đăng nhập thành công
 		String logInSuccess = "SUCCESS#" + ID_fullName;
 
 		clientHandler.sendMessage(logInSuccess);
-
+		
+		LocalDateTime now = LocalDateTime.now();
+		Timestamp loginTime = Timestamp.valueOf(now);
+		USERS_model user = new USERS_model(clientHandler.getClientID(), null, null, null, null, "connect", loginTime, null);
+		int result = DAO_USERS.getInstance().updateLastTimeLogin(user);
+		
+		if (result == 1) {
+			System.out.println("Cập nhật trạng thái và thời gian connect thành công");
+		} else {
+			System.out.println("Cập nhật trạng thái và thời gian connect không thành công");
+		}
 		System.out.println("-Client mới kết nối: " + clientHandler.getFullName() + "(" + clientHandler.getClientID()
 				+ ") ~~~ " + clientInfo_Socket.getInetAddress().getHostAddress() + "\n");
 
@@ -134,6 +143,7 @@ public class ChatServer {
 		// Tăng số lượng client kết nối để hiển thị
 		vFC.soLuongConnect++;
 		vFC.lbl_soLuongClient.setText("Số người kết nối: " + vFC.soLuongConnect);
+		vFC.clientOnline(clientHandler.infoClient().trim());
 	}
 
 	// Nếu là client mới đăng kí (mới tạo tài khoản) thì thêm thông tin vào bảng
@@ -148,7 +158,7 @@ public class ChatServer {
 
 		// Thêm thông tin client vào csdl
 		USERS_model user = new USERS_model(clientHandler.getClientID(), clientHandler.getClientName(),
-				clientHandler.getFullName(), clientHandler.getPassword(), createTime);
+				clientHandler.getFullName(), clientHandler.getPassword(), createTime, "connect", createTime, null);
 		int result = DAO_USERS.getInstance().insert(user);
 
 		if (result == 1) {
@@ -161,7 +171,7 @@ public class ChatServer {
 		listClientHandler.add(clientHandler);
 
 		// thêm client mới kết nối vào Jlist
-//		vFC.addClient_ToJList(clientHandler.infoClient().trim());
+		vFC.addClient_ToJList(clientHandler.infoClient().trim());
 
 		sendInfo(clientHandler); // Gửi thông tin cho các client để cập nhật JList
 
@@ -171,10 +181,11 @@ public class ChatServer {
 		// Tăng số lượng client kết nối để hiển thị
 		vFC.soLuongConnect++;
 		vFC.lbl_soLuongClient.setText("Số người kết nối: " + vFC.soLuongConnect);
+		vFC.clientOnline(clientHandler.infoClient().trim());
 	}
 
 	public void getClient(){
-		String[] partsResult = DAO_USERS.getInstance().getUsers().split("\\#");
+		String[] partsResult = DAO_USERS.getInstance().getUsersUpdateList().split("\\#");
 		for (int i = 0; i < partsResult.length; i++) {
 			System.out.println("\n-rs"+i+"- " + partsResult[i]);
 			vFC.addClient_ToJList(partsResult[i]);
@@ -323,8 +334,20 @@ public class ChatServer {
 	}
 
 	public void removeClient(ClientHandler clientDisconnect) {
+		
+		LocalDateTime now = LocalDateTime.now();
+		Timestamp disConnectTime = Timestamp.valueOf(now);
+		USERS_model user = new USERS_model(clientDisconnect.getClientID(), null, null, null, null, "no connect", null, disConnectTime);
+		int result = DAO_USERS.getInstance().updateLastTimeDisconnect(user);
+		if (result == 1) {
+			System.out.println("Cập nhật trạng thái và thời gian disconnect thành công");
+		} else {
+			System.out.println("Cập nhật trạng thái và thời gian disconnect không thành công");
+		}
+
 		listClientHandler.remove(clientDisconnect);
-		vFC.removeClientFromList(clientDisconnect.infoClient().trim()); // Xóa client khỏi Jlist
+		vFC.clientOffline(clientDisconnect.infoClient());
+//		vFC.removeClientFromList(clientDisconnect.infoClient().trim()); // Xóa client khỏi Jlist
 	}
 
 	// Gửi thông điệp ngắt kết nối đến client khác để xóa client ngắt kết nối khỏi

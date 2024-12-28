@@ -418,15 +418,15 @@ public class V_FrmChat_Client extends JFrame {
         btn_Nhom.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
         btn_Nhom.setActionCommand("Nhóm");
         btn_Nhom.addActionListener(ac);
-        
-                JButton btn_Clients = new JButton("Clients");
-                btn_Clients.setIcon(new ImageIcon(V_FrmChat_Client.class.getResource("/Images/client.png")));
-                btn_Clients.setFont(new Font("Arial", Font.BOLD, 15));
-                btn_Clients.setBounds(0, 0, 145, 35);
-                btn_Clients.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-                btn_Clients.setActionCommand("Clients");
-                btn_Clients.addActionListener(ac);
-                panel_Client_Nhom.add(btn_Clients);
+
+        JButton btn_Clients = new JButton("Clients");
+        btn_Clients.setIcon(new ImageIcon(V_FrmChat_Client.class.getResource("/Images/client.png")));
+        btn_Clients.setFont(new Font("Arial", Font.BOLD, 15));
+        btn_Clients.setBounds(0, 0, 145, 35);
+        btn_Clients.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+        btn_Clients.setActionCommand("Clients");
+        btn_Clients.addActionListener(ac);
+        panel_Client_Nhom.add(btn_Clients);
         panel_Client_Nhom.add(btn_Nhom);
 
         panel_ThongBaoKetNoi = new JPanel();
@@ -658,7 +658,7 @@ public class V_FrmChat_Client extends JFrame {
                 messageLabel.setOpaque(true);
                 messageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
                 messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            }else{
+            } else {
                 // Tin nhắn là văn bản
                 messageLabel.setText(
                         "<html>"

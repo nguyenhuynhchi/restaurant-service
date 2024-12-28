@@ -129,7 +129,8 @@ public class ClientHandler implements Runnable {
 				else if (message.startsWith("DISCONNECT#")) { // Client vừa disconnect gửi thông báo
 
 					System.out.println("'" + this.infoClient() + "' đã tự ngắt kết nối.");
-//					handleClientDisconnect();
+					handleClientDisconnect();
+					break;
 				}
 
 				else if (message.startsWith("MessageOfClient#")) { // Tin nhắn client -> client
@@ -185,6 +186,7 @@ public class ClientHandler implements Runnable {
 		} catch (SocketException e) {
 //			System.out.println(clientID + "|" + clientName +"vừa ngắt kết nối");
 			System.err.println("Lỗi socket ClientHandler: " + e);
+			e.printStackTrace();
 		} catch (Exception e) {
 			System.err.println("Lỗi ClientHandler: " + e);
 		}
@@ -203,7 +205,6 @@ public class ClientHandler implements Runnable {
 		try {
 			// Xóa client khỏi danh sách server
 			chatServer.broadcastDisconnect(this.infoClient());
-			chatServer.removeClient(this);
 			chatServer.updateQuantityConnect();
 			// Đóng socket và streams
 			if (socket != null)
@@ -212,7 +213,8 @@ public class ClientHandler implements Runnable {
 				input.close();
 			if (output != null)
 				output.close();
-			System.out.println("Đã xóa client " + this.infoClient() + " khỏi server.");
+			System.out.println(" -- X -- Đã xóa client " + this.infoClient() + " khỏi server.");
+			chatServer.removeClient(this);
 		} catch (IOException e) {
 			System.err.println("Lỗi khi đóng kết nối: " + e.getMessage());
 		}

@@ -1,9 +1,8 @@
 package View;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
-import javax.swing.*;
-import java.awt.*;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -11,12 +10,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,12 +27,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import Controller.ControllerFormChat_Server;
-import javax.swing.ImageIcon;
+import dataAccessObject.DAO_USERS;
 
 public class V_FrmChat_Server extends JFrame {
 
@@ -141,6 +144,48 @@ public class V_FrmChat_Server extends JFrame {
 		panel.setBackground(new Color(128, 128, 128));
 		panel.setBounds(0, 0, 1190, 740);
 		panel_Chinh.add(panel);
+		panel.setLayout(null);
+
+		JPanel panel_infoClient = new JPanel();
+		panel_infoClient.setBounds(0, 0, 595, 654);
+		panel_infoClient.setVisible(false);
+		panel.add(panel_infoClient);
+		panel_infoClient.setLayout(null);
+
+		JLabel lbl_ID = new JLabel("ID: ");
+		lbl_ID.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lbl_ID.setBounds(30, 100, 410, 30);
+		panel_infoClient.add(lbl_ID);
+
+		JLabel lbl_userName = new JLabel("Tên người dùng: ");
+		lbl_userName.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lbl_userName.setBounds(30, 140, 410, 30);
+		panel_infoClient.add(lbl_userName);
+
+		JLabel lbl_createTime = new JLabel("Tạo tài khoản lúc: ");
+		lbl_createTime.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lbl_createTime.setBounds(30, 180, 413, 30);
+		panel_infoClient.add(lbl_createTime);
+
+		JLabel lbl_trangThai = new JLabel("Trạng thái: ");
+		lbl_trangThai.setFont(new Font("Tahoma", Font.ITALIC, 18));
+		lbl_trangThai.setBounds(30, 60, 413, 30);
+		panel_infoClient.add(lbl_trangThai);
+
+		JLabel lbl_lastTimeLogin = new JLabel("Đăng nhập lần cuối lúc: ");
+		lbl_lastTimeLogin.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lbl_lastTimeLogin.setBounds(30, 220, 413, 30);
+		panel_infoClient.add(lbl_lastTimeLogin);
+
+		JLabel lbl_ThongTinClient_fullname = new JLabel("Thông tin client: ");
+		lbl_ThongTinClient_fullname.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lbl_ThongTinClient_fullname.setBounds(10, 10, 430, 30);
+		panel_infoClient.add(lbl_ThongTinClient_fullname);
+
+		JLabel lbl_lastTimeDisconnect = new JLabel("Ngắt kết nối lần cuối lúc: ");
+		lbl_lastTimeDisconnect.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lbl_lastTimeDisconnect.setBounds(30, 260, 413, 30);
+		panel_infoClient.add(lbl_lastTimeDisconnect);
 		panel_Chinh.add(panel_thongTinNhom);
 		panel_thongTinNhom.setLayout(null);
 
@@ -201,8 +246,7 @@ public class V_FrmChat_Server extends JFrame {
 		lbl_tenNguoiDung.setFont(new Font("Times New Roman", Font.BOLD, 22));
 		lbl_tenNguoiDung.setBounds(90, 0, 115, 33);
 		panel_UIDName.add(lbl_tenNguoiDung);
-		
-		
+
 		lbl_soLuongClient = new JLabel("Số người kết nối: " + soLuongConnect);
 		lbl_soLuongClient.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 		lbl_soLuongClient.setBackground(Color.WHITE);
@@ -213,6 +257,35 @@ public class V_FrmChat_Server extends JFrame {
 		model_Clients = new DefaultListModel<>();
 		list_UIDName_onl = new JList<>(model_Clients);
 		list_UIDName_onl.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		list_UIDName_onl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list_UIDName_onl.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					if (list_UIDName_onl.getSelectedValue() != null) {
+						String ID = list_UIDName_onl.getSelectedValue().split("\\|")[0];
+						System.out.println("Client được chọn để xem thông tin: " + list_UIDName_onl.getSelectedValue());
+						String[] result = DAO_USERS.getInstance().getTableUsers(ID).split("\\#");
+						String userID = result[0];
+						String userName = result[1];
+						String fullName = result[2];
+						String createTime = result[3];
+						String statusConnect = result[4];
+						String lastTimeLogin = result[5];
+						String lastTimeDisconnect = result[6];
+
+						lbl_ThongTinClient_fullname.setText("Thông tin client: " + fullName);
+						lbl_userName.setText("Tên người dùng: " + userName);
+						lbl_ID.setText("ID: " + userID);
+						lbl_trangThai.setText("Trạng thái: " + statusConnect);
+						lbl_createTime.setText("Tạo tài khoản lúc: " + createTime);
+						lbl_lastTimeLogin.setText("Đăng nhập lần cuối lúc: " + lastTimeLogin);
+						lbl_lastTimeDisconnect.setText("Ngắt kết nối lần cuối lúc: " + lastTimeDisconnect);
+						panel_infoClient.setVisible(true);
+					}
+				}
+			}
+		});
 
 		scrollPane_listUIDName = new JScrollPane(list_UIDName_onl);
 		scrollPane_listUIDName.setBounds(0, 130, 300, 610);
@@ -261,12 +334,13 @@ public class V_FrmChat_Server extends JFrame {
 	public void openPort() {
 		while (true) {
 			try {
-				String portInput = JOptionPane.showInputDialog(null, "Nhập số cổng: ", "Khởi động server", JOptionPane.PLAIN_MESSAGE);
-				
+				String portInput = JOptionPane.showInputDialog(null, "Nhập số cổng: ", "Khởi động server",
+						JOptionPane.PLAIN_MESSAGE);
+
 				if (portInput == null) { // Kiểm tra nếu người dùng nhấn "Cancel"
-	                System.out.println("Người dùng đã hủy.");
-	                System.exit(0); // Thoát chương trình
-	            }
+					System.out.println("Người dùng đã hủy.");
+					System.exit(0); // Thoát chương trình
+				}
 				if (portInput != null) { // Kiểm tra người dùng có nhấn "Cancel" hay không
 					port = Integer.parseInt(portInput); // Chuyển đổi chuỗi thành số nguyên
 					System.out.println("Số cổng bạn đã nhập là: " + port);
@@ -307,45 +381,122 @@ public class V_FrmChat_Server extends JFrame {
 		list_UIDNameInGr.setModel(modelClientsGroup);
 	}
 	
-	public void clientOnline(String infoClient) {
-		list_UIDName_onl.setCellRenderer(createCustomRenderer(infoClient));
+	public void clientOffline(String infoClient) {
+		list_UIDName_onl.setCellRenderer(updateHighlight(infoClient, false));
 	}
 	
-	public ListCellRenderer<? super String> createCustomRenderer(String newHighlightClient) {
-	    // Thêm client mới cần highlight vào danh sách
-	    if (newHighlightClient != null) {
-	        highlightedClients.add(newHighlightClient);
+
+	public void clientOnline(String infoClient) {
+		list_UIDName_onl.setCellRenderer(updateHighlight(infoClient, true));
+	}
+
+	// Hàm dùng chung để thêm hoặc xóa highlight
+	public ListCellRenderer<? super String> updateHighlight(String client, boolean isHighlight) {
+	    if (client != null) {
+	        if (isHighlight) {
+	            // Thêm client vào danh sách highlight
+	            if (!highlightedClients.contains(client)) {
+	                highlightedClients.add(client);
+	                moveHighlightedClientToTop(model_Clients, client);
+	            }
+	        } else {
+	            // Bỏ client khỏi danh sách highlight
+	            highlightedClients.remove(client);
+	            for(String clientOnl : highlightedClients) {
+	            	moveHighlightedClientToTop(model_Clients, clientOnl);
+	            }
+	        }
 	    }
 
+	    // Tạo renderer
 	    return new DefaultListCellRenderer() {
 	        @Override
-	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+	                                                      boolean cellHasFocus) {
 	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	            
-	            // Nếu client thuộc danh sách được highlight thì đổi màu
 	            if (value != null && highlightedClients.contains(value.toString())) {
 	                label.setForeground(Color.GREEN); // Đổi màu chữ thành xanh lá
-	                for(String clientHighlight : highlightedClients) {
-	                	moveHighlightedClientToTop(model_Clients, clientHighlight);
-	                }
-
 	            } else {
 	                label.setForeground(Color.BLACK); // Mặc định là màu đen
 	            }
-	            
 	            return label;
 	        }
 	    };
 	}
-	
+
+//	public ListCellRenderer<? super String> highlightClientOnl(String newHighlightClient) {
+//		// Thêm client mới cần highlight vào danh sách
+//		if (newHighlightClient != null) {
+//			highlightedClients.add(newHighlightClient);
+//		}
+//
+//		return new DefaultListCellRenderer() {
+//			@Override
+//			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+//					boolean cellHasFocus) {
+//				JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+//						cellHasFocus);
+//				try {
+//					// Nếu client thuộc danh sách được highlight thì đổi màu
+//					if (value != null && highlightedClients.contains(value.toString())) {
+//						label.setForeground(Color.GREEN); // Đổi màu chữ thành xanh lá
+//						for (String clientHighlight : highlightedClients) {
+//							moveHighlightedClientToTop(model_Clients, clientHighlight);
+////	                	System.out.println("  + Đã highlight '"+clientHighlight+"'");
+//						}
+//
+//					} else {
+//						label.setForeground(Color.BLACK); // Mặc định là màu đen
+//					}
+//				} catch (Exception e) {
+//
+//				}
+//				return label;
+//			}
+//		};
+//	}
+
+//	public ListCellRenderer<? super String> unHighlightClientOff(String HighlightClient) {
+//
+//		// Thêm client mới cần highlight vào danh sách
+//		if (HighlightClient != null) {
+//			highlightedClients.remove(HighlightClient);
+//		}
+//
+//		return new DefaultListCellRenderer() {
+//			@Override
+//			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+//					boolean cellHasFocus) {
+//				JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+//						cellHasFocus);
+//				try {
+//					// Nếu client thuộc danh sách được highlight thì đổi màu
+//					if (value != null && highlightedClients.contains(value.toString())) {
+//						label.setForeground(Color.GREEN); // Đổi màu chữ thành xanh lá
+//						for (String clientHighlight : highlightedClients) {
+//							moveHighlightedClientToTop(model_Clients, clientHighlight);
+//						}
+//
+//					} else {
+//						label.setForeground(Color.BLACK); // Mặc định là màu đen
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				return label;
+//
+//			}
+//
+//		};
+//
+//	}
+
 	public void moveHighlightedClientToTop(DefaultListModel<String> model, String highlightClient) {
-	    if (model.contains(highlightClient)) {
-	        // Xóa phần tử được highlight khỏi vị trí hiện tại
-	        model.removeElement(highlightClient);
-	        // Thêm phần tử được highlight lên đầu danh sách
-	        model.add(0, highlightClient);
-	    }
+		if (model.contains(highlightClient)) {
+			// Xóa phần tử được highlight khỏi vị trí hiện tại
+			model.removeElement(highlightClient);
+			// Thêm phần tử được highlight lên đầu danh sách
+			model.add(0, highlightClient);
+		}
 	}
-
-
 }

@@ -24,8 +24,8 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO USERS (userID, userName, fullName, password, createTime)"
-						+ "VALUES (?, ?, ?, ?, ?)";
+				String sql = "INSERT INTO USERS (userID, userName, fullName, password, createTime, status)"
+						+ "VALUES (?, ?, ?, ?, ?, ?)";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -36,6 +36,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 				pstmt.setString(3, t.getFullName());
 				pstmt.setString(4, t.getPassword());
 				pstmt.setTimestamp(5, t.getCreateTime());
+				pstmt.setString(6, t.getStatus());
 
 				// thực thi lệnh SQL
 				int affectedRows = pstmt.executeUpdate();
@@ -239,7 +240,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 		return rs;
 	}
 
-	public String getUsers() {
+	public String getUsersUpdateList() {
 		String rs = "";
 		// Tạo kết nối đến csdl
 		try {
@@ -263,9 +264,9 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 						String userID = result.getString("userID");
 						String fullName = result.getString("fullName");
 //						System.out.println("\t -- " + userID + "|" + fullName);
-						rs += userID + "|" + fullName+"#";
+						rs += userID + "|" + fullName + "#";
 					}
-					System.out.println("**"+rs);
+					System.out.println("**" + rs);
 
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -281,6 +282,153 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("SQL Error: " + e.getMessage());
+		}
+		return rs;
+	}
+
+	public String getTableUsers(String condition) {
+		String rs = "";
+		// Tạo kết nối đến csdl
+		try {
+			Connection conn = JDBC_Util.getConnection();
+
+			if (conn != null) {
+
+				// Thực thi lệnh sql
+				String sql = "SELECT * from USERS where userID = '" + condition+"'";
+
+				// Tạo đối tượng PreparedStatement
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+
+				// thực thi lệnh SQL
+				ResultSet result = pstmt.executeQuery();
+
+				// Kiểm tra xem có có kết quả truy vấn không
+				try {
+					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
+					while (result.next()) {
+						String userID = result.getString("userID");
+						String userName = result.getString("userName");
+						String fullName = result.getString("fullName");
+						String createTime = result.getString("createTime");
+						String statusConnect = result.getString("statusConnect");
+						String lastTimeLogin = result.getString("lastTimeLogin");
+						String lastTimeDisconnect = result.getString("lastTimeDisconnect");
+
+						rs = userID + "#" + userName + "#" + fullName + "#" + createTime + "#" + statusConnect + "#"
+								+ lastTimeLogin + "#" + lastTimeDisconnect;
+					}
+					System.out.println("**" + rs);
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("Lỗi khi truy vấn");
+				}
+
+				// Ngắt kết nối
+				JDBC_Util.closeConnection(conn);
+			} else {
+				System.out.println("Kết nối không thành công.");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("SQL Error: " + e.getMessage());
+		}
+		return rs;
+	}
+
+	public int updateLastTimeLogin(USERS_model t) {
+		int rs = -1;
+		// Tạo kết nối đến csdl
+		try {
+			Connection conn = JDBC_Util.getConnection();
+
+			if (conn != null) {
+
+				// Thực thi lệnh sql
+				String sql = "UPDATE USERS SET lastTimeLogin = ?, statusConnect = ? WHERE userID = ?";
+
+				// Tạo đối tượng PreparedStatement
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				// Thiết lập các giá trị cho PreparedStatement
+				pstmt.setTimestamp(1, t.getLastTimeLogin());
+				pstmt.setString(2, t.getStatus());
+				pstmt.setString(3, t.getUserID());
+
+				// thực thi lệnh SQL
+				int affectedRows = pstmt.executeUpdate();
+
+				// Kiểm tra xem có có kết quả truy vấn không
+				try {
+					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
+					if (affectedRows > 0) {
+						rs = 1;
+						System.out.println("Có 1 dòng bị thay đổi");
+					} else {
+						System.out.println("Không thể update");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Lỗi khi truy vấn");
+				}
+
+				// Ngắt kết nối
+				JDBC_Util.closeConnection(conn);
+			} else {
+				System.out.println("Kết nối không thành công.");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("SQL Error: " + e.getMessage());
+		}
+		return rs;
+	}
+
+	public int updateLastTimeDisconnect(USERS_model t) {
+		int rs = -1;
+		// Tạo kết nối đến csdl
+		try {
+			Connection conn = JDBC_Util.getConnection();
+
+			if (conn != null) {
+
+				// Thực thi lệnh sql
+				String sql = "UPDATE USERS SET lastTimeDisconnect = ?, statusConnect = ? WHERE userID = ?";
+
+				// Tạo đối tượng PreparedStatement
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+
+				// Thiết lập các giá trị cho PreparedStatement
+				pstmt.setTimestamp(1, t.getLastDisconnect());
+				pstmt.setString(2, t.getStatus());
+				pstmt.setString(3, t.getUserID());
+
+				// thực thi lệnh SQL
+				int affectedRows = pstmt.executeUpdate();
+				// Kiểm tra xem có có kết quả truy vấn không
+				try {
+					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
+					if (affectedRows > 0) {
+						rs = 1;
+						System.out.println("Có 1 dòng bị thay đổi");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Lỗi khi truy vấn");
+				}
+
+				// Ngắt kết nối
+				JDBC_Util.closeConnection(conn);
+			} else {
+				System.out.println("Kết nối không thành công.");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("SQL Error: " + e.getMessage());
+			e.printStackTrace();
 		}
 		return rs;
 	}
