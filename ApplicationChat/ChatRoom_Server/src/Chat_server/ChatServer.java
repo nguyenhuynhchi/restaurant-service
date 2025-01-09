@@ -63,7 +63,7 @@ public class ChatServer {
 
 			// Client kết nối đến server
 			while (true) {
-				clientInfo_Socket = serverInfo_Socket.accept();
+				clientInfo_Socket = serverInfo_Socket.accept(); // chấp nhận kết nối 
 
 				ClientHandler clientHandler = new ClientHandler(clientInfo_Socket, this);
 				// Tạo và khởi chạy thread ClientHandler để tiếp nhận các thông điệp của client
@@ -124,12 +124,13 @@ public class ChatServer {
 		String logInSuccess = "SUCCESS#" + ID_fullName;
 
 		clientHandler.sendMessage(logInSuccess);
-		
+
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp loginTime = Timestamp.valueOf(now);
-		USERS_model user = new USERS_model(clientHandler.getClientID(), null, null, null, null, "connect", loginTime, null);
+		USERS_model user = new USERS_model(clientHandler.getClientID(), null, null, null, null, "connect", loginTime,
+				null);
 		int result = DAO_USERS.getInstance().updateLastTimeLogin(user);
-		
+
 		if (result == 1) {
 			System.out.println("Cập nhật trạng thái và thời gian connect thành công");
 		} else {
@@ -184,10 +185,10 @@ public class ChatServer {
 		vFC.clientOnline(clientHandler.infoClient().trim());
 	}
 
-	public void getClient(){
+	public void getClient() {
 		String[] partsResult = DAO_USERS.getInstance().getUsersUpdateList().split("\\#");
 		for (int i = 0; i < partsResult.length; i++) {
-			System.out.println("\n-rs"+i+"- " + partsResult[i]);
+			System.out.println("\n-rs" + i + "- " + partsResult[i]);
 			vFC.addClient_ToJList(partsResult[i]);
 			try {
 				Thread.sleep(10);
@@ -206,22 +207,28 @@ public class ChatServer {
 	}
 
 	public void getGroups() {
-		String[] result = DAO_GROUPS.getInstance().getInfoGroups().split("\\$");
-		System.out.println("\nĐang lấy groups từ CSDL");
-		for (int i = 0; i < result.length; i++) {
-			String[] groupsParts = result[i].split("\\#");
+		try {
+			String[] result = DAO_GROUPS.getInstance().getInfoGroups().split("\\$");
+			System.out.println("\nĐang lấy groups từ CSDL");
+			if (result.length >= 1) {
+				for (int i = 0; i < result.length; i++) {
+					String[] groupsParts = result[i].split("\\#");
+					String groupName = groupsParts[1].split("\\|")[0];
 
-			String groupName = groupsParts[1].split("\\|")[0];
-			int quantity = Integer.parseInt(groupsParts[1].split("\\|")[1]);
-			System.out.println("Groups " + groupsParts[0] + ": " + groupName + "|" + quantity);
+					int quantity = Integer.parseInt(groupsParts[1].split("\\|")[1]);
+					System.out.println("Groups " + groupsParts[0] + ": " + groupName + "|" + quantity);
 
-			String[] clientInGroupParts = groupsParts[2].split("\\@");
-			List<String> clientInGroup = new ArrayList<>();
-			for (int j = 0; j < clientInGroupParts.length; j++) {
-				System.out.println("client trong group: " + clientInGroupParts[j]);
-				clientInGroup.add(clientInGroupParts[j].trim());
+					String[] clientInGroupParts = groupsParts[2].split("\\@");
+					List<String> clientInGroup = new ArrayList<>();
+					for (int j = 0; j < clientInGroupParts.length; j++) {
+						System.out.println("client trong group: " + clientInGroupParts[j]);
+						clientInGroup.add(clientInGroupParts[j].trim());
+					}
+					updateGroup(groupName, quantity, clientInGroup);
+				}
 			}
-			updateGroup(groupName, quantity, clientInGroup);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -334,10 +341,11 @@ public class ChatServer {
 	}
 
 	public void removeClient(ClientHandler clientDisconnect) {
-		
+
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp disConnectTime = Timestamp.valueOf(now);
-		USERS_model user = new USERS_model(clientDisconnect.getClientID(), null, null, null, null, "no connect", null, disConnectTime);
+		USERS_model user = new USERS_model(clientDisconnect.getClientID(), null, null, null, null, "no connect", null,
+				disConnectTime);
 		int result = DAO_USERS.getInstance().updateLastTimeDisconnect(user);
 		if (result == 1) {
 			System.out.println("Cập nhật trạng thái và thời gian disconnect thành công");

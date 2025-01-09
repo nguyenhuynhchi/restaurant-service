@@ -183,6 +183,7 @@ public class V_FrmChat_Client extends JFrame {
         tf_message.setFont(new Font("Tahoma", Font.PLAIN, 14));
         tf_message.setBounds(100, 710, 938, 45);
         tf_message.setColumns(10);
+        tf_message.enable(false);
         tf_message.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -243,12 +244,12 @@ public class V_FrmChat_Client extends JFrame {
         lbl_IDClientChat = new JLabel("ID:");
         lbl_IDClientChat.setFont(new Font("Times New Roman", Font.BOLD, 17));
         lbl_IDClientChat.setBackground(Color.WHITE);
-        lbl_IDClientChat.setBounds(377, 10, 183, 25);
+        lbl_IDClientChat.setBounds(377, 10, 170, 25);
         panel_chat.add(lbl_IDClientChat);
 
         lbl_nameClientChat = new JLabel("Tên: ");
         lbl_nameClientChat.setFont(new Font("Times New Roman", Font.BOLD, 17));
-        lbl_nameClientChat.setBounds(10, 10, 250, 25);
+        lbl_nameClientChat.setBounds(10, 10, 350, 25);
         panel_chat.add(lbl_nameClientChat);
 
         btn_viewClientsGroup = new JButton("Xem thành viên trong nhóm");
@@ -382,6 +383,7 @@ public class V_FrmChat_Client extends JFrame {
                         lbl_IDClientChat.setVisible(true);
                         lbl_IDClientChat.setText("ID: " + list_UIDName_onl.getSelectedValue().split("\\|")[0].trim());
                         lbl_nameClientChat.setText("Tên: " + list_UIDName_onl.getSelectedValue().split("\\|")[1].trim());
+                        tf_message.enable(true);
                     } else {
                         lbl_IDClientChat.setText("ID: ");
                         lbl_nameClientChat.setText("Tên: ");

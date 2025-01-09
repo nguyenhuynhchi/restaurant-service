@@ -25,7 +25,7 @@ public class DAO_GROUPMEMBERS implements interface_DAO<GROUPMEMBERS_model> {
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO GROUPMEMBERS (groupMemberID, groupID, userID) VALUE (?, ?, ?) ";
+				String sql = "INSERT INTO thanhvientrongnhom (ID_ThanhVien, groupID, userID) VALUE (?, ?, ?) ";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -97,7 +97,7 @@ public class DAO_GROUPMEMBERS implements interface_DAO<GROUPMEMBERS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT grmb.userID, users.fullName\r\n" + "FROM groupmembers grmb, users\r\n"
+				String sql = "SELECT grmb.userID, users.HoTen\r\n" + "FROM thanhvientrongnhom grmb, users\r\n"
 						+ "WHERE grmb.userID = users.userID AND grmb.groupID = '" + condition + "'";
 
 				// Tạo đối tượng PreparedStatement
@@ -111,7 +111,7 @@ public class DAO_GROUPMEMBERS implements interface_DAO<GROUPMEMBERS_model> {
 					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
 					while (result.next()) {
 						String userID = result.getString("userID");
-						String fullName = result.getString("fullName");
+						String fullName = result.getString("HoTen");
 						rs += userID + "|" + fullName + "@";
 					}
 					System.out.println("ID và họ tên của client trong group '" + condition + "': " + rs);

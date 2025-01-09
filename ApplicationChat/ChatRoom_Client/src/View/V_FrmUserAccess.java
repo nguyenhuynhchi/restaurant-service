@@ -194,6 +194,14 @@ public class V_FrmUserAccess extends JFrame {
         tf_hoTen_DK.setFont(new Font("Tahoma", Font.BOLD, 12));
         tf_hoTen_DK.setColumns(10);
         tf_hoTen_DK.setBounds(187, 119, 210, 30);
+        tf_hoTen_DK.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf_tenDN.getText().length() >= 50) {
+                    e.consume(); // Ngăn không cho nhập thêm ký tự
+                }
+            }
+        });
         panel_dangKy.add(tf_hoTen_DK);
 
         panel_dangNhap = new JPanel();

@@ -33,11 +33,13 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
             vFC.scrollPane_listUIDName.setVisible(true);
             vFC.list_GroupName.clearSelection();
             vFC.btn_viewClientsGroup.setVisible(false);
+            vFC.tf_message.enable(false);
         } else if (actionCommand.equals("Nhóm")) {
             vFC.scrollPane_listUIDName.setVisible(false);
             vFC.scrollPane_listGroupName.setVisible(true);
 //            vFC.btn_viewClientsGroup.setVisible(true);
             vFC.list_UIDName_onl.clearSelection();
+            vFC.tf_message.enable(false);
         }
 
         if (actionCommand.equals("Tạo nhóm")) {
@@ -90,6 +92,7 @@ public class ControllerFormChat_Clients implements ActionListener, MouseListener
                         vFC.lbl_nameClientChat.setText("Tên nhóm: " + selectedGroup);
                         vFC.lbl_IDClientChat.setVisible(false);
                         vFC.list_UIDName_onl.clearSelection();
+                        vFC.tf_message.enable(true);
                         System.out.println("Groups được chọn: '" + selectedGroup + "'");
 
                         if (selectedGroup != null) {

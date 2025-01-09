@@ -24,7 +24,7 @@ public class DAO_GROUPS implements interface_DAO<GROUPS_model> {
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO GROUPS (groupName, quantityMember, createBy, createTime)"
+				String sql = "INSERT INTO NHOM (groupName, SoLuongThanhVien, TaoBoi, TG_Tao)"
 						+ "VALUES (?, ?, ?, ?)";
 
 				// Tạo đối tượng PreparedStatement
@@ -95,7 +95,7 @@ public class DAO_GROUPS implements interface_DAO<GROUPS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT groupID from GROUPS WHERE groupName = ? LIMIT 1";
+				String sql = "SELECT groupID from NHOM WHERE groupName = ? LIMIT 1";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -143,7 +143,7 @@ public class DAO_GROUPS implements interface_DAO<GROUPS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT groupName from GROUPS WHERE groupID = ? LIMIT 1";
+				String sql = "SELECT groupName from NHOM WHERE groupID = ? LIMIT 1";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -191,7 +191,7 @@ public class DAO_GROUPS implements interface_DAO<GROUPS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT * from GROUPS";
+				String sql = "SELECT * from NHOM";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -204,18 +204,20 @@ public class DAO_GROUPS implements interface_DAO<GROUPS_model> {
 
 				// Kiểm tra xem có có kết quả truy vấn không
 				try {
-
 					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
 					int timesResult = 0;
 					System.out.println("Tên các nhóm: \n");
 					while (result.next()) {
 						String rs_groupName = result.getString("groupName");
-						String rs_quantity = result.getString("quantityMember");
+						String rs_quantity = result.getString("SoLuongThanhVien");
 						String rs_groupID = result.getString("groupID");
 						String rs_clientInGroup = DAO_GROUPMEMBERS.getInstance().findByCondition(rs_groupID);
 						System.out.println(" - " + rs_groupName + "|" + rs_quantity);
 						timesResult++;
 						rs += "rs" + timesResult + "#" + rs_groupName + "|" + rs_quantity +"#"+ rs_clientInGroup + "$";
+					}
+					if(timesResult == 0) {
+						System.out.println("Không có group trong cơ sở dữ liệu");
 					}
 					System.out.println("Kết quả truy vấn: \n" + rs);
 				} catch (SQLException e) {

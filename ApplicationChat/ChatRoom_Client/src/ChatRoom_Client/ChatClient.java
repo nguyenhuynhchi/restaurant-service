@@ -66,7 +66,7 @@ public class ChatClient {
 
             // Tạo và khởi chạy thread cho Client_Listener để nhận thông tin các client từ server gửi về
             client_Listener = new Client_Listener(socket, vFC, vFU);
-            new Thread(client_Listener).start();
+            new Thread(client_Listener).start(); // Tạo và khởi chạy luồng cho client
 
             // Tạo và khởi chạy thread cho MessageSender để gửi các thông tin đến server
             messageSender = new MessageSender(socket, vFC);

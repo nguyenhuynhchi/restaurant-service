@@ -24,8 +24,8 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO USERS (userID, userName, fullName, password, createTime, status)"
-						+ "VALUES (?, ?, ?, ?, ?, ?)";
+				String sql = "INSERT INTO USERS (userID, userName, HoTen, MatKhau, TG_TaoTK, TrangThai_KetNoi, DangNhap_LanCuoi)"
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -37,6 +37,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 				pstmt.setString(4, t.getPassword());
 				pstmt.setTimestamp(5, t.getCreateTime());
 				pstmt.setString(6, t.getStatus());
+				pstmt.setTimestamp(7, t.getLastTimeLogin());
 
 				// thực thi lệnh SQL
 				int affectedRows = pstmt.executeUpdate();
@@ -96,7 +97,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 		String rs = null;
 		String[] parts = condition.split("#");
 		String userName = parts[0];
-		String password = parts[1];
+		String MatKhau = parts[1];
 		// Tạo kết nối đến csdl
 		try {
 			Connection conn = JDBC_Util.getConnection();
@@ -104,14 +105,14 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT userID, fullName from USERS  WHERE userName = ?  AND  password = ? LIMIT 1";
+				String sql = "SELECT userID, HoTen from USERS WHERE BINARY userName = ?  AND BINARY MatKhau = ? LIMIT 1";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 
 				// Thiết lập các giá trị cho PreparedStatement
 				pstmt.setString(1, userName);
-				pstmt.setString(2, password);
+				pstmt.setString(2, MatKhau);
 
 				// thực thi lệnh SQL
 				ResultSet result = pstmt.executeQuery();
@@ -121,8 +122,8 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 					if (result.next()) {
 						System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
 						String ID = result.getString("userID");
-						String fullName = result.getString("fullName");
-						rs = ID + "#" + fullName;
+						String HoTen = result.getString("HoTen");
+						rs = ID + "#" + HoTen;
 						System.out.println("ID của client đó: " + rs);
 					} else {
 						System.out.println("Không có kết quả truy vấn");
@@ -203,7 +204,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT * from USERS  WHERE userName = '" + condition + "' LIMIT 1";
+				String sql = "SELECT * from USERS  WHERE BINARY userName = '" + condition + "' LIMIT 1";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -262,9 +263,9 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
 					while (result.next()) {
 						String userID = result.getString("userID");
-						String fullName = result.getString("fullName");
-//						System.out.println("\t -- " + userID + "|" + fullName);
-						rs += userID + "|" + fullName + "#";
+						String HoTen = result.getString("HoTen");
+//						System.out.println("\t -- " + userID + "|" + HoTen);
+						rs += userID + "|" + HoTen + "#";
 					}
 					System.out.println("**" + rs);
 
@@ -309,13 +310,13 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 					while (result.next()) {
 						String userID = result.getString("userID");
 						String userName = result.getString("userName");
-						String fullName = result.getString("fullName");
-						String createTime = result.getString("createTime");
-						String statusConnect = result.getString("statusConnect");
-						String lastTimeLogin = result.getString("lastTimeLogin");
-						String lastTimeDisconnect = result.getString("lastTimeDisconnect");
+						String HoTen = result.getString("HoTen");
+						String createTime = result.getString("TG_TaoTK");
+						String statusConnect = result.getString("TrangThai_KetNoi");
+						String lastTimeLogin = result.getString("DangNhap_LanCuoi");
+						String lastTimeDisconnect = result.getString("NgatKetNoi_LanCuoi");
 
-						rs = userID + "#" + userName + "#" + fullName + "#" + createTime + "#" + statusConnect + "#"
+						rs = userID + "#" + userName + "#" + HoTen + "#" + createTime + "#" + statusConnect + "#"
 								+ lastTimeLogin + "#" + lastTimeDisconnect;
 					}
 					System.out.println("**" + rs);
@@ -347,7 +348,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "UPDATE USERS SET lastTimeLogin = ?, statusConnect = ? WHERE userID = ?";
+				String sql = "UPDATE USERS SET DangNhap_LanCuoi = ?, TrangThai_KetNoi = ? WHERE userID = ?";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -395,7 +396,7 @@ public class DAO_USERS implements interface_DAO<USERS_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "UPDATE USERS SET lastTimeDisconnect = ?, statusConnect = ? WHERE userID = ?";
+				String sql = "UPDATE USERS SET NgatKetNoi_LanCuoi = ?, TrangThai_KetNoi = ? WHERE userID = ?";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);

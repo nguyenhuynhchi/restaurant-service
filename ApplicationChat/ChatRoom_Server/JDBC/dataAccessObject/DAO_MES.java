@@ -23,14 +23,14 @@ public class DAO_MES implements interface_DAO<MES_model> {
 
 			if (conn != null) {
 				// Thực thi lệnh sql
-				String sql = "INSERT INTO MES (senderID, receiverID, receiverGroupID, contentMessage, timeReceive) VALUES (?, ?, ?, ?, ?)";
+				String sql = "INSERT INTO tinnhan (userID_Gui, userID_Nhan, groupID_Nhan, NoiDungTinNhan, TG_Gui) VALUES (?, ?, ?, ?, ?)";
 
 				// Tạo đối tượng PreparedStatement
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 
 				// Thiết lập các giá trị cho PreparedStatement
 				pstmt.setString(1, t.getSenderID());
-				pstmt.setString(2, t.getReceiverID());
+				pstmt.setString(2, t.getReceiverGroupID());
 				pstmt.setString(3, t.getReceiverGroupID());
 				pstmt.setString(4, t.getContentMessage());
 				pstmt.setTimestamp(5, t.getTimeReceive());
@@ -92,13 +92,13 @@ public class DAO_MES implements interface_DAO<MES_model> {
 			if (conn != null) {
 
 				// Thực thi lệnh sql
-				String sql = "SELECT messageID, senderID, receiverID, u.userName, receiverGroupID, grs.groupName, contentMessage, timeReceive\r\n"
-						+ "FROM mes m\r\n" + "LEFT JOIN groupmembers grmb ON m.receiverGroupID = grmb.groupID\r\n"
-						+ "LEFT JOIN users u ON m.receiverID = u.userID\r\n"
-						+ "LEFT JOIN groups grs ON m.receiverGroupID = grs.groupID\r\n" + "WHERE m.senderID = '"
-						+ condition + "'\r\n" + "   OR m.receiverID = '" + condition + "'\r\n"
-						+ "   OR m.receiverGroupID IN (\r\n" + "       SELECT grmb.groupID\r\n"
-						+ "       FROM groupmembers grmb\r\n" + "       WHERE grmb.userID = '" + condition + "'\r\n"
+				String sql = "SELECT messageID, userID_Gui, userID_Nhan, u.userName, groupID_Nhan, grs.groupName, NoiDungTinNhan, TG_Gui\r\n"
+						+ "FROM tinnhan m\r\n" + "LEFT JOIN thanhvientrongnhom grmb ON m.groupID_Nhan = grmb.groupID\r\n"
+						+ "LEFT JOIN users u ON m.userID_Nhan = u.userID\r\n"
+						+ "LEFT JOIN nhom grs ON m.groupID_Nhan = grs.groupID\r\n" + "WHERE m.userID_Gui = '"
+						+ condition + "'\r\n" + "   OR m.userID_Nhan = '" + condition + "'\r\n"
+						+ "   OR m.groupID_Nhan IN (\r\n" + "       SELECT grmb.groupID\r\n"
+						+ "       FROM thanhvientrongnhom grmb\r\n       WHERE grmb.userID = '" + condition + "'\r\n"
 						+ "   )\n" + "GROUP BY m.messageID  LIMIT 50;";
 
 				// Tạo đối tượng PreparedStatement
@@ -115,27 +115,27 @@ public class DAO_MES implements interface_DAO<MES_model> {
 					System.out.println("\n- Bạn đã thực thi câu lệnh: " + sql);
 					int timesRs = 0;
 					while (result.next()) {
-						String senderID = result.getString("senderID");
-						String senderName = DAO_USERS.getInstance().findName(senderID);
-						String receiverID = result.getString("receiverID");
-						String receiverName = DAO_USERS.getInstance().findName(receiverID);
-						String receiverGroupID = result.getString("receiverGroupID");
-						String receiverGroupName = DAO_GROUPS.getInstance().findGroupName(receiverGroupID);
-						String message = result.getString("contentMessage");
-						String timeReceive_date = result.getString("timeReceive").substring(0, 10);
-						String timeReceive_time = result.getString("timeReceive").substring(11);
+						String userID_Gui = result.getString("userID_Gui");
+						String ten_NguoiGui = DAO_USERS.getInstance().findName(userID_Gui);
+						String userID_Nhan = result.getString("userID_Nhan");
+						String receiverName = DAO_USERS.getInstance().findName(userID_Nhan);
+						String groupID_Nhan = result.getString("groupID_Nhan");
+						String receiverGroupName = DAO_GROUPS.getInstance().findGroupName(groupID_Nhan);
+						String message = result.getString("NoiDungTinNhan");
+						String TG_Gui_date = result.getString("TG_Gui").substring(0, 10);
+						String TG_Gui_time = result.getString("TG_Gui").substring(11);
 
 						timesRs++;
-						rs += "rs" + timesRs + "#" + senderID + "#" + senderName + "#" + receiverID + "#" + receiverName
-								+ "#" + receiverGroupID + "#" + receiverGroupName + "#" + message + "#"
-								+ timeReceive_date + "#" + timeReceive_time + "$";
+						rs += "rs" + timesRs + "#" + userID_Gui + "#" + ten_NguoiGui + "#" + userID_Nhan + "#" + receiverName
+								+ "#" + groupID_Nhan + "#" + receiverGroupName + "#" + message + "#"
+								+ TG_Gui_date + "#" + TG_Gui_time + "$";
 
-						System.out.println("\n*** ***\n\tngười gửi: " + senderName + "(" + senderID
-								+ ")\n\tngười nhận: " + receiverName + "(" + receiverID + ")\t nhóm nhận: "
-								+ receiverGroupName + "#" + receiverGroupID);
+						System.out.println("\n*** ***\n\tngười gửi: " + ten_NguoiGui + "(" + userID_Gui
+								+ ")\n\tngười nhận: " + receiverName + "(" + userID_Nhan + ")\t nhóm nhận: "
+								+ receiverGroupName + "#" + groupID_Nhan);
 
 						System.out.println("\tnội dung tin: " + message);
-						System.out.println("\tngày: " + timeReceive_date + "\tgiờ: " + timeReceive_time);
+						System.out.println("\tngày: " + TG_Gui_date + "\tgiờ: " + TG_Gui_time);
 					}
 					System.out.println("\n->\n" + rs);
 
