@@ -30,7 +30,7 @@ public class DAO_MES implements interface_DAO<MES_model> {
 
 				// Thiết lập các giá trị cho PreparedStatement
 				pstmt.setString(1, t.getSenderID());
-				pstmt.setString(2, t.getReceiverGroupID());
+				pstmt.setString(2, t.getReceiverID());
 				pstmt.setString(3, t.getReceiverGroupID());
 				pstmt.setString(4, t.getContentMessage());
 				pstmt.setTimestamp(5, t.getTimeReceive());

@@ -63,7 +63,7 @@ public class ChatServer {
 
 			// Client kết nối đến server
 			while (true) {
-				clientInfo_Socket = serverInfo_Socket.accept(); // chấp nhận kết nối 
+				clientInfo_Socket = serverInfo_Socket.accept(); // chấp nhận kết nối
 
 				ClientHandler clientHandler = new ClientHandler(clientInfo_Socket, this);
 				// Tạo và khởi chạy thread ClientHandler để tiếp nhận các thông điệp của client
@@ -304,18 +304,22 @@ public class ChatServer {
 		System.out.println("client gửi tin: " + clientSend.infoClient());
 
 		for (String client : clientsInGroup) {
-			System.out.println("Gửi tới client: " + client);
-			if (!client.trim().equals(clientSend.infoClient().trim())) {
-				if (imageORmessage == "image") {
-					String messageImage = "IMAGE#[" + groupName + " {" + clientSend.getFullName() + "("
-							+ clientSend.getClientID() + ")}] - <html><body><b><i>hình ảnh</i></b></body></html>#"
-							+ message;
-					getClientByInfo(client).sendMessage(messageImage);
-				} else {
-					// [ten nhom {tenclient(123)}] - mes
-					getClientByInfo(client).sendMessage("[" + groupName + " {" + clientSend.getFullName() + "("
-							+ clientSend.getClientID() + ")}] - " + message);
+			if (getClientByInfo(client) != null) {
+				System.out.println("Gửi tới client: " + client);
+				if (!client.trim().equals(clientSend.infoClient().trim())) {
+					if (imageORmessage == "image") {
+						String messageImage = "IMAGE#[" + groupName + " {" + clientSend.getFullName() + "("
+								+ clientSend.getClientID() + ")}] - <html><body><b><i>hình ảnh</i></b></body></html>#"
+								+ message;
+						getClientByInfo(client).sendMessage(messageImage);
+					} else {
+						// [ten nhom {tenclient(123)}] - mes
+						getClientByInfo(client).sendMessage("[" + groupName + " {" + clientSend.getFullName() + "("
+								+ clientSend.getClientID() + ")}] - " + message);
+					}
 				}
+			} else {
+				System.out.println("Không có client: " + client + " để gửi tin");
 			}
 		}
 

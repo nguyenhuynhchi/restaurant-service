@@ -30,6 +30,7 @@ public class ChatClient {
     public String fullName;
     public String password;
     public boolean connect;
+    private boolean portTrue = true;
 
     private Socket socket;
 //    private Socket chatSocket;
@@ -169,9 +170,12 @@ public class ChatClient {
                     }
                 }
             }
+
         } catch (java.net.ConnectException e) {
+            JOptionPane.showMessageDialog(vFU, "Không thể kết nối đến server có số cổng này !", "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
             System.out.println("Lỗi: Không thể kết nối đến server. Vui lòng kiểm tra server và thử lại.");
             connect = false; //Kiểm tra kết nối không thành công thì hiện panel thông báo
+            vFU.connect = false;
         } catch (Exception e) {
             System.err.println("Lỗi ở chatClient: ");
             e.printStackTrace();
