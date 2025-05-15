@@ -6,6 +6,7 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
+
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -23,6 +24,7 @@ import com.option1.restaurant_service.exception.AppException;
 import com.option1.restaurant_service.exception.ErrorCode;
 import com.option1.restaurant_service.repository.InvalidatedTokenRepository;
 import com.option1.restaurant_service.repository.UserRepository;
+
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -118,7 +120,7 @@ public class AuthenticationService {
 
     }
 
-    public AuthenticationResponse refreshToken(RefreshRequest request)
+    public AuthenticationResponse refreshToken(RefreshRequest request)  // Chỉ refresh các token hết hạn không refresh các token được logout
         throws ParseException, JOSEException {
         var signedJWT = verifyToken(request.getToken(), true);
 

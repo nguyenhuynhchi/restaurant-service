@@ -56,8 +56,20 @@ public class SecurityConfig {
     return jwtAuthenticationConverter;
   }
 
+  // Đã config ở class CustomJwtDecoder
+//  @Bean
+//  JwtDecoder jwtDecoder() {
+//    SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),
+//        "HS512");  // Thuật toán đã sử dụng trong generateToken
+//    return NimbusJwtDecoder
+//        .withSecretKey(secretKeySpec)
+//        .macAlgorithm(MacAlgorithm.HS512)
+//        .build();
+//  }
+
   @Bean
   PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder(10);
   }
+
 }

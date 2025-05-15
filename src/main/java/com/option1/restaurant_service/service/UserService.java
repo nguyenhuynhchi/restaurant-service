@@ -12,6 +12,7 @@ import com.option1.restaurant_service.repository.UserRepository;
 import java.util.HashSet;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import lombok.AccessLevel;
@@ -49,6 +50,14 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
+    public UserResponse getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(name).orElseThrow(
+            () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userMapper.toUserResponse(user);
+    }
+
     // Post Thực hiện method để lấy được thông tin của user rồi kiểm tra trong thông tin token đó có đúng là của user đó không
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUserID(String userID) {
@@ -71,6 +80,8 @@ public class UserService {
     }
 
     public void deleteUserID(String userID) {
+        userRepository.findById(userID)
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userRepository.deleteById(userID);
     }
 
