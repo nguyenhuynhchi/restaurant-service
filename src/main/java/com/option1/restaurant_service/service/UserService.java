@@ -10,6 +10,9 @@ import com.option1.restaurant_service.mapper.UserMapper;
 import com.option1.restaurant_service.repository.RoleRepository;
 import com.option1.restaurant_service.repository.UserRepository;
 import java.util.HashSet;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import lombok.AccessLevel;
@@ -22,44 +25,64 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-  UserRepository userRepository;
-  UserMapper userMapper;
-  PasswordEncoder passwordEncoder;
-  private final RoleRepository roleRepository;
+    UserRepository userRepository;
+    UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
-  public UserResponse createUser(UserCreationRequest request) {
-    if (userRepository.existsByUsername(request.getUsername())) {
-      throw new AppException(ErrorCode.USER_EXISTED);
+    public UserResponse createUser(UserCreationRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
+        User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    User user = userMapper.toUser(request);
-    user.setPassword(passwordEncoder.encode(request.getPassword()));
+    // Pre kiểm tra ROLE trước khi thực hiện method lấy tất cả user
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getUsers() {
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    }
 
-    var roles = roleRepository.findAllById(request.getRoles());
-    user.setRoles(new HashSet<>(roles));
+    public UserResponse getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(name).orElseThrow(
+            () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userMapper.toUserResponse(user);
+    }
 
-    return userMapper.toUserResponse(userRepository.save(user));
-  }
+    // Post Thực hiện method để lấy được thông tin của user rồi kiểm tra trong thông tin token đó có đúng là của user đó không
+    @PostAuthorize("returnObject.username == authentication.name")
+    public UserResponse getUserID(String userID) {
+        return userMapper.toUserResponse(
+            userRepository.findById(userID) // kiểm tra User có tồn tại không
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
 
-  public List<UserResponse> getUsers() {
-    return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
-  }
+    public UserResponse updateUser(String userID, UserUpdateRequest request) {
+        User user = userRepository.findById(userID)
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-  public UserResponse updateUser(String userID, UserUpdateRequest request) {
-    User user = userRepository.findById(userID)
-        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-    userMapper.updateUser(user, request);
-//    user.setPassword(passwordEncoder.encode(request.getPassword()));
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
-//    var roles = roleRepository.findAllById(request.getRoles());
-//    user.setRoles(new HashSet<>(roles));
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
 
-    return userMapper.toUserResponse(userRepository.save(user));
-  }
-
-  public void deleteUserID(String userID) {
-    userRepository.deleteById(userID);
-  }
+    public void deleteUserID(String userID) {
+        userRepository.findById(userID)
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userRepository.deleteById(userID);
+    }
 
 }

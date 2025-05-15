@@ -2,11 +2,11 @@ package com.option1.restaurant_service.exception;
 
 import com.option1.restaurant_service.dto.request.ApiResponse;
 import jakarta.validation.ConstraintViolation;
-import java.nio.file.AccessDeniedException;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -85,6 +85,9 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity.badRequest().body(apiResponse);
   }
+
+
+
 
   private String mapAttibute(String message, Map<String, Object> attributes) {
     String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
