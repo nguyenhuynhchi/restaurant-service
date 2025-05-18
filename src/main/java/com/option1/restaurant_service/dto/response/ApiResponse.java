@@ -1,4 +1,4 @@
-package com.option1.restaurant_service.dto.request;
+package com.option1.restaurant_service.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

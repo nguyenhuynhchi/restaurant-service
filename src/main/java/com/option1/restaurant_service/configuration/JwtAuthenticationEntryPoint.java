@@ -2,7 +2,7 @@ package com.option1.restaurant_service.configuration;
 
 import org.springframework.security.web.AuthenticationEntryPoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.option1.restaurant_service.dto.request.ApiResponse;
+import com.option1.restaurant_service.dto.response.ApiResponse;
 import com.option1.restaurant_service.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

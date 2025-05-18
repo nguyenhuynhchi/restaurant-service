@@ -1,6 +1,6 @@
 package com.option1.restaurant_service.controller;
 
-import com.option1.restaurant_service.dto.request.ApiResponse;
+import com.option1.restaurant_service.dto.response.ApiResponse;
 import com.option1.restaurant_service.dto.request.RoleRequest;
 import com.option1.restaurant_service.dto.response.RoleResponse;
 import com.option1.restaurant_service.service.RoleService;

@@ -1,7 +1,7 @@
 package com.option1.restaurant_service.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.option1.restaurant_service.dto.request.ApiResponse;
+import com.option1.restaurant_service.dto.response.ApiResponse;
 import com.option1.restaurant_service.dto.request.AuthenticationRequest;
 import com.option1.restaurant_service.dto.request.IntrospectRequest;
 import com.option1.restaurant_service.dto.request.LogoutRequest;
