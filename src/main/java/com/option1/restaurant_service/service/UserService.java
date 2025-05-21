@@ -10,6 +10,7 @@ import com.option1.restaurant_service.mapper.UserMapper;
 import com.option1.restaurant_service.repository.RoleRepository;
 import com.option1.restaurant_service.repository.UserRepository;
 import java.util.HashSet;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
+@Slf4j
 public class UserService {
 
     UserRepository userRepository;
@@ -53,13 +55,14 @@ public class UserService {
     public UserResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
+        log.info("getMyinfo: {}", name);
         User user = userRepository.findByUsername(name).orElseThrow(
             () -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
     // Post Thực hiện method để lấy được thông tin của user rồi kiểm tra trong thông tin token đó có đúng là của user đó không
-    @PostAuthorize("returnObject.username == authentication.name")
+    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')")
     public UserResponse getUserID(String userID) {
         return userMapper.toUserResponse(
             userRepository.findById(userID) // kiểm tra User có tồn tại không

@@ -19,5 +19,6 @@ public class ReservationResponse {
     int quantityPeople;
     String restaurant;
     String user;
+    String status;
     String table;
 }

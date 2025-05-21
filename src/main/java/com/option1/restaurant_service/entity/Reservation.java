@@ -30,6 +30,7 @@ public class Reservation {
     @JoinColumn(name = "user_id")
     User user;
 
+    String status; // Trạng thái bàn: unconfirmed, confirmed, table booked, table cancelled.
     @ManyToOne
     @JoinColumn(name = "table_id")
     DiningTable table;

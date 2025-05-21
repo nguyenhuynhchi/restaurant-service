@@ -9,9 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReservationMapper {
 
-    @Mapping(target = "requestTime", ignore = true)
     @Mapping(target = "restaurant", ignore = true)
-    @Mapping(target = "table", ignore = true)
     Reservation toReservation(ReservationRequest request);
 
     //

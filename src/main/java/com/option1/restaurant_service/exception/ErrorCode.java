@@ -28,7 +28,13 @@ public enum ErrorCode {
   ID_TABLE_NOT_EXISTED(1009, "ID bàn này không tồn tại", HttpStatus.NOT_FOUND),
 
   NAME_RESTAURANT_EXISTED(1010, "Tên cho nhà hàng này đã tồn tại", HttpStatus.BAD_REQUEST),
-  ID_RESTAURANT_NOT_EXISTED(1011, "Tên nhà hàng này không tồn tại", HttpStatus.NOT_FOUND)
+  ID_RESTAURANT_NOT_EXISTED(1011, "Tên nhà hàng này không tồn tại", HttpStatus.NOT_FOUND),
+
+  ID_RESERVATION_NOT_EXISTED(1012, "Id của đơn hàng này không tồn tại", HttpStatus.NOT_FOUND),
+  NOT_HAVE_TABLE(1013, "Không thể nhận bàn khi chưa có bàn", HttpStatus.BAD_REQUEST),
+
+  OUTTIME_CANCLE(1014, "Chỉ còn 1 tiếng nữa đến giờ nhận bàn, nếu có nhu cầu hủy bàn vui lòng liên hệ qua số điện thoại nhà hàng", HttpStatus.BAD_REQUEST),
+  OUTTIME_RESERVATION(1015, "Bạn phải đặt bàn trước 5 tiếng, vui lòng liên hệ qua số điện thoại nhà hàng", HttpStatus.BAD_REQUEST)
 
   ;
 
