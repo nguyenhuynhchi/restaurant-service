@@ -1,6 +1,6 @@
 package com.option1.restaurant_service.exception;
 
-import com.option1.restaurant_service.dto.request.ApiResponse;
+import com.option1.restaurant_service.dto.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import java.util.Map;
 import java.util.Objects;

@@ -1,5 +1,6 @@
 package com.option1.restaurant_service.configuration;
 
+import com.option1.restaurant_service.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,44 +20,60 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh"};
+    private final String[] PUBLIC_ENDPOINTS = {
+        "/users",
+        "/auth/token",
+        "/auth/introspect",
+        "/auth/logout",
+        "/auth/refresh",
+        "/info-restaurant/reservation"
+    };
 
-  @Autowired
-  private CustomJwtDecoder customJwtDecoder;
+    private final String[] PRIVATE_ENDPOINTS = {
+        "/info-restaurant/table",
+        "/info-restaurant/restaurant"
+    };
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-    httpSecurity.authorizeHttpRequests(request ->
-        request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeHttpRequests(request ->
+            request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers(PRIVATE_ENDPOINTS) // Các phương thức tác động đến nhà hàng đều phải có role ADMIN
+                .hasRole(Role.ADMIN.name())
+
 //            .requestMatchers(HttpMethod.GET, "/users")    //  PHÂN QUYỀN QUA ENDPOINT
 //            .hasRole(Role.ADMIN.name())                   //  Với ROLE là ADMIN
-            .anyRequest().authenticated());
+                .anyRequest().authenticated());
 
-    httpSecurity.oauth2ResourceServer(oauth2 ->
-        oauth2.jwt(jwtConfigurer ->
-                jwtConfigurer.decoder(customJwtDecoder)
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-    );
+        httpSecurity.oauth2ResourceServer(oauth2 ->
+            oauth2.jwt(jwtConfigurer ->
+                    jwtConfigurer.decoder(customJwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+        );
 
-    // httpSecurity.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
-    // Rút ngắn bằng lambda cho câu lệnh trên
-    httpSecurity.csrf(AbstractHttpConfigurer::disable);
-    return httpSecurity.build();
-  }
+        // httpSecurity.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
+        // Rút ngắn bằng lambda cho câu lệnh trên
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        return httpSecurity.build();
+    }
 
-  @Bean
-  JwtAuthenticationConverter jwtAuthenticationConverter() {
-    JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-    jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Gốc là có "ROLE_"
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Gốc là có "ROLE_"
 
-    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
+            jwtGrantedAuthoritiesConverter);
 
-    return jwtAuthenticationConverter;
-  }
+        return jwtAuthenticationConverter;
+    }
 
-  // Đã config ở class CustomJwtDecoder
+    // Đã config ở class CustomJwtDecoder
 //  @Bean
 //  JwtDecoder jwtDecoder() {
 //    SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),
@@ -67,9 +84,9 @@ public class SecurityConfig {
 //        .build();
 //  }
 
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder(10);
-  }
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
 
 }

@@ -19,11 +19,23 @@ public enum ErrorCode {
   PHONE_INVALID(1007, "Phone invalid (Số điện thoại phải có đúng 10 kí tự và chỉ được chứa số 0-9)", HttpStatus.BAD_REQUEST),
   INVALID_DOB(1008, "Day of birth invalid (Tuổi của bạn phải ít nhất {min} tuổi)", HttpStatus.BAD_REQUEST),  // Tuoi phair lowns honw 18
 
-
   USER_NOT_EXISTED(1004, "User is not existed (Không tìm thấy người dùng này)", HttpStatus.NOT_FOUND),
 
   UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
   UNAUTHORIZED(1007, "You do not have permision", HttpStatus.FORBIDDEN),
+
+  ID_TABLE_EXISTED(1008, "ID cho bàn này đã tồn tại", HttpStatus.BAD_REQUEST),
+  ID_TABLE_NOT_EXISTED(1009, "ID bàn này không tồn tại", HttpStatus.NOT_FOUND),
+
+  NAME_RESTAURANT_EXISTED(1010, "Tên cho nhà hàng này đã tồn tại", HttpStatus.BAD_REQUEST),
+  ID_RESTAURANT_NOT_EXISTED(1011, "Tên nhà hàng này không tồn tại", HttpStatus.NOT_FOUND),
+
+  ID_RESERVATION_NOT_EXISTED(1012, "Id của đơn hàng này không tồn tại", HttpStatus.NOT_FOUND),
+  NOT_HAVE_TABLE(1013, "Không thể nhận bàn khi chưa có bàn", HttpStatus.BAD_REQUEST),
+
+  OUTTIME_CANCLE(1014, "Chỉ còn 1 tiếng nữa đến giờ nhận bàn, nếu có nhu cầu hủy bàn vui lòng liên hệ qua số điện thoại nhà hàng", HttpStatus.BAD_REQUEST),
+  OUTTIME_RESERVATION(1015, "Bạn phải đặt bàn trước 5 tiếng, vui lòng liên hệ qua số điện thoại nhà hàng", HttpStatus.BAD_REQUEST)
+
   ;
 
   ErrorCode(int code, String message, HttpStatusCode statusCode) {
