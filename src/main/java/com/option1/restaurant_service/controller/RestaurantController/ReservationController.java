@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/info-restaurant")
+@RequestMapping("/reservation")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -20,29 +20,28 @@ public class ReservationController {
 
     ReservationService reservationService;
 
-    @PostMapping("/reservation")
+    @PostMapping
     ApiResponse<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
         return ApiResponse.<ReservationResponse>builder()
             .result(reservationService.createReservation(request))
             .build();
     }
 
-
-    @GetMapping("/reservation")
+    @GetMapping
     ApiResponse<List<ReservationResponse>> getAllReservation() {
         return ApiResponse.<List<ReservationResponse>>builder()
             .result(reservationService.getAllReservation())
             .build();
     }
 
-    @GetMapping("/reservation-history")
+    @GetMapping("/history")
     ApiResponse<List<ReservationResponse>> getReservationByUserId() {
         return ApiResponse.<List<ReservationResponse>>builder()
             .result(reservationService.getReservationByUserId())
             .build();
     }
 
-    @PutMapping("/reservation/{reservationId}")
+    @PutMapping("/confirm/{reservationId}") // QUản lý xác nhận đặt bàn
     ApiResponse<ReservationResponse> confirmReservation(@PathVariable String reservationId,
         @RequestBody ConfirmReservationRequest request) {
         return ApiResponse.<ReservationResponse>builder()
@@ -50,7 +49,7 @@ public class ReservationController {
             .build();
     }
 
-    @PutMapping("/reservation-cancle/{reservationId}")
+    @PutMapping("/cancle/{reservationId}") // Khách hủy bàn
     ApiResponse<String> cancleReservation(@PathVariable String reservationId){
         return ApiResponse.<String>builder()
             .result(reservationService.cancleReservation(reservationId))
@@ -58,14 +57,14 @@ public class ReservationController {
     }
 
 
-    @PutMapping("/reservation-admin-cancle/{reservationId}")
+    @PutMapping("/admin-cancle/{reservationId}")  // Admin hủy bàn (User quá hạn
     ApiResponse<String> adminCancleReservation(@PathVariable String reservationId){
         return ApiResponse.<String>builder()
             .result(reservationService.adminCancleReservation(reservationId))
             .build();
     }
 
-    @PutMapping("/reservation-gotTable/{reservationId}")
+    @PutMapping("/gotTable/{reservationId}")  // Khách nhận bàn
     ApiResponse<ReservationResponse> gotTable(@PathVariable String reservationId){
         return ApiResponse.<ReservationResponse>builder()
             .result(reservationService.gotTable(reservationId))

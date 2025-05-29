@@ -5,6 +5,7 @@ import com.option1.restaurant_service.dto.request.UserCreationRequest;
 import com.option1.restaurant_service.dto.request.UserUpdateRequest;
 import com.option1.restaurant_service.dto.response.UserResponse;
 import com.option1.restaurant_service.service.UserService;
+
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AccessLevel;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     UserService userService;
+
 
     @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {

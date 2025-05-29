@@ -26,13 +26,15 @@ public class SecurityConfig {
         "/auth/introspect",
         "/auth/logout",
         "/auth/refresh",
-        "/info-restaurant/reservation"
+        "/reservation"
     };
 
-    private final String[] PRIVATE_ENDPOINTS = {
-        "/info-restaurant/table",
-        "/info-restaurant/restaurant"
-    };
+//    private final String[] PRIVATE_ENDPOINTS = {
+//        "/info-restaurant/table",
+//        "/info-restaurant/restaurant",
+//        "/roles",
+//        "/permissions"
+//    };
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
@@ -41,8 +43,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
             request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(PRIVATE_ENDPOINTS) // Các phương thức tác động đến nhà hàng đều phải có role ADMIN
-                .hasRole(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PUT, "/users/{userid}").permitAll()
+
+//                .requestMatchers(PRIVATE_ENDPOINTS) // Các phương thức tác động đến nhà hàng đều phải có role ADMIN
+//                .hasRole(Role.ADMIN.name())
 
 //            .requestMatchers(HttpMethod.GET, "/users")    //  PHÂN QUYỀN QUA ENDPOINT
 //            .hasRole(Role.ADMIN.name())                   //  Với ROLE là ADMIN

@@ -35,5 +35,5 @@ public class UserUpdateRequest {
     LocalDate dob;
     String sex;
 
-    List<String> roles;
+//    List<String> roles;
 }
