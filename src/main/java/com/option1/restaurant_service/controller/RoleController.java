@@ -7,10 +7,12 @@ import com.option1.restaurant_service.service.RoleService;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/roles")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -24,6 +26,7 @@ public class RoleController {
         .result(roleService.create(request))
         .build();
   }
+
 
   @GetMapping
   ApiResponse<List<RoleResponse>> getAll(){

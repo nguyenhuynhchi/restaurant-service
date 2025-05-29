@@ -7,25 +7,27 @@ import com.option1.restaurant_service.service.restaurantService.RestaurantServic
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/info-restaurant")
+@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/restaurant")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class RestaurantController {
     RestaurantService restaurantService;
 
-    @PostMapping("/restaurant")
+    @PostMapping
     ApiResponse<RestaurantResponse> createRestaurant(@RequestBody RestaurantRequest request){
         return ApiResponse.<RestaurantResponse>builder()
             .result(restaurantService.createRestaurant(request))
             .build();
     }
 
-    @GetMapping("/restaurant")
+    @GetMapping
     ApiResponse<List<RestaurantResponse>> getAllRestaurants(){
         return ApiResponse.<List<RestaurantResponse>>builder()
             .result(restaurantService.getAllRestaurant())

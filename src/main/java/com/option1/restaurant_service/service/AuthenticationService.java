@@ -148,7 +148,7 @@ public class AuthenticationService {
             .build();
     }
 
-    private SignedJWT verifyToken(String token, boolean isRefresh)
+    public SignedJWT verifyToken(String token, boolean isRefresh)
         throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -172,7 +172,7 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    private String generateToken(User user) {
+    public String generateToken(User user) {
         // Tạo JWS Header với thuật toán HS512 dủ mạnh để bảo vệ token
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
