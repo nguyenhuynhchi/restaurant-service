@@ -1,6 +1,7 @@
 package com.option1.restaurant_service.dto.request;
 
 import com.option1.restaurant_service.validation.DobConstraint;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -16,10 +17,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE) // Mặc định quyền cho các trường(Field) là private
 public class UserCreationRequest {
 
+    @NotBlank(message = "USERNAME_INVALID")
     @Size(min = 3, max = 50, message = "USERNAME_LENGTH_INVALID")
     @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "USERNAME_INVALID")
     String username;
-    @Pattern(regexp = "^[a-zA-Z ]*$", message = "FULLNAME_INVALID")
+    @NotBlank(message = "FULLNAME_INVALID")
+    @Pattern(regexp = "^[\\p{L} ]+$", message = "FULLNAME_INVALID")
     String fullname;
     @Size(min = 8, message = "USERPASSWORD_INVALID")
     String password;

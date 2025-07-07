@@ -3,13 +3,17 @@ package com.option1.restaurant_service.service;
 import com.option1.restaurant_service.dto.request.UserCreationRequest;
 import com.option1.restaurant_service.dto.request.UserUpdateRequest;
 import com.option1.restaurant_service.dto.response.UserResponse;
+import com.option1.restaurant_service.entity.Role;
 import com.option1.restaurant_service.entity.User;
 import com.option1.restaurant_service.exception.AppException;
 import com.option1.restaurant_service.exception.ErrorCode;
 import com.option1.restaurant_service.mapper.UserMapper;
 import com.option1.restaurant_service.repository.RoleRepository;
 import com.option1.restaurant_service.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,8 +44,15 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = roleRepository.findAllById(request.getRoles());
-        user.setRoles(new HashSet<>(roles));
+        if (request.getRoles() == null || request.getRoles().isEmpty()) {
+            // Nếu request không có roles, gán role mặc định USER
+            var defaultRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+            user.setRoles(Collections.singleton(defaultRole));
+        } else {
+            var roles = roleRepository.findAllById(request.getRoles());
+            user.setRoles(new HashSet<>(roles));
+        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -52,7 +63,7 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
-    public UserResponse getMyInfo(){
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         log.info("getMyinfo: {}", name);
@@ -74,7 +85,7 @@ public class UserService {
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
 //        var roles = roleRepository.findAllById(request.getRoles());
 //        user.setRoles(new HashSet<>(roles));

@@ -21,6 +21,7 @@ public class Reservation {
     LocalDateTime requestTime;      // Thời gian khách gửi yêu cầu đặt bàn
     LocalDateTime reservationTime;  // Thời gian khách muốn đến nhận bàn
     int quantityPeople;
+    String messenger;               // Tin nhắn ghi chú
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")

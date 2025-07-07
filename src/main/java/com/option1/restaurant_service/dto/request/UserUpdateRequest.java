@@ -24,8 +24,8 @@ public class UserUpdateRequest {
     String username;
     @Pattern(regexp = "^[a-zA-Z]*$", message = "FULLNAME_INVALID")
     String fullname;
-    @Size(min = 8, message = "USERPASSWORD_INVALID")
-    String password;
+//    @Size(min = 8, message = "USERPASSWORD_INVALID")
+//    String password;
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "EMAIL_INVALID")
     String email;
     @Pattern(regexp = "^[0-9]{10}$", message = "PHONE_INVALID")

@@ -21,4 +21,5 @@ public class ReservationResponse {
     String user;
     String status;
     String table;
+    String messenger;
 }

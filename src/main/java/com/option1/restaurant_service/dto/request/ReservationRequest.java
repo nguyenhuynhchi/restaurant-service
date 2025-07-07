@@ -15,4 +15,5 @@ public class ReservationRequest {
     LocalDateTime reservationTime;  // Thời gian khách muốn đến nhận bàn
     int quantityPeople;
     String restaurant;
+    String messenger;
 }

@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,20 +32,15 @@ public class SecurityConfig {
         "/reservation"
     };
 
-//    private final String[] PRIVATE_ENDPOINTS = {
-//        "/info-restaurant/table",
-//        "/info-restaurant/restaurant",
-//        "/roles",
-//        "/permissions"
-//    };
-
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-            request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+
+            request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Cho phép tất cả OPTIONS request
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers(HttpMethod.PUT, "/users/{userid}").permitAll()
 
 //                .requestMatchers(PRIVATE_ENDPOINTS) // Các phương thức tác động đến nhà hàng đều phải có role ADMIN
@@ -68,29 +66,32 @@ public class SecurityConfig {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Gốc là có "ROLE_"
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Remove default "ROLE_"
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
-            jwtGrantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
         return jwtAuthenticationConverter;
     }
 
-    // Đã config ở class CustomJwtDecoder
-//  @Bean
-//  JwtDecoder jwtDecoder() {
-//    SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(),
-//        "HS512");  // Thuật toán đã sử dụng trong generateToken
-//    return NimbusJwtDecoder
-//        .withSecretKey(secretKeySpec)
-//        .macAlgorithm(MacAlgorithm.HS512)
-//        .build();
-//  }
-
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+//        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // Frontend domain
+        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedMethod("*"); // All HTTP methods
+        corsConfiguration.addAllowedHeader("*"); // All headers
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration); // Apply to all endpoints
+
+        return new CorsFilter(source);
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10); // Strength of the encoder
+    }
 }

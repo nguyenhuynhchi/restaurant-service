@@ -19,5 +19,7 @@ public interface ReservationMapper {
         expression = "java(reservation.getUser() != null ? reservation.getUser().getId() : null)")
     @Mapping(target = "table",
         expression = "java(reservation.getTable() != null ? reservation.getTable().getId() : null)")
+//    @Mapping(target = "messenger",
+//        expression = "java(reservation.getMessenger() != null ? reservation.getMessenger() : null)")
     ReservationResponse toReservationResponse(Reservation reservation);
 }
