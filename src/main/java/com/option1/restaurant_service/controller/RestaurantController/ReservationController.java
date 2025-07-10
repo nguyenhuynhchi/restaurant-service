@@ -50,8 +50,7 @@ public class ReservationController {
     }
 
     @GetMapping("/unconfirmed")
-    ApiResponse<List<ReservationResponse>> getReservationUnconfirmed(){
-        return ApiResponse.<List<ReservationResponse>>builder()
+    ApiResponse<List<ReservationResponse>> getReservationUnconfirmed(){return ApiResponse.<List<ReservationResponse>>builder()
             .result(reservationService.getReservationUnconfirmed())
             .build();
     }
