@@ -23,7 +23,6 @@ public class DiningTableService {
     TableMapper tableMapper;
     TableRepository tableRepository;
 
-//    @PreAuthorize("hasRole('ADMIN')")
     public TableResponse createTables(TableRequest request) {
         if (tableRepository.existsById(request.getId())) {
             throw new AppException(ErrorCode.ID_TABLE_EXISTED);
@@ -33,13 +32,11 @@ public class DiningTableService {
         return tableMapper.toTableResponse(tableRepository.save(table));
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     public List<TableResponse> getAllTable() {
         var table = tableRepository.findAll();
         return table.stream().map(tableMapper::toTableResponse).toList();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTable(String idTable) {
         tableRepository.findById(idTable)
             .orElseThrow(() -> new AppException(ErrorCode.ID_TABLE_NOT_EXISTED));

@@ -1,6 +1,7 @@
 package com.option1.restaurant_service.service.restaurantService;
 
 import com.option1.restaurant_service.dto.request.ConfirmReservationRequest;
+import com.option1.restaurant_service.dto.request.ReservationFilterRequest;
 import com.option1.restaurant_service.dto.request.ReservationRequest;
 import com.option1.restaurant_service.dto.response.ReservationResponse;
 import com.option1.restaurant_service.entity.DiningTable;
@@ -85,11 +86,55 @@ public class ReservationService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    public List<ReservationResponse> getReservationUnconfirmed(){
+
+        List<Reservation> reservationUnconfirmed = reservationRepository.findAll()
+            .stream()
+            .filter(reservation -> reservation.getStatus().equals(StatusReservation.UNCONFIRMED.getDescription()))
+            .filter(reservation -> reservation.getReservationTime().isAfter(LocalDateTime.now()))
+            .toList();
+
+        return reservationUnconfirmed.stream().map(reservationMapper::toReservationResponse).toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ReservationResponse> getReservationFilter(ReservationFilterRequest request){
+        List<Reservation> reservationUnconfirmed = reservationRepository.findAll()
+            .stream()
+//            .filter(reservation -> reservation.getStatus().equals(StatusReservation.CONFIRMED.getDescription()))
+            .filter(reservation -> reservation.getReservationTime().isAfter(LocalDateTime.now()))
+            .filter(reservation -> reservation.getRestaurant().getId().equals(request.getRestaurant()))
+            .filter(reservation -> reservation.getTable() != null
+                && reservation.getTable().getCapacity() >= request.getQuantityPeople()
+                && reservation.getTable().getCapacity() <= request.getQuantityPeople() + 1)
+            .toList();
+
+        return reservationUnconfirmed.stream().map(reservationMapper::toReservationResponse).toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ReservationResponse> getAllReservation() {
         var reservation = reservationRepository.findAll();
         return reservation.stream().map(reservationMapper::toReservationResponse).toList();
     }
 
+    public List<ReservationResponse> getReservationComing(){
+        // Lấy user từ token.
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(name).orElseThrow(
+            () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Reservation> comingReservations  = reservationRepository.findAll()
+            .stream()
+            .filter(reservation -> reservation.getUser().getId().equals(user.getId()))
+            .filter(reservation -> reservation.getReservationTime().isAfter(LocalDateTime.now()))
+            .toList();
+
+        return comingReservations.stream()
+            .map(reservationMapper::toReservationResponse)
+            .toList();
+    }
 
     public List<ReservationResponse> getReservationByUserId() {   //Xem lịch sử đặt bàn của khách
         // Lấy user từ token.

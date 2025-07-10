@@ -1,6 +1,7 @@
 package com.option1.restaurant_service.controller.RestaurantController;
 
 import com.option1.restaurant_service.dto.request.ConfirmReservationRequest;
+import com.option1.restaurant_service.dto.request.ReservationFilterRequest;
 import com.option1.restaurant_service.dto.request.ReservationRequest;
 import com.option1.restaurant_service.dto.response.ApiResponse;
 import com.option1.restaurant_service.dto.response.ReservationResponse;
@@ -38,6 +39,27 @@ public class ReservationController {
     ApiResponse<List<ReservationResponse>> getReservationByUserId() {
         return ApiResponse.<List<ReservationResponse>>builder()
             .result(reservationService.getReservationByUserId())
+            .build();
+    }
+
+    @GetMapping("/coming")
+    ApiResponse<List<ReservationResponse>> getReservationComing() {
+        return ApiResponse.<List<ReservationResponse>>builder()
+            .result(reservationService.getReservationComing())
+            .build();
+    }
+
+    @GetMapping("/unconfirmed")
+    ApiResponse<List<ReservationResponse>> getReservationUnconfirmed(){
+        return ApiResponse.<List<ReservationResponse>>builder()
+            .result(reservationService.getReservationUnconfirmed())
+            .build();
+    }
+
+    @PostMapping("/filter")
+    ApiResponse<List<ReservationResponse>> getReservationFilter(@RequestBody ReservationFilterRequest request){
+        return ApiResponse.<List<ReservationResponse>>builder()
+            .result(reservationService.getReservationFilter(request))
             .build();
     }
 

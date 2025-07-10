@@ -16,7 +16,7 @@ public interface ReservationMapper {
     @Mapping(target = "restaurant",
         expression = "java(reservation.getRestaurant() != null ? reservation.getRestaurant().getId() : null)")
     @Mapping(target = "user",
-        expression = "java(reservation.getUser() != null ? reservation.getUser().getId() : null)")
+        expression = "java(reservation.getUser() != null ? reservation.getUser().getFullname() : null)")
     @Mapping(target = "table",
         expression = "java(reservation.getTable() != null ? reservation.getTable().getId() : null)")
 //    @Mapping(target = "messenger",
