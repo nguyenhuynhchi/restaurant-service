@@ -1,0 +1,4 @@
+---
+ENABLE_LINTERS:
+  - JAVA         # Để lint file .java
+  - JAVASCRIPT_ES  # Để lint file .js và .jsx
