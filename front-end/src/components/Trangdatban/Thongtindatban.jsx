@@ -2,31 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Thongtinnguoidung from "./Thongtinnguoidung.jsx";
 
-const background = "/background.png";
+const background = "/background_2.png";
 
 const restaurantChoice = [
    {
       resname: 'Steak Love Độc Lập',
       address: '106 Nguyễn Thị Minh Khai, Phường Võ Thị Sáu, Quận 3, Thành phố Hồ Chí Minh',
-      tel: '0901.56.55.57',
-      email: 'r1@gmail.com',
+      tel: '19007901',
+      email: 'SteakLoveĐocLap@gmail.com',
       resID: 'R1'
    },
    {
       resname: 'Steak Love The Villa',
       address: '290 Điện Biên Phủ, Phường Võ Thị Sáu, Quận 3, Thành phố Hồ Chí Minh',
-      tel: '0944.56.55.57',
-      email: 'r2@gmail.com',
+      tel: '19007902',
+      email: 'SteakLoveTheVilla@gmail.com',
       resID: 'R2'
    },
    {
       resname: 'Steak Love Diamond',
       address: 'Tầng 5 Diamond Plaza, 34 Lê Duẩn, Phường Bến Nghén, Quận 1, Thành phố Hồ Chí Minh',
-      tel: '0963.56.55.57',
-      email: 'r3@gmail.com',
+      tel: '19007903',
+      email: 'SteakLoveDiamond@gmail.com',
       resID: 'R3'
    },
-
 ];
 
 
@@ -73,7 +72,7 @@ const Thongtindatban = () => {
          const requestUrl = `http://localhost:8386/restaurant/reservation`;
          const requestBody = JSON.stringify(reservationData);
 
-         // 👉 In ra toàn bộ thông tin request
+         // In ra toàn bộ thông tin request
          console.log("=== Request revervation ===");
          console.log("URL:", requestUrl);
          console.log("Body:\n", reservationData);
@@ -86,18 +85,22 @@ const Thongtindatban = () => {
             body: requestBody,
          });
 
+         
+         const result = await response.json();
+         console.log("Gửi request đặt bàn thành công:\n", result);
+         
+         const messageError = result.message;
+         setFormError(messageError);
          if (!response.ok) {
             throw new Error(`Lỗi khi đặt bàn:\n ${response.status}`);
          }
 
-         const result = await response.json();
-         console.log("Gửi request đặt bàn thành công:\n", result);
 
          setIsModalOpen(true);
 
       } catch (error) {
          console.error("Lỗi khi gửi request đặt bàn:", error);
-         setFormError("Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại.");
+         // setFormError("Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại.");
       }
    };
 
@@ -109,7 +112,7 @@ const Thongtindatban = () => {
             </div>
          </div>
          <div className="relative z-10 flex justify-center items-start pt-[50px] pb-[100px]">
-            <div className="w-[80%] p-8 rounded-lg shadow-lg bg-slate-500 bg-opacity-90 z-10">
+            <div className="w-[80%] p-8 rounded-lg shadow-lg bg-slate-600 bg-opacity-90 z-10">
                <div className="absolute inset-0  rounded-lg z-0"></div>
                <div className="relative z-10 p-8 flex flex-col justify-start mt-[-50px] items-center h-full w-full">
 
@@ -151,7 +154,7 @@ const Thongtindatban = () => {
                                        className="form-radio text-blue-500 h-4 w-8 focus:ring-blue-400"
                                        onChange={(e) => setReservationData({ ...reservationData, restaurant: e.target.value })}
                                     />
-                                    <div className='flex-col space-y-3 text-[15px] mt-[20px] rounded-xl hover:bg-zinc-200  bg-zinc-200'>
+                                    <div className='flex-col space-y-3 text-[15px] mt-[20px] rounded-xl hover:bg-zinc-500  bg-zinc-200'>
                                        <p className="text-justify text-xl font-medium  text-black leading-relaxed px-2">
                                           {res.resname}
                                        </p>

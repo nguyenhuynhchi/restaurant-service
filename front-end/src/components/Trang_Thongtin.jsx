@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from './Navbar-v2.jsx'
 
-const background = "/background.png";
+const background = "/background_2.png";
 
 const TrangTT = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -76,7 +76,7 @@ const TrangTT = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`, // <-- đính kèm token tại đây
+                        "Authorization": `Bearer ${token}`,
                     },
                 });
 

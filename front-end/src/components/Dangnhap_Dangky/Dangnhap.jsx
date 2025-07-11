@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+import showPasswordIcon from "../../assets/showPassword.png";
+import hidePasswordIcon from "../../assets/hidePassword.png";
 
 const TrangDangNhap = () => {
   const navigate = useNavigate();
@@ -9,6 +11,8 @@ const TrangDangNhap = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Trạng thái lỗi
   const [success, setSuccess] = useState(""); // Trạng thái thành công
+
+  const [showPassword, setShowPassword] = useState(false);  // Ẩn hiện password
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Ngăn hành vi làm mới trang
@@ -33,11 +37,11 @@ const TrangDangNhap = () => {
       const data = await response.json();
       console.log(data);
       setSuccess("Đăng nhập thành công!");
-      
+
       localStorage.setItem("token", data.result.token);
       const token = localStorage.getItem("token");
-      console.log("Token trong localStorage: \n"+token);
-      
+      console.log("Token trong localStorage: \n" + token);
+
       navigate("/trangchu"); // Điều hướng giao diện về trang chủ khi đăng nhập thành công
       setError("");
     } catch (error) {
@@ -78,17 +82,26 @@ const TrangDangNhap = () => {
             />
           </div>
           {/* Password Input */}
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Mật khẩu
             </label>
+
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10"
               placeholder="Nhập mật khẩu"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {/* Icon con mắt */}
+            <img
+              src={showPassword ? hidePasswordIcon : showPasswordIcon}
+              alt="toggle password"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-[42px] w-6 h-6 cursor-pointer"
             />
           </div>
           {/* Submit Button */}

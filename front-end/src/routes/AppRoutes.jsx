@@ -6,7 +6,8 @@ import TrangChu from "../components/Trangchu/Trangchu.jsx";
 import TrangGioiThieu from "../components/Tranggioithieu/Tranggioithieu.jsx";
 import TrangDatBan from "../components/Trangdatban/Trangdatban.jsx";
 import Trangxembandat from "../components/Trangxembandat/Trangxemban.jsx";
-
+import Tranglienhe from "../components/Tranglienhe/Tranglienhe.jsx";
+import Trangduyetban from "../components/Trangduyetban/Trangduyetban.jsx";
 
 const AppRoutes = () => {
   return (
@@ -35,6 +36,12 @@ const AppRoutes = () => {
 
         {/* Route cho trang xem bàn đã đặt */}
         <Route path="/bandadat" element={<Trangxembandat />} />
+
+        {/* Route cho trang liên hệ */}
+        <Route path="/lienhe" element={<Tranglienhe />} />
+
+        {/* Route cho trang duyệt bàn */}
+        <Route path="/duyetban" element={<Trangduyetban />} />
 
         <Route path="*" element={<h1>404 - Không tìm thấy trang</h1>} />
 

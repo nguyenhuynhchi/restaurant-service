@@ -7,7 +7,7 @@ const Middle = () => {
         <div className="w-1/2 mx-auto bg-white py-4 px-4 rounded-2xl shadow-lg shadow-gray-500/100 flex justify-center relative -mt-[40px] z-30">
             <ul className="flex w-full items-center justify-evenly">
 
-                <Link to="/">
+                <Link to="/lienhe">
                     <li className="text-black font-semibold cursor-pointer">
                         <div className="flex flex-col items-center">
                             <img src={Icon_chinhanh} alt="icon_chinhanh"

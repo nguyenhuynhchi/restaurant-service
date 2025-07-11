@@ -33,7 +33,7 @@ const Thongtinnguoidung = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`, // <-- đính kèm token tại đây
+                        "Authorization": `Bearer ${token}`,
                     },
                 });
 

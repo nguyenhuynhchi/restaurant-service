@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'banner' : 'url(/background.png)'
+        'banner' : 'url(/background_2.png)'
       },
       fontFamily: {
         oswald: ['Oswald', 'sans-serif'], // Định nghĩa riêng nếu cần
