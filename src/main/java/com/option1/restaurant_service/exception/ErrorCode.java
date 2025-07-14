@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
-  UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR), // Lỗi chưa đươc phân loại
-  INVALID_KEY(-1, "Uncategorized exception", HttpStatus.BAD_REQUEST), // Lỗi do viết enumKey sai chổ nào đó (vẫn hiển thị "Uncategorized exception")
-  USER_EXISTED(1001, "User existed", HttpStatus.BAD_REQUEST),  // Người dùng đã tồn tại
+  UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception (Ngoại lệ không xác định)", HttpStatus.INTERNAL_SERVER_ERROR), // Lỗi chưa đươc phân loại
+  INVALID_KEY(-1, "Uncategorized exception (Ngoại lệ không xác định)", HttpStatus.BAD_REQUEST), // Lỗi do viết enumKey sai chổ nào đó (vẫn hiển thị "Uncategorized exception")
+  USER_EXISTED(1001, "User existed (Tên người dùng đã tồn tại", HttpStatus.BAD_REQUEST),  // Người dùng đã tồn tại
 
   // Invalid
   USERNAME_LENGTH_INVALID(1002, "Username invalid (Tên sử dụng phải có tối thiểu {min} kí tự)", HttpStatus.BAD_REQUEST),  // {min} là giá trị min trong custom annotation invalid
@@ -23,8 +23,8 @@ public enum ErrorCode {
 
   ROLE_NOT_FOUND(1009, "Role is not existed (Không có role này)", HttpStatus.NOT_FOUND),
 
-  UNAUTHENTICATED(1010, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-  UNAUTHORIZED(10011, "You do not have permision", HttpStatus.FORBIDDEN),
+  UNAUTHENTICATED(1010, "Unauthenticated (Chưa xác thực)", HttpStatus.UNAUTHORIZED),
+  UNAUTHORIZED(1011, "You do not have permision (Không có quyền)", HttpStatus.FORBIDDEN),
 
   ID_TABLE_EXISTED(1012, "ID cho bàn này đã tồn tại", HttpStatus.BAD_REQUEST),
   ID_TABLE_NOT_EXISTED(1013, "ID bàn này không tồn tại", HttpStatus.NOT_FOUND),

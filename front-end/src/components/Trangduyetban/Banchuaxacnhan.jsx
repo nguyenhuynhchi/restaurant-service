@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Locban from "./Locban";
+import { getValidToken } from "../authService.js";
 
 const restaurantName = [
    {
@@ -24,10 +25,13 @@ const Banchuaxacnhan = () => {
    const [availableTables, setAvailableTables] = useState([]);
    const [selectedTable, setSelectedTable] = useState(null);
 
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [modalMessage, setModalMessage] = useState("");
+
    useEffect(() => {
       const fetchUnconfirmedReservations = async () => {
          try {
-            const token = localStorage.getItem("token");
+            const token = await getValidToken();
             const response = await fetch("http://localhost:8386/restaurant/reservation/unconfirmed", {
                method: "GET",
                headers: {
@@ -79,7 +83,8 @@ const Banchuaxacnhan = () => {
 
    const handleConfirm = async (booking) => {
       if (!booking.table) {
-         alert("Hãy chọn bàn trước khi xác nhận!");
+         setIsModalOpen(true);
+         setModalMessage("Hãy chọn bàn trước khi xác nhận!");
          return;
       }
 
@@ -111,7 +116,8 @@ const Banchuaxacnhan = () => {
             prev.filter(r => r.id !== booking.id)
          );
 
-         alert("Đã xác nhận bàn cho khách!");
+         setIsModalOpen(true); // Bấm xác nhận chọn bàn thành công thì thông báo "đã xác nhận"
+         setModalMessage("Đã xác nhận bàn !");
       } catch (err) {
          console.error(err);
          alert("Có lỗi khi xác nhận.");
@@ -197,18 +203,23 @@ const Banchuaxacnhan = () => {
                   <div className="bg-zinc-400 bg-opacity-80 p-6 w-[500px] max-h-[90vh] overflow-y-auto">
                      <h3 className="text-xl font-bold mb-4">Chọn bàn cho đơn đặt bàn {selectedBooking?.id.slice(-4)}</h3>
                      <div className="grid grid-cols-2 gap-4">
-                        {availableTables.map((table, index) => (
-                           <div
-                              key={index}
-                              className={`border p-4 rounded-lg cursor-pointer ${selectedTable?.id === table.id ? 'bg-blue-200 border-blue-500' : 'bg-gray-100'
-                                 }`}
-                              onClick={() => setSelectedTable(table)}
-                           >
-                              <p className="font-semibold">🪑 {table.id}</p>
-                              <p>Sức chứa: {table.capacity}</p>
-                              <p className="text-sm italic text-gray-600">{table.description}</p>
-                           </div>
-                        ))}
+                        {availableTables
+                           .filter(table =>
+                              table.capacity >= selectedBooking.quantityPeople &&
+                              table.capacity <= selectedBooking.quantityPeople + 1
+                           )
+                           .map((table, index) => (
+                              <div
+                                 key={index}
+                                 className={`border p-4 rounded-lg cursor-pointer ${selectedTable?.id === table.id ? 'bg-blue-200 border-blue-500' : 'bg-gray-100'
+                                    }`}
+                                 onClick={() => setSelectedTable(table)}
+                              >
+                                 <p className="font-semibold">🪑 {table.id}</p>
+                                 <p>Sức chứa: {table.capacity}</p>
+                                 <p className="text-sm italic text-gray-600">{table.description}</p>
+                              </div>
+                           ))}
                      </div>
 
                      <div className="flex justify-end mt-6 space-x-4">
@@ -233,9 +244,22 @@ const Banchuaxacnhan = () => {
                      </div>
                   </div>
                </div>
-            )
-            }
+            )}
          </div >
+         {isModalOpen && (
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+               <div className="bg-slate-700 rounded-lg shadow-lg w-[90%] sm:w-[600px] p-6 relative">
+                  <h3 className="text-2xl font-bold text-red-600 text-center mb-4">{modalMessage}</h3>
+                  <div className="flex space-x-4 justify-center">
+                     <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
+                        onClick={() => setIsModalOpen(false)}>
+                        OK
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )};
       </div>
    );
 

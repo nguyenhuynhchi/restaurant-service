@@ -3,12 +3,12 @@
 
 const Content = () => {
     return (
-        <div className="flex flex-col items-center p-12 z-30 space-y-7">
+        <div className="flex flex-col items-center p-12 py-[80px] z-30 space-y-7">
             <div className="text-[40px] text-white font-extralight">
                 Không gian sang trọng
             </div>
 
-            <div className="text-[25px] text-red-600 font-semibold whitespace-nowrap">
+            <div className="text-[25px] text-red-600 font-semibold pt-3 whitespace-nowrap">
                 CÓ MỘT CHÂU ÂU THU NHỎ GIỮA LÒNG SÀI GÒN
             </div>
 

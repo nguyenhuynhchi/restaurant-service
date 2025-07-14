@@ -3,8 +3,12 @@ import { Link } from "react-router-dom"; // Thêm import Link
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
+import showPasswordIcon from "../../assets/showPassword.png";
+import hidePasswordIcon from "../../assets/hidePassword.png";
+
 const TrangDangKy = () => { // Đổi tên thành TrangDangKy
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(true);  // Ẩn hiện password
 
   const [username, setUsername] = useState("");
   const [fullname, setFullname] = useState("");
@@ -146,7 +150,7 @@ const TrangDangKy = () => { // Đổi tên thành TrangDangKy
           </div>
 
           {/************** Mật khẩu ***************/}
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Mật khẩu
               {password.trim() === "" && (
@@ -154,12 +158,20 @@ const TrangDangKy = () => { // Đổi tên thành TrangDangKy
               )}
             </label>
             <input
-              type="password"
+              type={showPassword ? "password" : "text"}
               id="password"
               className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Nhập mật khẩu"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {/* Icon con mắt */}
+            <img
+              src={showPassword ? hidePasswordIcon : showPasswordIcon}
+              alt="toggle password"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-[42px] w-6 h-6 cursor-pointer"
             />
             {isSubmitted && password.trim() === "" && (
               <p className="text-red-500 text-sm mt-1">Bạn không được bỏ trống mật khẩu</p>
@@ -292,7 +304,7 @@ const TrangDangKy = () => { // Đổi tên thành TrangDangKy
         <div className="mt-6 text-center text-sm text-gray-500">
           Đã có tài khoản?{" "}
           <Link to="/dangnhap" className="text-blue-500 hover:underline">
-            Đăng nhập ngay
+            Đăng nhập thôi !
           </Link>
         </div>
       </div>

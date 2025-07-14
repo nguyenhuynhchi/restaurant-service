@@ -1,8 +1,8 @@
 import Navbar from '../Navbar-v2.jsx'
 import Banner from './Banner.jsx'
 import Bestseller from './Bestseller.jsx';
-import Middle from './Middle.jsx'
-
+import Middle from './Middle.jsx';
+import Footer from '../Footer.jsx';
 const Tranggioithieu = () => {
     return (
         <div>
@@ -12,6 +12,7 @@ const Tranggioithieu = () => {
                 <Middle />
                 <Bestseller />
             </div>
+            <Footer />
         </div>
     );
 };

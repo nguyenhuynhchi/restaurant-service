@@ -15,8 +15,6 @@ const Bandadat = () => {
             const token = localStorage.getItem("token");
 
             if (!token) {
-               // setIsLoggedIn(false);
-               // return;
                navigate("/dangnhap");
                console.log("Chưa đăng nhập !!!!")
                return;
@@ -26,7 +24,7 @@ const Bandadat = () => {
                method: "GET",
                headers: {
                   "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`, // <-- đính kèm token tại đây
+                  "Authorization": `Bearer ${token}`,
                },
             });
 

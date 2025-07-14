@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Lichsudatban from "./Lichsudatban";
-const background = "/background_2.png";
+import { getValidToken } from "../authService.js";
 
 const restaurantName = [
    {
@@ -26,15 +26,10 @@ const Bandadat = () => {
    useEffect(() => {
       // Gọi API lấy dữ liệu người dùng
       const fetchReservationData = async () => {
-         try {
-            const token = localStorage.getItem("token");
-
+            const token = await getValidToken();
             if (!token) {
-               // setIsLoggedIn(false);
-               // return;
-               navigate("/dangnhap");
-               console.log("Chưa đăng nhập !!!!")
-               return;
+                console.warn("❗Không có token hợp lệ (kể cả sau khi refresh).");
+                return;
             }
 
             const response = await fetch("http://localhost:8386/restaurant/reservation/coming", {
@@ -47,33 +42,31 @@ const Bandadat = () => {
 
             console.log("Api xem thông tin đặt bàn sắp tới được gọi");
 
-            if (!response.ok) {
-               throw new Error("Lỗi khi gọi API: " + response.status);
-            }
-
             const data = await response.json();
             console.log(data);
 
             setReservationList(data.result);
-
-
-         } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu:", error);
-            // setIsLoggedIn(false);
-            navigate("/dangnhap");
-            return;
-         }
       };
 
       fetchReservationData();
    }, []);
 
-   const handleAction = async (res) => {
-      try {
-         const token = localStorage.getItem("token");
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [modalType, setModalType] = useState("confirm");
+   const [formError, setFormError] = useState("");
+   const [targetReservation, setTargetReservation] = useState(null);
 
-         const response = await fetch(`http://localhost:8386/restaurant/reservation/cancle/${res.id}`, {
-            method: "PUT", // hoặc "POST" nếu backend yêu cầu
+   const handleAction = async () => {
+      try {
+         const token = await getValidToken();
+         if (!token) {
+            console.log("Không có token hợp lệ.");
+            // setIsLoggedIn(false);
+            return;
+         }
+
+         const response = await fetch(`http://localhost:8386/restaurant/reservation/cancle/${targetReservation.id}`, {
+            method: "PUT",
             headers: {
                "Content-Type": "application/json",
                "Authorization": `Bearer ${token}`,
@@ -83,24 +76,30 @@ const Bandadat = () => {
          const result = await response.json();
          console.log("Gửi request hủy bàn thành công:\n", result);
 
+         const messageError = result.message;
+         setFormError(messageError);
+
          if (!response.ok) {
-            throw new Error("Huỷ bàn thất bại:\n", response);
+            setModalType("error");
+            // throw new Error("Huỷ bàn thất bại:\n", response);
+            return;
          }
 
          // Cập nhật trạng thái chỉ bàn đó trong danh sách
          setReservationList(prevList =>
             prevList.map(item =>
-               item.id === res.id ? { ...item, status: "❌ Khách đã hủy bàn" } : item
+               item.id === targetReservation.id ? { ...item, status: "❌ Khách đã hủy bàn" } : item
             )
          );
-         // navigate(0);
 
-         console.log(`Đã huỷ bàn có id: ${res.id}`);
+         setModalType("success");
+         console.log(`Đã huỷ bàn có id: ${targetReservation.id}`);
       } catch (error) {
          console.error("Lỗi khi huỷ bàn:", error);
+         setFormError("Lỗi không xác định khi gửi yêu cầu hủy.");
+         setModalType("error");
       }
    };
-
 
    const InfoItem = ({ label, value }) => {
       const isTableLabel = label === "🍽️ Bàn";
@@ -142,43 +141,111 @@ const Bandadat = () => {
                <div className="w-40 h-[2px] bg-zinc-200 mt-[25px]"></div>
             </div>
 
-            {reservationList.map((res, index) => (
-               <div key={index} className="flex justify-end w-[100%] my-4">
+            {reservationList.length === 0 ? (
+               <div className="flex flex-col text-center text-xl text-white">
+                  <p>Chưa có bàn đã đặt.</p>
+                  <Link to="/datban" className="underline text-green-400 hover:text-blue-400">
+                     Đặt bàn ngay thôi !
+                  </Link>
+               </div>
+            ) : (
+               reservationList.map((res, index) => (
+                  <div key={index} className="flex justify-end w-[100%] my-4">
 
-                  <div className="flex space-x-16 items-center w-[80%] p-2 text-gray-800 text-x rounded-2xl border-blue-100 bg-blue-400 border-b-[10px] border-l-[10px] border-t-[2px] border-r-[2px] justify-center">
-                     {/* <div className="flex flex-col space-y-3 items-center w-full"> */}
-                     <div className="grid grid-cols-2 gap-9 text-gray-800 w-[95%] text-sm">
-                        <div className="space-y-3">
+                     <div className="flex space-x-16 items-center w-[80%] p-2 text-gray-800 text-x rounded-2xl border-blue-100 bg-blue-400 border-b-[10px] border-l-[10px] border-t-[2px] border-r-[2px] justify-center">
+                        {/* <div className="flex flex-col space-y-3 items-center w-full"> */}
+                        <div className="grid grid-cols-2 gap-9 text-gray-800 w-[95%] text-sm">
+                           <div className="space-y-3">
 
-                           <InfoItem label="🏠 Chi nhánh" value={restaurantName.find(item => item.resID === res.restaurant)?.resname || "Không rõ chi nhánh"} />
+                              <InfoItem label="🏠 Chi nhánh" value={restaurantName.find(item => item.resID === res.restaurant)?.resname || "Không rõ chi nhánh"} />
 
-                           <InfoItem label="⏰ Thời gian nhận bàn" value={new Date(res.reservationTime).toLocaleString()} />
+                              <InfoItem label="⏰ Thời gian nhận bàn" value={new Date(res.reservationTime).toLocaleString()} />
 
-                           <InfoItem label="✅❌⏳Trạng thái đặt bàn" value={res.status} />
-                        </div>
+                              <InfoItem label="✅❌⏳Trạng thái đặt bàn" value={res.status} />
+                           </div>
 
-                        <div className="space-y-3">
-                           <InfoItem label="👥 Số lượng người" value={res.quantityPeople} />
+                           <div className="space-y-3">
+                              <InfoItem label="👥 Số lượng người" value={res.quantityPeople} />
 
-                           <InfoItem label="💬 Tin nhắn ghi chú" value={res.messenger} />
+                              <InfoItem label="💬 Tin nhắn ghi chú" value={res.messenger} />
 
-                           <InfoItem label="🍽️ Bàn" value={res.table || "Chưa có"} />
+                              <InfoItem label="🍽️ Bàn" value={res.table || "Chưa có"} />
+                           </div>
                         </div>
                      </div>
-                  </div>
-                  <div className="ml-4 mt-5">
-                     <button
-                        onClick={() => handleAction(res)}
-                        className="px-6 py-3 rounded-xl bg-red-500 text-white text-xl hover:bg-red-600"
-                     >
-                        Huỷ bàn
-                     </button>
-                  </div>
+                     <div className="ml-4 mt-5">
+                        <button
+                           onClick={() => {
+                              setTargetReservation(res);
+                              setModalType("confirm");
+                              setIsModalOpen(true);
+                           }}
+                           className="px-6 py-3 rounded-xl bg-red-500 text-white text-xl hover:bg-red-600"
+                        >
+                           Huỷ bàn
+                        </button>
+                     </div>
 
-               </div>
-
-            ))}
+                  </div>
+               ))
+            )}
          </div>
+         {isModalOpen && (
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+               <div className="bg-slate-700 rounded-lg shadow-lg w-[90%] sm:w-[500px] p-6 text-white text-center">
+                  {modalType === "confirm" && (
+                     <>
+                        <h3 className="text-2xl font-bold mb-4">Bạn có chắc chắn muốn hủy đặt bàn không?</h3>
+                        <div className="flex justify-center space-x-4">
+                           <button
+                              onClick={() => setIsModalOpen(false)}
+                              className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500"
+                           >
+                              Huỷ
+                           </button>
+                           <button
+                              onClick={handleAction}
+                              className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+                           >
+                              Chắc chắn
+                           </button>
+                        </div>
+                     </>
+                  )}
+
+                  {modalType === "success" && (
+                     <>
+                        <h3 className="text-2xl font-bold mb-4 text-green-300">Đã huỷ đặt bàn!</h3>
+                        <button
+                           onClick={() => {
+                              setIsModalOpen(false);
+                              setTargetReservation(null);
+                           }}
+                           className="mt-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+                        >
+                           Đóng
+                        </button>
+                     </>
+                  )}
+
+                  {modalType === "error" && (
+                     <>
+                        <h3 className="text-2xl font-bold mb-4 text-red-400">Lỗi khi huỷ bàn</h3>
+                        <p className="text-sm mb-4">{formError}</p>
+                        <button
+                           onClick={() => {
+                              setIsModalOpen(false);
+                              setTargetReservation(null);
+                           }}
+                           className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+                        >
+                           Đóng
+                        </button>
+                     </>
+                  )}
+               </div>
+            </div>
+         )}
       </div>
    );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Navbar from './Navbar-v2.jsx'
+import Navbar from './Navbar-v2.jsx';
+import { getValidToken } from "./authService.js";
 
 const background = "/background_2.png";
 
@@ -24,77 +25,76 @@ const TrangTT = () => {
         sex: ""
     });
 
+    const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            const token = await getValidToken();
+            if (!token) {
+                console.log("Không có token hợp lệ.");
+                setIsLoggedIn(false);
+                return;
+            }
+
             const userId = userData.id;
             const requestUrl = `http://localhost:8386/restaurant/users/${userId}`;
             const requestBody = JSON.stringify(userDataUpdate);
 
-            // 👉 In ra toàn bộ thông tin request
+            // In thông tin request
             console.log("=== Request Update User ===");
             console.log("URL:", requestUrl);
             console.log("Body:", userDataUpdate);
             const response = await fetch(requestUrl, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: requestBody,
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
+                console.log("Cập nhật không thành công:", result);
                 throw new Error(`Lỗi cập nhật: ${response.status}`);
             }
 
-            const result = await response.json();
             console.log("Cập nhật thành công:", result);
+            setIsModalOpen(true);
 
             setUserData(userDataUpdate); // cập nhật lại view chính
-            setIsModalOpen(false); // đóng modal
+            setIsModalUpdateOpen(false); // đóng modal
         } catch (error) {
             console.error("Lỗi khi cập nhật người dùng:", error);
         }
     };
 
-
     useEffect(() => {
         // Gọi API lấy dữ liệu người dùng
         const fetchUserData = async () => {
-            try {
-                const token = localStorage.getItem("token");
-
-                if (!token) {
-                    setIsLoggedIn(false);
-                    return;
-                }
-
-                const response = await fetch("http://localhost:8386/restaurant/users/myInfo", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                });
-
-                console.log("Api xem thông tin được gọi");
-
-                if (!response.ok) {
-                    throw new Error("Lỗi khi gọi API: " + response.status);
-                }
-
-                const data = await response.json();
-                console.log(data);
-
-                setUserData(data.result);
-                setIsLoggedIn(true);
-            } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+            const token = await getValidToken();
+            if (!token) {
+                console.warn("❗Không có token hợp lệ (kể cả sau khi refresh).");
                 setIsLoggedIn(false);
+                return;
             }
+
+            const res = await fetch("http://localhost:8386/restaurant/users/myInfo", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            const json = await res.json();
+            console.log("Thông tin người dùng:", json);
+            setUserData(json.result);
+            setIsLoggedIn(true);
         };
 
         fetchUserData();
@@ -154,7 +154,7 @@ const TrangTT = () => {
                                     className="absolute bottom-[-50px] right-4 mr-[-300px] bg-blue-700 text-orange-200 px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300"
                                     onClick={() => {
                                         setUserDataUpdate(userData);
-                                        setIsModalOpen(true);
+                                        setIsModalUpdateOpen(true);
                                     }}>
                                     Chỉnh sửa
                                 </button>
@@ -165,7 +165,7 @@ const TrangTT = () => {
             </div>
 
             {/* Modal chỉnh sửa */}
-            {isModalOpen && (
+            {isModalUpdateOpen && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-slate-700 rounded-lg shadow-lg w-[90%] sm:w-[600px] p-6 relative">
                         <h3 className="text-3xl font-bold text-white text-center mb-4">Chỉnh sửa thông tin</h3>
@@ -281,7 +281,7 @@ const TrangTT = () => {
                                 {/* Nút đóng */}
                                 <button
                                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
-                                    onClick={() => setIsModalOpen(false)}>
+                                    onClick={() => setIsModalUpdateOpen(false)}>
                                     Đóng
                                 </button>
                                 {/* Nút lưu */}
@@ -295,6 +295,21 @@ const TrangTT = () => {
                     </div>
                 </div>
             )}
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-slate-700 rounded-lg shadow-lg w-[90%] sm:w-[600px] p-6 relative">
+                        <h3 className="text-3xl font-bold text-white text-center mb-4">Đã cập nhật các thay đổi</h3>
+                        <div className="flex space-x-4 justify-center">
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
+                                onClick={() => setIsModalOpen(false)}>
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )};
         </div>
     );
 };

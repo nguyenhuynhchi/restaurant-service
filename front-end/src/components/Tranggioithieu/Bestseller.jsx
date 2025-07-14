@@ -52,35 +52,6 @@ const images = [
     },
 ];
 
-// const Bestseller = () => {
-//     return (
-//         <div className='bg-gray-300'>
-//             <div className="grid grid-cols-2 gap-6 justify-center items-center w-full max-w-5xl mx-auto">
-//                 {images.map((img, idx) => (
-//                     <div
-//                         key={idx}
-//                         className="relative group overflow-hidden rounded-xl">
-//                         {/* Hình ảnh */}
-//                         <img
-//                             src={img.src}
-//                             alt={`img-${idx}`}
-//                             className={`w-full h-auto object-cover rounded-xl transition-all duration-500 ease-in-out transform
-//               group-hover:scale-105`} />
-
-//                         {/* Mô tả hiển thị khi hover */}
-//                         <div
-//                             className={`absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100
-//               flex items-center justify-center text-sm px-4 text-center transition-opacity duration-500
-//               translate-y-0 pointer-events-none`}>
-//                             <p>{img.desc}</p>
-//                         </div>
-//                     </div>
-//                 ))}
-//             </div>
-//         </div>
-//     );
-// };
-
 const Bestseller = () => {
     return (
         <div className="bg-gray-300 py-10">

@@ -49,11 +49,11 @@ const Chinhanh = () => {
    }
 
    return (
-      <div className="z-10 pt-4 flex flex-col space-y-6 justify-start items-center h-full w-full">
+      <div className="z-10 p-4 py-10 flex flex-col space-y-6 justify-start items-center h-full w-full">
          <h2 className="text-4xl font-roboto leading-tight-custom font-light300 whitespace-nowrap">Gửi mọi thắc mắc và ý kiến đến chúng tôi</h2>
 
          <textarea
-            className="w-[80%] h-48 border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-[70%] h-48 border-2 border-black p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Nội dung"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -61,7 +61,7 @@ const Chinhanh = () => {
 
          <button
             onClick={handleSubmit}
-            className="px-6 py-2 text-white font-medium bg-red-600 transition"
+            className="px-6 py-3 text-white font-medium bg-red-600 transition"
          >
             Gửi đến chúng tôi
          </button>

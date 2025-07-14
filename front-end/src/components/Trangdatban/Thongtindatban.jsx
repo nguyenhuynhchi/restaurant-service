@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Thongtinnguoidung from "./Thongtinnguoidung.jsx";
+import { getValidToken } from "../authService.js";
 
 const background = "/background_2.png";
 
@@ -9,7 +10,7 @@ const restaurantChoice = [
       resname: 'Steak Love Độc Lập',
       address: '106 Nguyễn Thị Minh Khai, Phường Võ Thị Sáu, Quận 3, Thành phố Hồ Chí Minh',
       tel: '19007901',
-      email: 'SteakLoveĐocLap@gmail.com',
+      email: 'SteakLoveDocLap@gmail.com',
       resID: 'R1'
    },
    {
@@ -30,9 +31,11 @@ const restaurantChoice = [
 
 
 const Thongtindatban = () => {
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
    // Kiểm tra khi khách hàng chưa điền đầy đủ thông tin
    const [formError, setFormError] = useState("");
+   const [isModalOpen, setIsModalOpen] = useState(false);
 
    const [reservationData, setReservationData] = useState({
       reservationTime: "",
@@ -41,7 +44,24 @@ const Thongtindatban = () => {
       messenger: ""
    });
 
-   const [isModalOpen, setIsModalOpen] = useState(false);
+   useEffect(() => {
+      const introspectToken = async () => {
+
+         const token = await getValidToken();
+         console.log("Token: \n", token);
+
+         if (!token) {
+            // navigate("/dangnhap");
+            setIsLoggedIn(false);
+            console.log("Chưa đăng nhập !!!!")
+            return;
+         }
+         
+         setIsLoggedIn(true);
+      };
+      introspectToken();
+   }, []);
+
 
    const handleSubmit = async (e) => {
       e.preventDefault(); // Ngăn hành vi làm mới trang
@@ -50,8 +70,7 @@ const Thongtindatban = () => {
       if (
          !reservationData.restaurant ||
          !reservationData.reservationTime ||
-         !reservationData.quantityPeople ||
-         !reservationData.messenger
+         !reservationData.quantityPeople
       ) {
          setFormError("Vui lòng nhập đầy đủ thông tin trước khi đặt bàn.");
          return;
@@ -61,11 +80,12 @@ const Thongtindatban = () => {
       setFormError(""); // Xóa lỗi cũ
 
       try {
-         const token = localStorage.getItem("token");
+         const token = await getValidToken()
+         console.log("Token: \n", token);
+
          if (!token) {
-            // setIsLoggedIn(false);
-            // return;
-            navigate("/dangnhap");
+            // navigate("/dangnhap");
+            // setIsLoggedIn(false)
             console.log("Chưa đăng nhập !!!!")
             return;
          }
@@ -85,17 +105,15 @@ const Thongtindatban = () => {
             body: requestBody,
          });
 
-         
+
          const result = await response.json();
          console.log("Gửi request đặt bàn thành công:\n", result);
-         
+
          const messageError = result.message;
          setFormError(messageError);
          if (!response.ok) {
             throw new Error(`Lỗi khi đặt bàn:\n ${response.status}`);
          }
-
-
          setIsModalOpen(true);
 
       } catch (error) {
@@ -125,117 +143,151 @@ const Thongtindatban = () => {
                   </div>
                   <Thongtinnguoidung />
 
-                  <div className="flex space-x-1 mt-5">
-                     <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
-                     <h2 className="text-2xl font-bold text-white text-center mb-4">
-                        Nhập thông tin đặt bàn
-                     </h2>
-                     <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
-                  </div>
+                  {isLoggedIn ? (
+                     <div>
+                        <div className="flex space-x-1 mt-5">
+                           <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
+                           <h2 className="text-2xl font-bold text-white text-center mb-4">
+                              Nhập thông tin đặt bàn
+                           </h2>
+                           <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
+                        </div>
 
-                  <div className="flex space-x-10 w-[80%] text-white text-xl">
-                     <form onSubmit={handleSubmit}>
-                        {/************** Chọn chi nhánh nhà hàng ***************/}
-                        <div className="mb-4">
-                           <label htmlFor="restaurant" className="text-white font-semibold rounded-[4px] text-2xl">
-                              Chi nhánh
-                              <span className="text-red-500 text-x font-bold"> *</span>
-                           </label>
-
-                           <div className="flex flex-col border-neutral-700 border-4  rounded-[10px]">
-                              {restaurantChoice.map((res, idx) => (
-                                 <label className="inline-flex items-center space-x-3 cursor-pointer mr-4"
-                                 // key={idx}
-                                 >
-                                    <input
-                                       type="radio"
-                                       name="resID"
-                                       value={res.resID}
-                                       className="form-radio text-blue-500 h-4 w-8 focus:ring-blue-400"
-                                       onChange={(e) => setReservationData({ ...reservationData, restaurant: e.target.value })}
-                                    />
-                                    <div className='flex-col space-y-3 text-[15px] mt-[20px] rounded-xl hover:bg-zinc-500  bg-zinc-200'>
-                                       <p className="text-justify text-xl font-medium  text-black leading-relaxed px-2">
-                                          {res.resname}
-                                       </p>
-                                       <div className="rounded-xl bg-zinc-600">
-                                          <p className="text-justify leading-relaxed px-2">
-                                             {res.address}
-                                          </p>
-                                          <div className="flex space-x-[50px]">
-                                             <p className="text-justify leading-relaxed px-2">
-                                                {res.tel}
-                                             </p>
-                                             <p className="text-justify leading-relaxed px-2">
-                                                {res.email}
-                                             </p>
-                                          </div>
-                                       </div>
-                                    </div>
+                        <div className="flex space-x-10 w-[80%] text-white text-xl">
+                           <form onSubmit={handleSubmit}>
+                              {/************** Chọn chi nhánh nhà hàng ***************/}
+                              <div className="mb-4">
+                                 <label htmlFor="restaurant" className="text-white font-semibold rounded-[4px] text-2xl">
+                                    Chi nhánh
+                                    <span className="text-red-500 text-x font-bold"> *</span>
                                  </label>
-                              ))}
-                           </div>
-                        </div>
 
-                        {/************** Chọn thời gian ***************/}
-                        <div className="mb-4 flex flex-col">
-                           <label htmlFor="reservationTime" className="text-white font-semibold rounded-[4px] text-2xl">
-                              Chọn thời gian
-                              <span className="text-red-500 text-x font-bold"> *</span>
-                           </label>
-                           <input
-                              type="datetime-local"
-                              id="reservationTime"
-                              className="w-[300px] mt-1 p-3 text-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                              value={reservationData.reservationTime}
-                              onChange={(e) => setReservationData({ ...reservationData, reservationTime: e.target.value })}
-                           />
-                        </div>
+                                 <div className="flex flex-col border-neutral-700 border-4  rounded-[10px]">
+                                    {restaurantChoice.map((res, idx) => (
+                                       <label className="inline-flex items-center space-x-3 cursor-pointer mr-4"
+                                       // key={idx}
+                                       >
+                                          <input
+                                             type="radio"
+                                             name="resID"
+                                             value={res.resID}
+                                             className="form-radio text-blue-500 h-4 w-8 focus:ring-blue-400"
+                                             onChange={(e) => setReservationData({ ...reservationData, restaurant: e.target.value })}
+                                          />
+                                          <div className='flex-col space-y-3 text-[15px] mt-[20px] rounded-xl hover:bg-zinc-500 bg-zinc-200'>
+                                             <p className="text-justify w-full  text-xl font-medium  text-black leading-relaxed px-4">
+                                                {res.resname}
+                                             </p>
+                                             <div className="rounded-xl bg-zinc-600 p-2">
+                                                <p className="text-justify leading-relaxed px-2">
+                                                   {res.address}
+                                                </p>
+                                                <div className="flex space-x-[50px]">
+                                                   <p className="text-justify leading-relaxed px-2">
+                                                      {res.tel}
+                                                   </p>
+                                                   <p className="text-justify leading-relaxed px-2">
+                                                      {res.email}
+                                                   </p>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </label>
+                                    ))}
+                                 </div>
+                              </div>
 
-                        {/************** Chọn số lượng người ***************/}
-                        <div className="mb-4 flex flex-col">
-                           <label htmlFor="quantityPeple" className="text-white font-semibold rounded-[4px] text-2xl">
-                              Số lượng người
-                              <span className="text-red-500 text-x font-bold"> *</span>
-                           </label>
-                           <input
-                              type="number"
-                              id="quantityPeople"
-                              className="w-[300px] mt-1 p-3 text-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                              value={reservationData.quantityPeople}
-                              onChange={(e) => setReservationData({ ...reservationData, quantityPeople: e.target.value })}
-                           />
-                        </div>
+                              {/************** Chọn thời gian ***************/}
+                              <div className="mb-4 flex flex-col">
+                                 <label htmlFor="reservationTime" className="text-white font-semibold rounded-[4px] text-2xl">
+                                    Chọn thời gian
+                                    <span className="text-red-500 text-x font-bold"> *</span>
+                                 </label>
+                                 <input
+                                    type="datetime-local"
+                                    id="reservationTime"
+                                    className="w-[300px] mt-1 p-3 text-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    value={reservationData.reservationTime}
+                                    onChange={(e) => setReservationData({ ...reservationData, reservationTime: e.target.value })}
+                                 />
+                              </div>
 
-                        {/************** Nhập tin nhắn ***************/}
-                        <div className="mb-4 flex flex-col">
-                           <label htmlFor="messenger" className="text-white text-xl">
-                              Tin nhắn ghi chú
-                              <span className="text-red-500 text-x font-bold"> *</span>
-                           </label>
-                           <textarea
-                              // type="textarea"
-                              id="messenger"
-                              className="w-[300px] mt-1 p-3 text-black border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                              value={reservationData.messenger}
-                              onChange={(e) => setReservationData({ ...reservationData, messenger: e.target.value })}
-                           />
-                        </div>
+                              {/************** Chọn số lượng người ***************/}
+                              <div className="mb-4 flex flex-col">
+                                 <label htmlFor="quantityPeople" className="text-white font-semibold rounded-[4px] text-2xl">
+                                    Số lượng người
+                                    <span className="text-red-500 text-x font-bold"> *</span>
+                                 </label>
 
-                        <div>
-                           {formError && (
-                              <p className="text-red-600 mt-2 font-medium text-center">{formError}</p>
-                           )}
-                           <button
-                              type="submit"
-                              className="w-full bg-blue-500 text-white p-3 rounded-lg font-medium hover:bg-blue-600 transition"
-                           >
-                              Xác nhận đặt bàn
-                           </button>
+                                 <div className="flex items-center space-x-2 mt-1">
+                                    <input
+                                       type="number"
+                                       id="quantityPeople"
+                                       min="1"
+                                       className="w-[80px] p-3 text-black border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                       value={reservationData.quantityPeople}
+                                       onChange={(e) => setReservationData({ ...reservationData, quantityPeople: parseInt(e.target.value || 1), })}
+                                    />
 
+                                    {/* Nút giảm */}
+                                    <button
+                                       type="button"
+                                       className="px-3 py-2 bg-gray-300 rounded-lg text-black hover:bg-gray-400"
+                                       onClick={() =>
+                                          setReservationData((prev) => ({ ...prev, quantityPeople: Math.max(1, parseInt(prev.quantityPeople || 1) - 1), }))}
+                                    >
+                                       -
+                                    </button>
+
+                                    {/* Nút tăng */}
+                                    <button
+                                       type="button"
+                                       className="px-3 py-2 bg-gray-300 rounded-lg text-black hover:bg-gray-400"
+                                       onClick={() =>
+                                          setReservationData((prev) => ({
+                                             ...prev,
+                                             quantityPeople: parseInt(prev.quantityPeople || 1) + 1,
+                                          }))}
+                                    >
+                                       +
+                                    </button>
+                                 </div>
+                              </div>
+
+
+                              {/************** Nhập tin nhắn ****************/}
+                              <div className="mb-4 flex flex-col">
+                                 <label htmlFor="messenger" className="text-white text-xl">
+                                    Tin nhắn ghi chú
+                                 </label>
+                                 <textarea
+                                    // type="textarea"
+                                    id="messenger"
+                                    className="w-[300px] mt-1 p-3 text-black text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    placeholder="Không bắt buộc"
+                                    value={reservationData.messenger}
+                                    onChange={(e) => setReservationData({ ...reservationData, messenger: e.target.value })}
+                                 />
+                              </div>
+
+                              <div>
+                                 {formError && (
+                                    <p className="text-red-600 mt-2 font-medium text-center">{formError}</p>
+                                 )}
+                                 <button
+                                    type="submit"
+                                    className="w-full bg-blue-500 text-white p-3 rounded-lg font-medium hover:bg-blue-600 transition"
+                                 >
+                                    Xác nhận đặt bàn
+                                 </button>
+
+                              </div>
+                           </form>
                         </div>
-                     </form>
-                  </div>
+                     </div>
+                  ) : (
+                     <div></div>
+                  )}
                </div>
             </div>
          </div>
@@ -244,13 +296,20 @@ const Thongtindatban = () => {
             <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                <div className="bg-slate-700 rounded-lg shadow-lg w-[90%] sm:w-[600px] p-6 relative">
                   <h3 className="text-3xl font-bold text-white text-center mb-4">Đặt bàn thành công</h3>
-                  <Link to="/bandadat">
+                  <div className="flex space-x-4 justify-center">
+                     <Link to="/bandadat">
+                        <button
+                           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
+                           onClick={() => setIsModalOpen(false)}>
+                           Xem
+                        </button>
+                     </Link>
                      <button
                         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
                         onClick={() => setIsModalOpen(false)}>
-                        Xem
+                        Đóng
                      </button>
-                  </Link>
+                  </div>
                </div>
             </div>
          )};

@@ -42,7 +42,8 @@ const TrangDangNhap = () => {
       const token = localStorage.getItem("token");
       console.log("Token trong localStorage: \n" + token);
 
-      navigate("/trangchu"); // Điều hướng giao diện về trang chủ khi đăng nhập thành công
+      navigate("/trangchu"); 
+      window.location.reload();
       setError("");
     } catch (error) {
       console.error("Lỗi kết nối:", error.message);
@@ -118,7 +119,7 @@ const TrangDangNhap = () => {
         <div className="mt-6 text-center text-sm text-gray-500">
           Bạn chưa có tài khoản?{" "}
           <Link to="/dangky" className="text-blue-500 hover:underline">
-            Đăng ký ngay
+            Đăng ký ngay !
           </Link>
         </div>
       </div>

@@ -1,61 +1,89 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { Button } from './Trangchu/Button';
+import { useNavigate } from "react-router-dom";
+import { getValidToken } from "./authService.js";
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false); // Kiểm tra role đó có là ADMIN
-
+    const [isAdmin, setIsAdmin] = useState(false);
+    const navigate = useNavigate();
 
     const toggleMenu = () => {
         console.log("Menu toggled!");
-        setMenuOpen(!menuOpen);
+        const newState = !menuOpen;
+        setMenuOpen(newState);
+        handleCheckLoginStatus();
     };
 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setIsLoggedIn(false);
-                    return;
-                }
+    const handleCheckLoginStatus = async () => {
+        try {
+            const token = await getValidToken();
+            if (!token) {
+                console.log("Không có token hợp lệ.");
+                setIsLoggedIn(false);
+                return;
+            }
 
-                const response = await fetch("http://localhost:8386/restaurant/users/myInfo", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                });
+            const response = await fetch("http://localhost:8386/restaurant/users/myInfo", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
 
-                if (!response.ok) {
-                    setIsLoggedIn(false);
-                    return;
-                }
+            if (!response.ok) {
+                setIsLoggedIn(false);
+                return;
+            }
 
-                const data = await response.json();
+            const data = await response.json();
 
-                console.log("Request đã được gửi. Response:", data)
-                if (data.code === 1000) {
-                    setIsLoggedIn(true);
+            if (data.code === 1000) {
+                setIsLoggedIn(true);
 
-                    // Kiểm tra vai trò ADMIN
-                    const userRoles = data.result.roles || [];
-                    const hasAdminRole = userRoles.some(role => role.name === "ADMIN");
-                    setIsAdmin(hasAdminRole);
-                } else {
-                    setIsLoggedIn(false);
-                }
-            } catch (error) {
-                console.error("Lỗi kiểm tra đăng nhập:", error);
+                const userRoles = data.result.roles || [];
+                const hasAdminRole = userRoles.some(role => role.name === "ADMIN");
+                setIsAdmin(hasAdminRole);
+            } else {
                 setIsLoggedIn(false);
             }
-        };
+        } catch (error) {
+            console.error("Lỗi kiểm tra đăng nhập:", error);
+            setIsLoggedIn(false);
+        }
+    };
 
-        checkLoginStatus();
-    }, []);
+    const handleLogout = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.log("Không có token --> trở về trang chủ");
+            navigate("/trangchu");
+            return;
+        }
+
+        try {
+            await fetch("http://localhost:8386/restaurant/auth/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({ token }),
+            });
+
+            localStorage.removeItem("token");
+            console.log("Đã xóa token !!!");
+            window.location.reload();
+            console.log("Đã đăng xuất trở về trang chủ");
+            navigate("/trangchu");
+        } catch (err) {
+            console.error("Logout API error:", err);
+            // tuỳ ý hiển thị toast/thông báo lỗi
+        }
+    };
 
     return (
         <nav className="fixed top-0 left-0 w-full z-50 flex items-center space-x-5 justify-between py-3 px-5 bg-white shadow">
@@ -121,6 +149,9 @@ const Navbar = () => {
                                             </li>
                                         </Link>
                                     )}
+                                    <li className="dropdown-item px-4 py-2 text-black hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
+                                        Đăng xuất
+                                    </li>
                                 </>
                             ) : (
                                 <Link to="/dangnhap">

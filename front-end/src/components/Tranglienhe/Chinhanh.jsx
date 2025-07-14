@@ -47,7 +47,7 @@ const Chinhanh = () => {
                   <img
                      src={res.img}
                      alt="Topping Beef Restaurant"
-                     className="w-full rounded-xl shadow-lg "
+                     className="w-full rounded-xl drop-shadow-2xl "
                   />
                </div>
 

@@ -3,7 +3,7 @@ import Icon_nhahang from "../../assets/icon_nhahang.png";
 
 const Content = () => {
     return (
-        <div className="flex flex-col items-center p-12 z-30 space-y-7">
+        <div className="flex flex-col items-center p-12 py-[80px] z-30 space-y-7">
             <div className="text-[40px] text-white font-extralight">
                 Mở cửa 7 ngày trong tuần
             </div>

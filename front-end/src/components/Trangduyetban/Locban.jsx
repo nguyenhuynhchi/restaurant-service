@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getValidToken } from "../authService.js";
 
 const restaurantName = [
    {
@@ -30,7 +31,7 @@ const Locban = () => {
 
    const handleFilter = async () => {
       try {
-         const token = localStorage.getItem("token");
+         const token = await getValidToken();
 
          const response = await fetch("http://localhost:8386/restaurant/reservation/filter", {
             method: "POST",
@@ -53,14 +54,21 @@ const Locban = () => {
       }
    };
 
-   const InfoItem = ({ label, value }) => (
-      <div className="flex flex-col space-y-1 bg-zinc-300 rounded-xl p-2 items-center">
-         <p className="font-semibold">{label}</p>
-         <div className="bg-zinc-600 w-full text-center rounded-xl px-2 py-1 text-slate-100 min-h-[40px] flex items-center justify-center">
-            {typeof value === "string" || typeof value === "number" ? <p>{value}</p> : value}
+   const InfoItem = ({ label, value }) => {
+      const isTableLabel = label === "🍽️ Bàn:";
+      return (
+         <div className="flex flex-col space-y-1 bg-zinc-300 rounded-xl p-2 items-center">
+            <p className="font-semibold">{label}</p>
+            <div className="bg-zinc-600 w-full text-center rounded-xl px-2 py-1 text-slate-100 min-h-[40px] flex items-center justify-center">
+               {typeof value === "string" || typeof value === "number" ? (
+                  <p className={`${(isTableLabel) ? "font-bold text-green-500 text-[20px]" : ""}`}>{value}</p>
+               ) : (
+                  value
+               )}
+            </div>
          </div>
-      </div>
-   );
+      );
+   };
 
    return (
       <div className="w-full md:w-1/2 space-y-6">
@@ -115,7 +123,7 @@ const Locban = () => {
                         <InfoItem label="🏠 Chi nhánh:" value={restaurantName.find(item => item.resID === res.restaurant)?.resname || "Không rõ"} />
                         <InfoItem label="👥 Số lượng người:" value={res.quantityPeople} />
                         <InfoItem label="💬 Tin nhắn ghi chú:" value={res.messenger || "Không có"} />
-                        <InfoItem label="🍽️ Bàn:" value={res.table || "Hãy chọn bàn"} />
+                        <InfoItem label="🍽️ Bàn:" value={res.table} />
                      </div>
                   </div>
                ))}

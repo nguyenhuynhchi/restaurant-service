@@ -8,10 +8,12 @@ import TrangDatBan from "../components/Trangdatban/Trangdatban.jsx";
 import Trangxembandat from "../components/Trangxembandat/Trangxemban.jsx";
 import Tranglienhe from "../components/Tranglienhe/Tranglienhe.jsx";
 import Trangduyetban from "../components/Trangduyetban/Trangduyetban.jsx";
+import ScrollToTop from "./ScrollToTop.jsx";
 
 const AppRoutes = () => {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Điều hướng tất cả các URL khác về trang đăng nhập */}
         <Route path="/" element={<Navigate to="/trangchu" />} />

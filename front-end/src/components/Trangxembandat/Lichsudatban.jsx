@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getValidToken } from "../authService.js";
 
 const restaurantName = [
    {
@@ -13,7 +14,6 @@ const restaurantName = [
 ];
 
 
-
 const Lichsudatban = () => {
 
    const navigate = useNavigate();
@@ -22,43 +22,33 @@ const Lichsudatban = () => {
    useEffect(() => {
       // Gọi API lấy dữ liệu người dùng
       const fetchReservationData = async () => {
-         try {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-               // setIsLoggedIn(false);
-               // return;
-               navigate("/dangnhap");
-               console.log("Chưa đăng nhập !!!!")
-               return;
-            }
-
-            const response = await fetch("http://localhost:8386/restaurant/reservation/history", {
-               method: "GET",
-               headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`, // <-- đính kèm token tại đây
-               },
-            });
-
-            console.log("Api xem thông tin đặt bàn sắp tới được gọi");
-
-            if (!response.ok) {
-               throw new Error("Lỗi khi gọi API: " + response.status);
-            }
-
-            const data = await response.json();
-            console.log(data);
-
-            setReservationList(data.result);
-
-
-         } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu:", error);
-            // setIsLoggedIn(false);
-            navigate("/dangnhap");
+         // const token = await checkAndRefreshToken();
+         // const token = localStorage.getItem("token");
+         const token = await getValidToken();
+         if (!token) {
+            console.warn("❗Không có token hợp lệ (kể cả sau khi refresh).");
+            // navigate("/dangnhap");
             return;
          }
+
+         const response = await fetch("http://localhost:8386/restaurant/reservation/history", {
+            method: "GET",
+            headers: {
+               "Content-Type": "application/json",
+               "Authorization": `Bearer ${token}`,
+            },
+         });
+
+         console.log("Api xem thông tin đặt bàn sắp tới được gọi");
+
+         // if (!response.ok) {
+         //    throw new Error("Lỗi khi gọi API: " + response.status);
+         // }
+
+         const data = await response.json();
+         console.log(data);
+
+         setReservationList(data.result);
       };
 
       fetchReservationData();

@@ -4,6 +4,7 @@ import com.option1.restaurant_service.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,12 +37,27 @@ public class SecurityConfig {
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
+    @Order(1) // Ưu tiên áp dụng trước
+    public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
+                "/webjars/**", "/configuration/**")
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+            .csrf(AbstractHttpConfigurer::disable)
+            .oauth2ResourceServer(oauth2 -> oauth2.disable()); // Vô hiệu hóa OAuth2
+
+        return http.build();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
 
-            request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Cho phép tất cả OPTIONS request
+            request
+                .requestMatchers(HttpMethod.OPTIONS, "/**")
+                .permitAll() // Cho phép tất cả OPTIONS request
                 .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.PUT, "/users/{userid}").permitAll()
+                .requestMatchers(HttpMethod.PUT, PUBLIC_ENDPOINTS).permitAll()
 
 //                .requestMatchers(PRIVATE_ENDPOINTS) // Các phương thức tác động đến nhà hàng đều phải có role ADMIN
 //                .hasRole(Role.ADMIN.name())
@@ -57,8 +73,6 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 
-        // httpSecurity.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
-        // Rút ngắn bằng lambda cho câu lệnh trên
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
@@ -69,7 +83,8 @@ public class SecurityConfig {
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Remove default "ROLE_"
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
+            jwtGrantedAuthoritiesConverter);
 
         return jwtAuthenticationConverter;
     }

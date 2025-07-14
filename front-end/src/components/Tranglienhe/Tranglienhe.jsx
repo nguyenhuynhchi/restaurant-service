@@ -2,6 +2,7 @@ import Navbar from '../Navbar-v2.jsx'
 import Banner from './Banner.jsx';
 import Chinhanh from './Chinhanh.jsx';
 import Guithacmac from './Guithacmac.jsx';
+import Footer from '../Footer.jsx';
 
 const Tranglienhe = () => {
    return (
@@ -10,6 +11,7 @@ const Tranglienhe = () => {
          <Banner />
          <Chinhanh />
          <Guithacmac />
+         <Footer />
       </div>
    );
 };

@@ -6,7 +6,8 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.5</version>
+<!--    <version>3.4.5</version>-->
+    <version>3.2.5</version> <!-- nên dùng 3.2.5 -->
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.option1</groupId>
@@ -58,6 +59,12 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-crypto</artifactId>
     </dependency>
+    <!-- Springdoc OpenAPI -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.3.0</version>
+    </dependency>
     <!--    -->
     <dependency>
       <groupId>com.mysql</groupId>
@@ -98,12 +105,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-    </dependency>
-    <!--    -->
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.2.0</version>
     </dependency>
     <!--    -->
     <dependency>

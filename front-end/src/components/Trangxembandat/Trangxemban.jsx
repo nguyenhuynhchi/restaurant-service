@@ -1,6 +1,7 @@
 import Navbar from '../Navbar-v2.jsx'
 import Bandadat from './Bandadat_v2.jsx';
 import Lichsudatban from './Lichsudatban.jsx';
+import Footer from '../Footer.jsx';
 const background = "/background_2.png";
 
 const Trangxembandat = () => {
@@ -18,6 +19,7 @@ const Trangxembandat = () => {
                <Lichsudatban />
             </div>
          </div>
+         <Footer />
       </div>
    );
 };
