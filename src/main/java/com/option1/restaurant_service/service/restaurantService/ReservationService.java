@@ -56,7 +56,7 @@ public class ReservationService {
         Duration duration = Duration.between(LocalDateTime.now(), reservation.getReservationTime());
         long hoursDifference = duration.toHours();
 
-        int durationReservation = 5; // thời gian đặt bàn phải trước 5 tiếng
+        int durationReservation = 3; // thời gian đặt bàn phải trước 3 tiếng
 
         if (hoursDifference < durationReservation) {
             throw new AppException(ErrorCode.OUTTIME_RESERVATION);
@@ -105,10 +105,23 @@ public class ReservationService {
             .stream()
             // Lọc các đơn đặt bàn với số lượng người và tên chi nhánh
             .filter(reservation -> reservation.getReservationTime().isAfter(LocalDateTime.now()))
-            .filter(reservation -> reservation.getRestaurant().getId().equals(request.getRestaurant()))
-            .filter(reservation -> reservation.getTable() != null
-                && reservation.getTable().getCapacity() >= request.getQuantityPeople()
-                && reservation.getTable().getCapacity() <= request.getQuantityPeople() + 1)
+//            .filter(reservation -> reservation.getRestaurant().getId().equals(request.getRestaurant()))
+            .filter(reservation ->
+            {
+                if (request.getRestaurant() != null && !request.getRestaurant().isEmpty()) {
+                    return reservation.getRestaurant().getId().equals(request.getRestaurant());
+                }
+                return true;
+            })
+            .filter(reservation ->
+            {
+                if (request.getQuantityPeople() != 0) {
+                    return reservation.getTable() != null
+                        && reservation.getTable().getCapacity() >= request.getQuantityPeople()
+                        && reservation.getTable().getCapacity() <= request.getQuantityPeople() + 1;
+                }
+                return true;
+            })
             .toList();
 
         return reservationUnconfirmed.stream().map(reservationMapper::toReservationResponse)

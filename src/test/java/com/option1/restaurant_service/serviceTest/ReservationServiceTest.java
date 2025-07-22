@@ -329,4 +329,60 @@ public class ReservationServiceTest {
             .isInstanceOf(AppException.class)
             .hasMessage(ErrorCode.NOT_HAVE_TABLE.getMessage());
     }
+
+    @Test
+    void getReservationComing_shouldReturnComingReservationsOfUser() {
+        // Mock security context
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("user1");
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        // Mock user
+        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
+
+        // Tạo 2 reservation: 1 cái trong tương lai, 1 cái trong quá khứ
+        Reservation futureReservation = Reservation.builder()
+            .id("Res01")
+            .reservationTime(LocalDateTime.now().plusDays(1))
+            .user(user)
+            .build();
+
+        Reservation pastReservation = Reservation.builder()
+            .id("Res02")
+            .reservationTime(LocalDateTime.now().minusDays(1))
+            .user(user)
+            .build();
+
+        List<Reservation> allReservations = List.of(futureReservation, pastReservation);
+        when(reservationRepository.findAll()).thenReturn(allReservations);
+
+        // Mapping
+        ReservationResponse response = ReservationResponse.builder()
+            .id("Res01")
+            .build();
+        when(reservationMapper.toReservationResponse(futureReservation)).thenReturn(response);
+
+        List<ReservationResponse> result = reservationService.getReservationComing();
+
+        Assertions.assertThat(result).hasSize(1);
+        Assertions.assertThat(result.get(0).getId()).isEqualTo("Res01");
+    }
+
+    @Test
+    void getReservationComing_shouldThrowIfUserNotExist() {
+        // Mock security context
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("user1");
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByUsername("user1")).thenReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> reservationService.getReservationComing())
+            .isInstanceOf(AppException.class)
+            .hasMessage(ErrorCode.USER_NOT_EXISTED.getMessage());
+    }
 }

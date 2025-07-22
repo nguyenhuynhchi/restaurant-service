@@ -27,6 +27,8 @@ const Banchuaxacnhan = () => {
 
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [modalMessage, setModalMessage] = useState("");
+   const [isModalConfirmCancle, setIsModalConfirmCancle] = useState(false);
+   const [targetReservation, setTargetReservation] = useState(null);
 
    useEffect(() => {
       const fetchUnconfirmedReservations = async () => {
@@ -78,6 +80,42 @@ const Banchuaxacnhan = () => {
          setAvailableTables(filtered);
       } catch (error) {
          console.error("Lỗi khi lấy danh sách bàn:", error);
+      }
+   };
+
+   const handleCancle = async (booking) => {
+      try {
+         const token = localStorage.getItem("token");
+
+         const requestUrl = `http://localhost:8386/restaurant/reservation/admin-cancle/${booking.id}`;
+
+         const res = await fetch(requestUrl,
+            {
+               method: "PUT",
+               headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`,
+               },
+            });
+
+         console.log("URL:", requestUrl);
+         console.log("Response: ", res);
+
+         if (!res.ok) throw new Error("Xác nhận thất bại");
+
+         // tuỳ ý: xoá khỏi danh sách chờ hoặc đổi status
+         setReservations(prev =>
+            prev.filter(r => r.id !== booking.id)
+         );
+
+         console.log("Đã hủy bàn !!")
+
+         setIsModalOpen(true);
+         setModalMessage("Đã xác nhận hủy bàn !");
+         setIsModalConfirmCancle(false);
+      } catch (err) {
+         console.error(err);
+         alert("Có lỗi khi xác nhận.");
       }
    };
 
@@ -177,20 +215,35 @@ const Banchuaxacnhan = () => {
                            <InfoItem label="👥 Số lượng người:" value={res.quantityPeople} />
                            <InfoItem label="💬 Tin nhắn ghi chú:" value={res.messenger || "Không có"} />
                            <InfoItem label="🍽️ Bàn" value={res.table || "Chưa có"} />
-                           <div className="space-x-4">
-                              {<button
-                                 onClick={() => handleOpenTableModal(res)}
-                                 className="text-red-600 py-1 px-2 rounded-lg bg-zinc-300 cursor-pointer hover:bg-blue-800"
-                              >
-                                 Chọn bàn
-                              </button>}
-                              {<button
-                                 onClick={() => handleConfirm(res)}
-                                 className="text-red-600 py-1 px-2 rounded-lg bg-zinc-300 cursor-pointer hover:bg-blue-800"
-                              >
-                                 xác nhận
-                              </button>}
+                           <div className="flex flex-col space-y-2 w-full">
+                              <div className="flex space-x-4 h-full ">
+                                 {<button
+                                    onClick={() => handleOpenTableModal(res)}
+                                    className="text-red-600 w-[40%] py-1 px-2 rounded-lg bg-zinc-300 cursor-pointer hover:bg-blue-800 hover:text-white"
+                                 >
+                                    Chọn bàn
+                                 </button>}
+                                 {<button
+                                    onClick={() => handleConfirm(res)}
+                                    className="text-red-600 w-[40%] py-1 px-2 rounded-lg bg-zinc-300 cursor-pointer hover:bg-blue-800 hover:text-white"
+                                 >
+                                    Xác nhận
+                                 </button>}
+                              </div>
+                              <div className="h-full">
+                                 {<button
+                                    onClick={() => {
+                                       setTargetReservation(res);
+                                       setIsModalConfirmCancle(true)
+                                    }}
+                                    className="text-red-600 w-[40%] h-full py-1 px-2 rounded-lg bg-zinc-300 cursor-pointer hover:bg-red-700 hover:text-red-300"
+                                 >
+                                    Hủy bàn
+                                 </button>}
+                              </div>
+
                            </div>
+
                         </div>
                      </div>
                   ))
@@ -198,6 +251,7 @@ const Banchuaxacnhan = () => {
             </div>
 
             <Locban />
+
             {showTableModal && (
                <div className="fixed inset-0 ml-[-120px] pt-16 bg-black bg-opacity-40 flex justify-center items-center z-100">
                   <div className="bg-zinc-400 bg-opacity-80 p-6 w-[500px] max-h-[90vh] overflow-y-auto">
@@ -255,6 +309,29 @@ const Banchuaxacnhan = () => {
                         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-red-500 transition duration-300"
                         onClick={() => setIsModalOpen(false)}>
                         OK
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )};
+
+         {isModalConfirmCancle && (
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+               <div className="bg-slate-700 rounded-lg shadow-lg w-[90%] sm:w-[500px] p-6 text-white text-center">
+
+                  <h3 className="text-2xl font-bold mb-4">Bạn có chắc chắn muốn hủy bàn không?</h3>
+                  <div className="flex justify-center space-x-4">
+                     <button
+                        onClick={() => setIsModalConfirmCancle(false)}
+                        className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500"
+                     >
+                        Đóng
+                     </button>
+                     <button
+                        onClick={() => handleCancle(targetReservation)}
+                        className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+                     >
+                        Chắc chắn
                      </button>
                   </div>
                </div>

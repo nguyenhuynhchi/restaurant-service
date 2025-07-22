@@ -30,7 +30,9 @@ public class SecurityConfig {
         "/auth/introspect",
         "/auth/logout",
         "/auth/refresh",
-        "/reservation"
+        "/reservation",
+        "/roles",
+        "/permissions"
     };
 
     @Autowired
@@ -94,7 +96,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
 //        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // Frontend domain
-        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
         corsConfiguration.addAllowedMethod("*"); // All HTTP methods
         corsConfiguration.addAllowedHeader("*"); // All headers
         corsConfiguration.setAllowCredentials(true);

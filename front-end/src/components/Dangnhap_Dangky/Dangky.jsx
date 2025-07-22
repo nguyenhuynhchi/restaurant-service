@@ -190,7 +190,7 @@ const TrangDangKy = () => { // Đổi tên thành TrangDangKy
               )}
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Nhập email"
@@ -256,6 +256,9 @@ const TrangDangKy = () => { // Đổi tên thành TrangDangKy
           <div className="mb-4">
             <label htmlFor="sex" className="block text-sm font-medium text-gray-700">
               Giới tính
+              {sex.trim() === "" && (
+                <span className="text-red-500 text-sm font-bold mt-1"> *</span>
+              )}
             </label>
             <div className="mt-2 flex items-center">
               <label className="inline-flex items-center mr-4">
@@ -289,6 +292,9 @@ const TrangDangKy = () => { // Đổi tên thành TrangDangKy
                 <span className="ml-2 text-gray-700">Khác</span>
               </label>
             </div>
+            {isSubmitted && sex.trim() === "" && (
+              <p className="text-red-500 text-sm mt-1">Bạn không được bỏ trống giới tính</p>
+            )}
           </div>
 
           {/* Nút submit */}

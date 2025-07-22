@@ -1,0 +1,90 @@
+# version: '3.9'
+
+# services:
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.backend
+#     container_name: restaurant-backend
+#     ports:
+#       - "8386:8386"
+#     # nếu backend cần kết nối DB bên ngoài, cấu hình biến môi trường JDBC ở đây
+#     environment:
+#       SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/restaurant_service
+#       SPRING_DATASOURCE_USERNAME: root
+#       SPRING_DATASOURCE_PASSWORD: root
+#     networks:
+#       - app-network
+
+#   frontend:
+#     build:
+#       context: ./front-end
+#       dockerfile: Dockerfile.frontend
+#     container_name: restaurant-frontend
+#     ports:
+#       - "3000:80"
+#     depends_on:
+#       - backend          # đợi backend sẵn sàng (tuỳ chọn)
+#     networks:
+#       - app-network
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+
+########################
+#       THÊM SQL       #
+########################
+
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0.41
+    container_name: restaurant-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: restaurant_service
+    ports:
+      - "3306:3306"
+    volumes:
+      - vl_mysql-8.0.41:/var/lib/mysql
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: restaurant-backend
+    ports:
+      - "8386:8386"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/restaurant_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile.frontend
+    container_name: restaurant-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  vl_mysql-8.0.41:
+
+networks:
+  app-network:
+    driver: bridge

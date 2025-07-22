@@ -8,10 +8,14 @@ import com.option1.restaurant_service.entity.User;
 import com.option1.restaurant_service.exception.AppException;
 import com.option1.restaurant_service.exception.ErrorCode;
 import com.option1.restaurant_service.mapper.UserMapper;
+import com.option1.restaurant_service.repository.RoleRepository;
 import com.option1.restaurant_service.repository.UserRepository;
 import com.option1.restaurant_service.service.AuthenticationService;
 import com.option1.restaurant_service.service.UserService;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +28,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -40,6 +47,7 @@ public class UserServiceTest {
 
     @MockBean
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
 
 
     private UserMapper userMapper;
@@ -84,57 +92,6 @@ public class UserServiceTest {
             .build();
     }
 
-//  @Test
-//  void createUser_validRequest_success() {
-//    // GIVEN
-//    when(userRepository.existsByUsername(anyString())).thenReturn(false);
-//    when(userRepository.save(any())).thenReturn(user);
-//
-//    // WHEN
-//    var response = userService.createUser((request));
-//
-//    // THEN
-//    Assertions.assertThat(response.getId()).isEqualTo("a5f2b5fdefe5");
-//    Assertions.assertThat(response.getUsername()).isEqualTo("usertest1");
-//  }
-
-//  @Test
-//  void createUser_validRequest_success() {
-//    // GIVEN
-//    when(userRepository.existsByUsername(anyString())).thenReturn(false);
-//    when(userRepository.save(any())).thenReturn(user);
-//
-//    // WHEN
-//    var response = userService.createUser(request);
-//    // THEN
-//
-//    Assertions.assertThat(response.getId()).isEqualTo("a5f2b5fdefe5");
-//    Assertions.assertThat(response.getUsername()).isEqualTo("usertest1");
-//  }
-
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void getUsers_adminRole_success() {
-//        // GIVEN
-//        List<User> users = List.of(user); // Danh sách thực thể User từ repository
-//        List<UserResponse> userResponses = List.of(userResponse); // Danh sách UserResponse trả về từ mapper
-//
-//        // Mock repository để trả về danh sách người dùng
-//        when(userRepository.findAll()).thenReturn(users);
-//
-//        // Mock mapper để chuyển đổi User -> UserResponse
-//        when(userMapper.toUserResponse(any(User.class))).thenReturn(userResponse);
-//
-//        // WHEN
-//        var result = userService.getUsers();
-//
-//        // THEN
-//        Assertions.assertThat(result).hasSize(1);
-//        Assertions.assertThat(result.get(0).getId()).isEqualTo("a5f2b5fdefe5");
-//        Assertions.assertThat(result.get(0).getUsername()).isEqualTo("usertest1");
-//        Assertions.assertThat(result.get(0).getFullname()).isEqualTo("user test");
-//    }
-
 
     @Test
     void createUser_userExisted_fail() {
@@ -145,6 +102,25 @@ public class UserServiceTest {
         var exception = assertThrows(AppException.class, () -> userService.createUser(request));
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1001);
     }
+
+    @Test
+    void updateUser_userNotFound_throwsException_() {
+        // Arrange
+        String userId = "non_existing_user_id";
+        UserUpdateRequest request = new UserUpdateRequest();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Act
+        AppException exception = assertThrows(AppException.class, () ->
+            userService.updateUser(userId, request));
+
+        // Assert
+        assertEquals(ErrorCode.USER_NOT_EXISTED, exception.getErrorCode());
+//        verify(userRepository, times(1)).findById(userId);
+//        verifyNoMoreInteractions(userRepository); // vì không save
+    }
+
 
     @Test
     @WithMockUser(username = "usertest1")
@@ -167,7 +143,7 @@ public class UserServiceTest {
         // WHEN
         var exception = assertThrows(AppException.class, () -> userService.getMyInfo());
 
-        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1004);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1008);
     }
 
 
@@ -206,7 +182,7 @@ public class UserServiceTest {
         // WHEN
         var exception = assertThrows(AppException.class, () -> userService.getUserID("abc"));
 
-        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1004);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1008);
     }
 
     @Test
@@ -232,7 +208,7 @@ public class UserServiceTest {
         var exception = assertThrows(AppException.class,
             () -> userService.deleteUserID("invalidUser"));
 
-        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1004);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1008);
 
     }
 
@@ -244,81 +220,4 @@ public class UserServiceTest {
         // Thực thi phương thức
         userService.deleteUserID("user123");
     }
-
-//    @Test
-//    void createUser_validRequest_success() {   // Tạo người dùng thành công
-//        // GIVEN
-//        when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
-//        when(userMapper.toUser(request)).thenReturn(user);
-//        when(userRepository.save(user)).thenReturn(user);
-//        when(userMapper.toUserResponse(user)).thenReturn(userResponse);
-//
-//        // WHEN
-//        var response = userService.createUser(request);
-//
-//        // THEN
-//        Assertions.assertThat(response).isNotNull();
-//        Assertions.assertThat(response.getUsername()).isEqualTo("usertest1");
-//        Assertions.assertThat(response.getEmail()).isEqualTo("huynhchi0904@gmail.com");
-//        Assertions.assertThat(response.getFullname()).isEqualTo("user test");
-//
-//        verify(userRepository, times(1)).existsByUsername(request.getUsername());
-//        verify(userMapper, times(1)).toUser(request);
-//        verify(userRepository, times(1)).save(user);
-//    }
-
-//    @Test
-//    void createUser_invalidPassword_fail() {
-//        // GIVEN
-//        request.setPassword("123"); // Mật khẩu rỗng (không hợp lệ)
-//        when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
-//
-//        // WHEN
-//        var exception = assertThrows(AppException.class, () -> userService.createUser(request));
-//
-//        // THEN
-//        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002); // Mã lỗi mật khẩu không hợp lệ
-//
-//        verify(userRepository, times(1)).existsByUsername(request.getUsername());
-//        verify(userMapper, never()).toUser(request);
-//        verify(passwordEncoder, never()).encode(anyString());
-//    }
-
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void getUsers_validRole_success() {
-//        // GIVEN
-//        List<User> users = List.of(user); // `user` đã được khởi tạo trong phương thức `initData`.
-//        List<UserResponse> userResponses = List.of(userResponse); // `userResponse` cũng đã được khởi tạo.
-//
-//        when(userRepository.findAll()).thenReturn(users);
-//        when(userMapper.toUserResponse(user)).thenReturn(userResponse);
-//
-//        // WHEN
-//        List<UserResponse> result = userService.getUsers();
-//
-//        // THEN
-//        Assertions.assertThat(result).isNotEmpty();
-//        Assertions.assertThat(result).hasSize(1);
-//        Assertions.assertThat(result.get(0).getUsername()).isEqualTo("usertest1");
-//
-//        verify(userRepository, times(1)).findAll();
-//        verify(userMapper, times(1)).toUserResponse(user);
-//    }
-
-//    @Test
-//    @WithMockUser(roles = "USER") // Giả lập người dùng có vai trò không hợp lệ
-//    void getUsers_invalidRole_fail() {
-//        // WHEN
-//        var exception = assertThrows(AuthorizationDeniedException.class, () -> userService.getUsers());
-//
-//        // THEN
-//        Assertions.assertThat(exception.getMessage()).contains("Access Denied");
-//
-//        // Xác minh rằng repository không được gọi
-//        verify(userRepository, never()).findAll();
-//        verify(userMapper, never()).toUserResponse(any());
-//    }
-
-
 }

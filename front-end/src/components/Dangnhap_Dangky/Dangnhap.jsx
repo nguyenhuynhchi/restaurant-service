@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import showPasswordIcon from "../../assets/showPassword.png";
 import hidePasswordIcon from "../../assets/hidePassword.png";
+const logo = "/logo.png";
 
 const TrangDangNhap = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const TrangDangNhap = () => {
       <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-xl">
         {/* Logo */}
         <div className="flex justify-center mb-4">
-          <img src="./public/logo.png" alt="Logo" className="w-24 h-24" />
+          <img src={logo} alt="Logo" className="w-24 h-24" />
         </div>
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Đăng Nhập</h2>

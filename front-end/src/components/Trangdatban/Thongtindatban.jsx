@@ -75,8 +75,7 @@ const Thongtindatban = () => {
          setFormError("Vui lòng nhập đầy đủ thông tin trước khi đặt bàn.");
          return;
       }
-
-      // Nếu không có lỗi
+      
       setFormError(""); // Xóa lỗi cũ
 
       try {
@@ -135,25 +134,25 @@ const Thongtindatban = () => {
                <div className="relative z-10 p-8 flex flex-col justify-start mt-[-50px] items-center h-full w-full">
 
                   <div className="flex space-x-1">
-                     <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
-                     <h2 className="text-2xl font-bold text-white text-center mb-8">
+                     <div className="w-60 h-[2px] bg-slate-800 mt-[20px]"></div>
+                     <h2 className="text-2xl font-bold w-[60%] text-white text-center mb-4">
                         Thông tin của bạn
                      </h2>
-                     <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
+                     <div className="w-60 h-[2px] bg-slate-800 mt-[20px]"></div>
                   </div>
                   <Thongtinnguoidung />
 
                   {isLoggedIn ? (
                      <div>
-                        <div className="flex space-x-1 mt-5">
-                           <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
-                           <h2 className="text-2xl font-bold text-white text-center mb-4">
+                        <div className="flex space-x-1  mt-5">
+                           <div className="w-60 h-[2px] bg-slate-800 mt-[20px]"></div>
+                           <h2 className="text-2xl w-[60%] font-bold text-white text-center mb-4">
                               Nhập thông tin đặt bàn
                            </h2>
-                           <div className="w-40 h-[2px] bg-slate-700 mt-[20px]"></div>
+                           <div className="w-60 h-[2px] bg-slate-800 mt-[20px]"></div>
                         </div>
 
-                        <div className="flex space-x-10 w-[80%] text-white text-xl">
+                        <div className="flex space-x-10 w-[80%] text-white ml-20 text-xl">
                            <form onSubmit={handleSubmit}>
                               {/************** Chọn chi nhánh nhà hàng ***************/}
                               <div className="mb-4">

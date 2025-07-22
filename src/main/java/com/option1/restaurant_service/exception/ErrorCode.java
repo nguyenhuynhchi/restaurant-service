@@ -23,7 +23,7 @@ public enum ErrorCode {
 
   ROLE_NOT_FOUND(1009, "Role is not existed (Không có role này)", HttpStatus.NOT_FOUND),
 
-  UNAUTHENTICATED(1010, "Unauthenticated (Chưa xác thực)", HttpStatus.UNAUTHORIZED),
+  UNAUTHENTICATED(1010, "Unauthenticated (Chưa xác thựcccc)", HttpStatus.UNAUTHORIZED),
   UNAUTHORIZED(1011, "You do not have permision (Không có quyền)", HttpStatus.FORBIDDEN),
 
   ID_TABLE_EXISTED(1012, "ID cho bàn này đã tồn tại", HttpStatus.BAD_REQUEST),

@@ -33,17 +33,20 @@ const Locban = () => {
       try {
          const token = await getValidToken();
 
+         const requestBody = JSON.stringify({
+               restaurant: selectedBranch,
+               quantityPeople: selectedQuantity,
+            }); 
          const response = await fetch("http://localhost:8386/restaurant/reservation/filter", {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
                "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({
-               restaurant: selectedBranch,
-               quantityPeople: selectedQuantity,
-            }),
+            body: requestBody,
          });
+
+         console.log("Gửi request lọc:\n", requestBody)
 
          if (!response.ok) throw new Error("Không thể lọc dữ liệu");
 

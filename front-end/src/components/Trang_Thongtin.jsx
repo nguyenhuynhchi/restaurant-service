@@ -106,14 +106,18 @@ const TrangTT = () => {
                 <Navbar />
             </div>
             <div className="pt-[60px]">
-                <div className='relative w-screen h-[1000px]'>
+                {/* <div className='relative w-full h-full'>
                     <div className="absolute w-full h-full top-0 left-0 bg-current opacity-60" />
                     <img src={background} alt="background right" className="w-full h-[900px] " />
+                </div> */}
+                <div className="absolute w-full h-full top-0 left-0 bg-current">
+                    <img src={background} alt="background right" className="w-full h-[900px] " />
                 </div>
-                <div className="flex h-[500px] mt-[-900px] justify-center items-center">
-                    <div className="relative h-[500px] w-[80%] p-8 rounded-lg shadow-lg flex flex-col justify-start items-center mt-[-80px] z-30">
+                {/* <div className="flex h-[500px] mt-[-900px] justify-center items-center z-10"> */}
+                <div className="relative z-10 flex flex-col space-y-7 justify-center items-center pt-[50px] pb-[100px]">
+                    <div className="relative h-[500px] w-[80%] p-8 rounded-lg shadow-lg flex flex-col justify-start items-center z-30">
                         {/* Nền mờ nằm dưới */}
-                        <div className="absolute inset-0 bg-slate-500 opacity-80 rounded-lg z-0"></div>
+                        <div className="absolute inset-0 bg-slate-500 opacity-90 rounded-lg z-0"></div>
                         {/* Nội dung nằm trên */}
                         <div className="relative z-10 p-8 flex flex-col justify-start mt-[-50px] items-center h-full">
                             {/* Tiêu đề căn giữa */}
@@ -121,22 +125,24 @@ const TrangTT = () => {
                                 {isLoggedIn ? "Thông tin người dùng" : "Bạn chưa đăng nhập"}
                             </h2>
                             {isLoggedIn ? (
-                                <div className="flex text-white ml-[-400px] text-xl space-x-9 w-full">
+                                <div className="flex text-white ml-[-400px] text-xl space-x-6 w-full">
                                     <div className="flex flex-col items-center space-y-8 whitespace-nowrap">
-                                        <p><strong>Tên người dùng:</strong></p>
-                                        <p><strong>Họ tên:</strong></p>
-                                        <p><strong>Email:</strong></p>
-                                        <p><strong>Số điện thoại:</strong></p>
-                                        <p><strong>Ngày sinh:</strong></p>
-                                        <p><strong>Giới tính:</strong></p>
+                                        <p className="border-b-2 border-black border-opacity-0"><strong>Tên người dùng:</strong></p>
+                                        {/* <div className="w-40 h-[2px] bg-black"></div> */}
+                                        <p className="border-b-2 border-black border-opacity-0"><strong>Họ tên:</strong></p>
+                                        <p className="border-b-2 border-black border-opacity-0"><strong>Email:</strong></p>
+                                        <p className="border-b-2 border-black border-opacity-0"><strong>Số điện thoại:</strong></p>
+                                        <p className="border-b-2 border-black border-opacity-0"><strong>Ngày sinh:</strong></p>
+                                        <p className="border-b-2 border-black border-opacity-0"><strong>Giới tính:</strong></p>
                                     </div>
                                     <div className="space-y-8">
-                                        <p className="mb-4">{userData.username}</p>
-                                        <p className="mb-4">{userData.fullname}</p>
-                                        <p className="mb-4">{userData.email}</p>
-                                        <p className="mb-4">{userData.phone}</p>
-                                        <p className="mb-4">{userData.dob}</p>
-                                        <p className="mb-4">{userData.sex}</p>
+                                        <p className="mb-4 border-b-2 border-white w-[300px] border-opacity-60">{userData.username}</p>
+                                        {/* <div className="w-40 h-[2px] bg-black opacity-0"></div> */}
+                                        <p className="mb-4 border-b-2 border-white w-[300px] border-opacity-60">{userData.fullname}</p>
+                                        <p className="mb-4 border-b-2 border-white w-[300px] border-opacity-60">{userData.email}</p>
+                                        <p className="mb-4 border-b-2 border-white w-[300px] border-opacity-60">{userData.phone}</p>
+                                        <p className="mb-4 border-b-2 border-white w-[300px] border-opacity-60">{userData.dob}</p>
+                                        <p className="mb-4 border-b-2 border-white w-[300px] border-opacity-60">{userData.sex}</p>
                                     </div>
                                 </div>
                             ) : (

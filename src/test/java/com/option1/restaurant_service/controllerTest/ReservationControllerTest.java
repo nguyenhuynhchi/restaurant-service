@@ -146,7 +146,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     void gotTable_success() throws Exception {
         reservationResponse.setStatus("GOT TABLE");
         when(reservationService.gotTable("Resv01")).thenReturn(reservationResponse);

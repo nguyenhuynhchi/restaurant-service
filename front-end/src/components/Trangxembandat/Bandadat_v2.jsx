@@ -56,7 +56,7 @@ const Bandadat = () => {
    const [formError, setFormError] = useState("");
    const [targetReservation, setTargetReservation] = useState(null);
 
-   const handleAction = async () => {
+   const handleCancle = async () => {
       try {
          const token = await getValidToken();
          if (!token) {
@@ -204,7 +204,7 @@ const Bandadat = () => {
                               Huỷ
                            </button>
                            <button
-                              onClick={handleAction}
+                              onClick={() => handleCancle}
                               className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
                            >
                               Chắc chắn

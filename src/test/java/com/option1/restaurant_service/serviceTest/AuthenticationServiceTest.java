@@ -1,6 +1,7 @@
 package com.option1.restaurant_service.serviceTest;
 
 import com.option1.restaurant_service.dto.request.AuthenticationRequest;
+import com.option1.restaurant_service.dto.request.IntrospectRequest;
 import com.option1.restaurant_service.dto.response.AuthenticationResponse;
 import com.option1.restaurant_service.entity.User;
 import com.option1.restaurant_service.exception.AppException;

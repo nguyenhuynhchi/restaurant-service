@@ -1,17 +1,30 @@
 import React from "react";
 import work_icon from "../assets/work_icon.png";
 import contact_mail from "../assets/contact-mail.png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
    return (
       <footer className="bg-[#0a0624] text-gray-300 pt-2 pb-8">
          <div className="mx-auto flex flex-col items-center">
 
-            <h3 className="text-s font-roboto text-center text-white">
+            <h3 className="text-s font-roboto pb-5 text-center text-white">
                Đồ án kết thúc môn<br />
                Công nghệ phần mềm</h3>
 
             <div className="flex w-full justify-around">
+               <div className="text-center">
+                  <div className="flex items-center space-x-3 justify-center text-lg font-roboto">
+                     <p className="w-[25px] h-[25px]">☰</p>
+                     <p>Danh mục chính:</p>
+                  </div>
+                  <ul className="space-y-[5px] text-left ml-10 mt-1 underline">
+                     <Link to="/trangchu" className="hover:font-semibold"><li>Trang chủ</li></Link>
+                     <Link to="/trangchu" className="hover:font-semibold"><li>Giới thiệu</li></Link>
+                     <Link to="/lienhe" className="hover:font-semibold"><li>Liên hệ</li></Link>
+                  </ul>
+               </div>
+
                <div className="text-center">
                   <div className="flex items-center space-x-3 justify-center text-lg font-roboto">
                      <img src={work_icon} alt="" className="w-[25px] h-[25px]" />
