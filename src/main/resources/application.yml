@@ -6,13 +6,14 @@ server:
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/restaurant_service}
-    # url: jdbc:mysql://mysql:3306/restaurant_service
+#    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/restaurant_service}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-8.0.41:3306/restaurant_service}
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:root}
-    # username: root
-    # password: root
+  #    url: jdbc:mysql://mysql:3306/restaurant_service
+  #    username: root
+  #    password: root
   jpa:
     hibernate:
       ddl-auto: update

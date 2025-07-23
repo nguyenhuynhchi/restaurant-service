@@ -96,7 +96,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
 //        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // Frontend domain
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+//        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOriginPattern("*"); // Cho phép mọi domain
         corsConfiguration.addAllowedMethod("*"); // All HTTP methods
         corsConfiguration.addAllowedHeader("*"); // All headers
         corsConfiguration.setAllowCredentials(true);
